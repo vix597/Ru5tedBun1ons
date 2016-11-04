@@ -2,8 +2,11 @@
 My bunions...they're so rusty again!
 
 RDP runs on 3389
+
 Username: WhiteRabbit
+
 Password: followme
+
 Host range 172.18.30.0 - 172.18.30.255
 
 1. Scan range with nmap. Find hosts with 3389. Try “rdesktop”
