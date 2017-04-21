@@ -16,3 +16,9 @@ nmap -sS -n -T4 --top-ports 1000 172.18.30.0-255
 ```
 1. Scan range with nmap and find hosts with 3389. Try the `rdesktop` kali command to log into the hosts
 1. On the 1 host without 3389....maybe try to `netcat` to the port for some fun times - I think this is running: https://github.com/vix597/vulny
+
+This should work for RDP on one of those machines:
+```
+Username: hacking
+password: hacking
+```
