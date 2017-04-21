@@ -8,6 +8,13 @@ Host range 172.18.30.0 - 172.18.30.255
 * 1 Windows 7
 * 1 Ubuntu 16.something
 
+4 flags...maybe 5?
+1. 100pts
+1. 100pts
+1. 200pts
+1. 200pts
+1. ??? interview ???
+
 RDP runs on `3389`. Other stuff runs on other ports. How about you figure that out yourself...
 1. Ping scan/Port scan
 ```
