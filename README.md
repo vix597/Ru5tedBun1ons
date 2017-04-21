@@ -22,3 +22,5 @@ This should work for RDP on one of those machines:
 Username: hacking
 password: hacking
 ```
+
+Actually I think the `hacking` username is the user for all of em....The passwords are probably different though.
