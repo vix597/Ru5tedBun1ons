@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Mac crap
+.DS_STORE
+
 # SQLite
 db.sqlite3
 
