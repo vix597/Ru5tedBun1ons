@@ -33,4 +33,15 @@ else
     exit 1
 fi
 
+if [ -f "/home/protected/database/crapdb.sqlite3" ];
+then
+    chgrp web /home/protected/database/crapdb.sqlite3
+
+    # Make this DB read-only
+    chmod a-w /home/protected/database/crapdb.sqlite3
+else
+    echo "ERROR: Could not modify permissions on crapdb file"
+    exit 1
+fi
+
 exit 0

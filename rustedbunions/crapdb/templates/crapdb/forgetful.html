@@ -1,0 +1,54 @@
+{% extends 'crapdb/base.html' %}
+
+{% block head %}
+    {{ block.super }}
+
+    <!-- Custom styles for signin page -->
+    {% load static %}
+    <link href="{% static 'crapdb/css/signin.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <form class="form-signin" action="{% url 'crapdb:searchcrap' %}" method="POST">
+        {% csrf_token %}
+
+        <h2 class="form-signin-heading">Who are you?</h2>
+
+        <label for="inputUsername" class="sr-only">Username</label>
+        <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+
+        {% verbatim %}
+            <input type="hidden" value="flag={dont_evet_stop_lookin_at_that_sweet_sweet_source_code}">
+        {% endverbatim %}
+
+        <div style="padding-top: 10px;">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Search</button>
+            <button onclick="goBack()" class="btn btn-lg btn-primary btn-block" type="button">Back</button>
+        </div>
+    </form>
+
+    {% if success is True %}
+        <div class="alert alert-success" role="alert">
+            User found
+        </div>
+        <table>
+            <!-- Table of found user/users if they're hacking -->
+        </table>
+
+        <!-- TODO: Security Questions -->
+    {% elif success is False %}
+        <div class="alert alert-danger" role="alert">
+            No user with that username
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+
+    <script>
+        function goBack() {
+            window.location = "/";
+        }
+    </script>
+{% endblock %}

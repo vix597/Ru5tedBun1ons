@@ -73,19 +73,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rustedbunions.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 if DEBUG:
     DATABASE_PATH = os.path.join(BASE_DIR, 'db.sqlite3')
+    CRAPDB_PATH = os.path.join(BASE_DIR, 'crapdb.sqlite3')
 else:
     DATABASE_PATH = os.path.join(DEPLOY_PROTECTED_DIR, "database", "db.sqlite3")
+    CRAPDB_PATH = os.path.join(BASE_DIR, 'crapdb.sqlite3')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': DATABASE_PATH,
+    },
+    'crapdb': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': CRAPDB_PATH
     }
 }
 

@@ -2,10 +2,44 @@
 
 {% block head %}
     {{ block.super }}
+
+    <!-- Custom styles for signin page -->
+    {% load static %}
+    <link href="{% static 'crapdb/css/signin.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-    <h1>CONTENT</h1>
+    <form class="form-signin" action="{% url 'crapdb:login' %}" method="POST">
+        {% csrf_token %}
+
+        <h2 class="form-signin-heading">Please sign in</h2>
+
+        <label for="inputUsername" class="sr-only">Username</label>
+        <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+
+        {% verbatim %}
+            <input type="hidden" value="flag={I_L00k_At_Page_S0urce}">
+        {% endverbatim %}
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"> Remember me
+            </label>
+        </div>
+
+        <a href="{% url 'crapdb:forgetful' %}">Forgot Username/Password?</a>
+
+        {% if success is False %}
+            <div class="alert alert-danger" role="alert">
+                Invalid Username/Password combination
+            </div>
+        {% endif %}
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
 {% endblock %}
 
 {% block script %}
