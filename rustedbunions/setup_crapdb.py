@@ -3,6 +3,9 @@ import sys
 import sqlite3
 from rustedbunions import settings
 
+#
+# TODO: Make sure to change all these in deployment so answers can't just be taken from source
+#
 CRAPDB_SETUP = [
     "CREATE TABLE flags (flag text)",
     "INSERT INTO flags VALUES ('Flag={Y0u_did_1t}')",
