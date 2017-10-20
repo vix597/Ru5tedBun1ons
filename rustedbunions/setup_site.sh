@@ -33,6 +33,9 @@ else
     exit 1
 fi
 
+# Sets up the database if it doesn't exist
+python3 setup_crapdb.py
+
 if [ -f "/home/protected/database/crapdb.sqlite3" ];
 then
     chgrp web /home/protected/database/crapdb.sqlite3

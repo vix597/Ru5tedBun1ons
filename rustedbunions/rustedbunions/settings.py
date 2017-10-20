@@ -87,10 +87,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': DATABASE_PATH,
-    },
-    'crapdb': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': CRAPDB_PATH
     }
 }
 
