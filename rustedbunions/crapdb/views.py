@@ -4,7 +4,7 @@ from uuid import uuid4
 from datetime import timedelta
 from datetime import datetime
 
-from django.shortcuts import redirect
+from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
 from django.template import loader
 
@@ -25,7 +25,7 @@ class Session:
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.oid = str(uuid4())
+        self.oid = str(uuid4()).replace('-', '')
         self.expires = datetime.utcnow() + timedelta(minutes=5)
 
         with Session._session_lock:
@@ -55,7 +55,10 @@ class Session:
         try:
             result = [x for x in cursor.execute(query)]
         except Exception as e:
+            conn.close()
             raise Exception("'{}' - {}".format(query, str(e)))
+
+        conn.close()
 
         if result:
             return cls(username, password)
@@ -79,50 +82,51 @@ class Session:
                 del cls._registry[oid]
 
 def index(request):
-    error = request.GET.get("error", None)
-    print("***ERROR: ", error)
+    context = {}
+
+    if request.GET:
+        d = request.GET.dict()
+        context["error"] = d.get("error", None)
+
     template = loader.get_template('crapdb/index.html')
-    context = {"error": error}
     return HttpResponse(template.render(context, request))
 
-def main(request):
-    template = loader.get_template('crapdb/main.html')
+def main(request, session_id):
     context = {}
-    d = request.GET.dict()
-    try:
-        Session.get_session(d.get("session_id", ""))
-    except KeyError:
-        return redirect("/?error=Invalid Session")
 
+    try:
+        Session.get_session(session_id)
+    except KeyError:
+        return redirect(reverse("crapdb:index") + "?error={}".format("Login failed. No Session"))
+
+    context["session_id"] = session_id
+    template = loader.get_template('crapdb/main.html')
     return HttpResponse(template.render(context, request))
 
 def login(request):
-    context = {"success": False}
-    template = loader.get_template("crapdb/index.html")
+    context = {}
 
     if request.POST:
         d = request.POST.dict()
         username = d.get("username", None)
         password = d.get("password", None)
-        print("Login: ", username, ":", password, sep='')
 
         if username is not None and password is not None:
             try:
                 session = Session.validate(username, password)
                 if session is not None:
-                    return redirect("/crapdb/main/?session_id={}?username={}".format(
-                        session.oid, username))
+                    return redirect("crapdb:main", session_id=session.oid)
+                else:
+                    context["error"] = "Username/Password combination does not exist"
             except Exception as e:
                 context["error"] = str(e)
-    else:
-        context["success"] = None
 
+    template = loader.get_template("crapdb/index.html")
     return HttpResponse(template.render(context, request))
 
-def logout(request):
-    d = request.GET.dict()
-    Session.logout(d.get("session_id", ""))
-    return redirect("/")
+def logout(request, session_id):
+    Session.logout(session_id)
+    return redirect("crapdb:index")
 
 def forgetful(request):
     template = loader.get_template('crapdb/forgetful.html')
@@ -130,26 +134,26 @@ def forgetful(request):
     return HttpResponse(template.render(context, request))
 
 def searchcrap(request):
-    conn = sqlite3.connect(settings.CRAPDB_PATH)
-    cursor = conn.cursor()
-    context = {"success": False, "result": None}
+    context = {}
 
-    template = loader.get_template("crapdb/forgetful.html")
     if request.POST:
+        conn = sqlite3.connect(settings.CRAPDB_PATH)
+        cursor = conn.cursor()
+
         d = request.POST.dict()
         username = d.get("username", None)
-        print("Search user: ", username)
 
         if username is not None:
-            context["success"] = True
-            context["result"] = []
             query = "SELECT username, question FROM users WHERE username='" + username + "'"
             try:
                 context["result"] = [x for x in cursor.execute(query)]
+                if not context["result"]:
+                    context["error"] = "User not found in database"
             except Exception as e:
-                print("Exception: ", str(e))
                 context["error"] = "'{}' - {}".format(query, str(e))
-    else:
-        context["success"] = None
 
+        # Close the sqlite connection
+        conn.close()
+
+    template = loader.get_template("crapdb/forgetful.html")
     return HttpResponse(template.render(context, request))

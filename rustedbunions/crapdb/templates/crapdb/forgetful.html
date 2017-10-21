@@ -27,7 +27,7 @@
         </div>
     </form>
 
-    {% if success is True and result %}
+    {% if result %}
         <div class="alert alert-success" role="alert">
             User found
         </div>
@@ -62,15 +62,9 @@
                 </tbody>
             </table>
         </form>
-
-        <!-- TODO: Security Questions -->
-    {% elif success is True and not result %}
+    {% elif error %}
         <div class="alert alert-danger" role="alert">
-            {% if error %}
-                {{ error }}
-            {% else %}
-                No user with that username
-            {% endif %}
+            {{ error }}
         </div>
     {% endif %}
 {% endblock %}
