@@ -3,6 +3,11 @@ import os
 import sys
 
 if __name__ == "__main__":
+    from rustedbunions import settings
+    if not os.path.exists(settings.CRAPDB_PATH):
+        print("Run setup_site.sh first to create the crapdb.sqlite3 file and set permissions")
+        sys.exit(1)
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rustedbunions.settings")
     try:
         from django.core.management import execute_from_command_line
@@ -19,4 +24,5 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
+
     execute_from_command_line(sys.argv)

@@ -1,10 +1,14 @@
+'''
+Creates the crap database for the hacking
+'''
+
 import os
 import sys
 import sqlite3
 from rustedbunions import settings
 
 #
-# TODO: Make sure to change all these in deployment so answers can't just be taken from source
+# NOTE: Make sure to change all these in deployment so answers can't just be taken from source
 #
 CRAPDB_SETUP = [
     "CREATE TABLE flags (flag text)",
@@ -12,7 +16,8 @@ CRAPDB_SETUP = [
     "INSERT INTO flags VALUES ('Flag={This_Table_Has_a_few_flags}')",
     "INSERT INTO flags VALUES ('Flag={JustThreeActually!}')",
     "CREATE TABLE users (username text, password text, question text, answer text)",
-    "INSERT INTO users VALUES ('Joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')"
+    "INSERT INTO users VALUES ('Joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
+    "INSERT INTO users VALUES ('JackBlack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question')"
 ]
 
 if __name__ == "__main__":

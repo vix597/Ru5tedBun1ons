@@ -27,18 +27,50 @@
         </div>
     </form>
 
-    {% if success is True %}
+    {% if success is True and result %}
         <div class="alert alert-success" role="alert">
             User found
         </div>
-        <table>
-            <!-- Table of found user/users if they're hacking -->
-        </table>
+        <form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Security Question</th>
+                        <th scope="col">Answer</th>
+                        <th scope="col">Reset</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name in result %}
+                        <tr>
+                            <td>{{ name.0 }}</td>
+                            <td>{{ name.1 }}</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    name="answer"
+                                    class="form-control"
+                                    placeholder="Security Question Answer"
+                                    required>
+                            </td>
+                            <td>
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Reset</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
 
         <!-- TODO: Security Questions -->
-    {% elif success is False %}
+    {% elif success is True and not result %}
         <div class="alert alert-danger" role="alert">
-            No user with that username
+            {% if error %}
+                {{ error }}
+            {% else %}
+                No user with that username
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}

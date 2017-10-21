@@ -32,14 +32,19 @@
 
         <a href="{% url 'crapdb:forgetful' %}">Forgot Username/Password?</a>
 
-        {% if success is False %}
-            <div class="alert alert-danger" role="alert">
-                Invalid Username/Password combination
-            </div>
-        {% endif %}
-
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
+
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% elif success is False %}
+        <div class="alert alert-danger" role="alert">
+            Invalid Username/Password combination
+        </div>
+    {% endif %}
+
 {% endblock %}
 
 {% block script %}
