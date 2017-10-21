@@ -18,7 +18,8 @@
         <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
 
         {% verbatim %}
-            <input type="hidden" value="flag={dont_evet_stop_lookin_at_that_sweet_sweet_source_code}">
+            <!-- NOTE: Change flag value before release -->
+            <input type="hidden" value="Flag={dont_ever_stop_lookin_at_that_sweet_sweet_source_code}">
         {% endverbatim %}
 
         <div style="padding-top: 10px;">
@@ -31,14 +32,15 @@
         <div class="alert alert-success" role="alert">
             User found
         </div>
-        <form>
+        <form action="{% url 'crapdb:getpassword' %}" method="POST">
+            {% csrf_token %}
             <table class="table">
                 <thead>
                     <tr>
                         <th scope="col">Username</th>
                         <th scope="col">Security Question</th>
                         <th scope="col">Answer</th>
-                        <th scope="col">Reset</th>
+                        <th scope="col">Get Password</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,9 +55,10 @@
                                     class="form-control"
                                     placeholder="Security Question Answer"
                                     required>
+                                <input type="hidden" name="username" value="{{ name.0 }}">
                             </td>
                             <td>
-                                <button class="btn btn-lg btn-primary btn-block" type="submit">Reset</button>
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Get Password</button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -66,6 +69,12 @@
         <div class="alert alert-danger" role="alert">
             {{ error }}
         </div>
+    {% elif password %}
+        {% for pass in password %}
+            <div class="alert alert-success" role="alert">
+                {{ pass.0 }}
+            </div>
+        {% endfor %}
     {% endif %}
 {% endblock %}
 

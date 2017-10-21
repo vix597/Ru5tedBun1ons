@@ -21,7 +21,8 @@
         <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
 
         {% verbatim %}
-            <input type="hidden" value="flag={I_L00k_At_Page_S0urce}">
+            <!-- NOTE: Change flag value before release -->
+            <input type="hidden" value="Flag={I_L00k_At_Page_S0urce}">
         {% endverbatim %}
 
         <div class="checkbox">
@@ -45,4 +46,7 @@
 
 {% block script %}
     {{ block.super }}
+
+    {% load static %}
+    <script src="{% static 'crapdb/js/index.js' %}"></script>
 {% endblock %}

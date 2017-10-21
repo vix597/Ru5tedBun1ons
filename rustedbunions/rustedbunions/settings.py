@@ -21,7 +21,12 @@ DEPLOY_PROTECTED_DIR = os.path.join("/", "home", "protected")
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'this_is_not_the_key_i_use_in_deployment'
+#
+# This is not the key used in production, however if you're seeing this flag
+# in the source code on github...it is valid...it's the only flag in the source
+# code that I didn't change. Great Job! You're looking in the right places.
+#
+SECRET_KEY = 'Flag={FINALLY!_someone_looked_@_S0URC3}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

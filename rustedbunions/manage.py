@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import threading
 
 if __name__ == "__main__":
     from rustedbunions import settings
@@ -25,4 +26,13 @@ if __name__ == "__main__":
             )
         raise
 
+    from crapdb.views import cleanup, CLEANUP_EVENT
+    thread = threading.Thread(target=cleanup)
+    thread.start()
+
     execute_from_command_line(sys.argv)
+
+    # App exiting
+    CLEANUP_EVENT.set()
+    print("Waiting up to 20 seconds for thread to finish...")
+    thread.join(timeout=20)

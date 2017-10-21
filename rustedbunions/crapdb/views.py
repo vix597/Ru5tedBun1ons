@@ -1,5 +1,8 @@
 import sqlite3
 import threading
+import time
+import json
+
 from uuid import uuid4
 from datetime import timedelta
 from datetime import datetime
@@ -9,6 +12,8 @@ from django.http import HttpResponse
 from django.template import loader
 
 from rustedbunions import settings
+
+CLEANUP_EVENT = threading.Event()
 
 class Session:
     _registry = {}
@@ -22,9 +27,10 @@ class Session:
 
         raise KeyError("no session found that matched object id " + oid)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, user_info=None):
         self.username = username
         self.password = password
+        self.user_info = user_info or []
         self.oid = str(uuid4()).replace('-', '')
         self.expires = datetime.utcnow() + timedelta(minutes=5)
 
@@ -32,7 +38,8 @@ class Session:
             Session._registry[self.oid] = self
 
     def update(self):
-        self.expires = datetime.utcnow() + timedelta(minutes=5)
+        if self.is_valid():
+            self.expires = datetime.utcnow() + timedelta(minutes=5)
 
     def is_valid(self):
         check = datetime.utcnow()
@@ -61,7 +68,7 @@ class Session:
         conn.close()
 
         if result:
-            return cls(username, password)
+            return cls(username, password, user_info=result)
         else:
             return None
 
@@ -71,15 +78,25 @@ class Session:
             if session_id in cls._registry:
                 del cls._registry[session_id]
 
-    @classmethod
-    def cleanup(cls):
-        with cls._session_lock:
+def cleanup():
+    '''
+    Runs in a thread and cleans up expired sessions
+    '''
+    print("Session cleanup monitor running...")
+
+    while not CLEANUP_EVENT.is_set():
+        # Every 10 seconds cleanup sessions
+        time.sleep(10)
+        with Session._session_lock:
             rem_oids = []
-            for session in cls._registry.values():
+            for session in Session._registry.values():
                 if not session.is_valid():
+                    print("Found expired session: ", session.oid)
                     rem_oids.append(session.oid)
             for oid in rem_oids:
-                del cls._registry[oid]
+                del Session._registry[oid]
+
+    print("Session cleanup monitor complete.")
 
 def index(request):
     context = {}
@@ -93,13 +110,19 @@ def index(request):
 
 def main(request, session_id):
     context = {}
+    session = None
 
     try:
-        Session.get_session(session_id)
+        session = Session.get_session(session_id)
     except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format("Login failed. No Session"))
+        return redirect(reverse("crapdb:index") + "?error={}".format(
+            "Login failed. No session or session expired"))
+
+    # Refresh the session so it doesn't expire
+    session.update()
 
     context["session_id"] = session_id
+    context["session"] = session
     template = loader.get_template('crapdb/main.html')
     return HttpResponse(template.render(context, request))
 
@@ -133,6 +156,37 @@ def forgetful(request):
     context = {}
     return HttpResponse(template.render(context, request))
 
+def getpassword(request):
+    context = {}
+
+    if request.POST:
+        conn = sqlite3.connect(settings.CRAPDB_PATH)
+        cursor = conn.cursor()
+
+        d = request.POST.dict()
+        username = d.get("username", None)
+        answer = d.get("answer", None)
+
+        if username is None or answer is None:
+            context["error"] = "You must provide an answer"
+        else:
+            query = ' '.join((
+                "SELECT password FROM users",
+                "WHERE username='" + username + "'",
+                "AND answer='" + answer + "'"
+            ))
+            try:
+                context["password"] = [x for x in cursor.execute(query)]
+                if not context["password"]:
+                    context["error"] = "Wrong answer"
+            except Exception as e:
+                context["error"] = "'{}' - {}".format(query, str(e))
+
+        conn.close()
+
+    template = loader.get_template("crapdb/forgetful.html")
+    return HttpResponse(template.render(context, request))
+
 def searchcrap(request):
     context = {}
 
@@ -157,3 +211,18 @@ def searchcrap(request):
 
     template = loader.get_template("crapdb/forgetful.html")
     return HttpResponse(template.render(context, request))
+
+def getmodalflag(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return redirect(reverse("crapdb:index") + "?error={}".format(
+            "Login failed. No session or session expired"))
+
+    # Refresh the session so it doesn't expire
+    session.update()
+
+    # NOTE: Change this flag before deploy
+    return HttpResponse(json.dumps({
+        "flag": "Flag={JavascriptIsNotSecurity}"
+    }))

@@ -1,0 +1,18 @@
+/*
+Make the canvas position absolute and ensure it's on top of
+the body contents
+*/
+canvas {
+    position: absolute;
+    z-index: 3;
+    top: 0px;
+    left: 0px;
+    background-color: transparent;
+
+    /*
+    Trigger the background color to transition
+    when it is changed
+    */
+    -webkit-transition: background-color 5s;
+    transition: background-color 5s linear;
+}
