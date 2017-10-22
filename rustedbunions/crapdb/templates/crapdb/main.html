@@ -160,6 +160,12 @@
 {% block script %}
     {{ block.super }}
 
+    <!-- Phaser javascript game engine -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.9.1/phaser.min.js" 
+        integrity="sha256-93nav3Eqz92Cbnx1ly8dgyyKxMBwi7vZfojSe0POrSc=" 
+        crossorigin="anonymous"></script>
+
     {% load static %}
     <script src="{% static 'crapdb/js/matrix.js' %}"></script>
     <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>

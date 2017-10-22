@@ -12,7 +12,7 @@ p.pop-text {
 
     /* Safari 4.0 - 8.0 */
     -webkit-animation-name: pop;
-    -webkit-animation-duration: 1.5s;
+    -webkit-animation-duration: 1s;
     -webkit-animation-timing-function: ease-out;
     -webkit-animation-delay: 0ms;
     -webkit-animation-iteration-count: 1;
@@ -21,7 +21,7 @@ p.pop-text {
 
     /* Standard syntax */
     animation-name: pop;
-    animation-duration: 1.5s;
+    animation-duration: 1s;
     animation-timing-function: ease-out;
     animation-delay: 0ms;
     animation-iteration-count: 1;
