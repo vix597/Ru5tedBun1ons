@@ -12,9 +12,9 @@ from rustedbunions import settings
 #
 CRAPDB_SETUP = [
     "CREATE TABLE flags (flag text)",
-    "INSERT INTO flags VALUES ('Flag={Y0u_did_1t}')",
-    "INSERT INTO flags VALUES ('Flag={This_Table_Has_a_few_flags}')",
-    "INSERT INTO flags VALUES ('Flag={JustThreeActually!}')",
+    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
+    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
+    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
     "CREATE TABLE users (username text, password text, question text, answer text)",
     "INSERT INTO users VALUES ('Joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
     "INSERT INTO users VALUES ('JackBlack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question')"

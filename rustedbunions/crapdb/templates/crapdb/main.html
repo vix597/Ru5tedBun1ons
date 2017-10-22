@@ -26,13 +26,14 @@
                 {% else %}
                     {% verbatim %}
                       <!-- NOTE: Change flag value before release -->
-                      <h1 class="blog-title">Welcome Flag={No_Username_Eh?}</h1>
+                      <h1 class="blog-title">Welcome Flag={__PLACEHOLDER_FLAG__?}</h1>
                     {% endverbatim %}
                 {% endif %}
 
                 {% if not session.password %}
                   {% verbatim %}
-                      <p class="lead blog-description">How'd you get in here without a Flag={P455w0rd!!}</p>
+                  <!-- NOTE: Change flag value before release -->
+                      <p class="lead blog-description">How'd you get in here without a Flag={__PLACEHOLDER_FLAG__}</p>
                   {% endverbatim %}
                 {% else %}
                     <p class="lead blog-description">A sweet blog about hacking</p>

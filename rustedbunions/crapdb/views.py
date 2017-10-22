@@ -224,5 +224,5 @@ def getmodalflag(request, session_id):
 
     # NOTE: Change this flag before deploy
     return HttpResponse(json.dumps({
-        "flag": "Flag={JavascriptIsNotSecurity}"
+        "flag": "Flag={__PLACEHOLDER_FLAG__}"
     }))
