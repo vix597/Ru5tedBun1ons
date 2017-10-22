@@ -17,7 +17,8 @@ function runMatrix() {
         body.offsetHeight,
         html.clientHeight,
         html.scrollHeight,
-        html.offsetHeight
+        html.offsetHeight,
+        window.innerHeight
     );
 
     // Making the canvas full screen

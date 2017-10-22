@@ -217,7 +217,7 @@ def getmodalflag(request, session_id):
         session = Session.get_session(session_id)
     except KeyError:
         return redirect(reverse("crapdb:index") + "?error={}".format(
-            "Login failed. No session or session expired"))
+            "No session or session expired"))
 
     # Refresh the session so it doesn't expire
     session.update()
@@ -226,3 +226,34 @@ def getmodalflag(request, session_id):
     return HttpResponse(json.dumps({
         "flag": "Flag={__PLACEHOLDER_FLAG__}"
     }))
+
+def querydb(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return redirect(reverse("crapdb:index") + "?error={}".format(
+            "No session or session expired"))
+
+    # Refresh the session so it doesn't expire
+    session.update()
+
+    ret = {"flags": []}
+
+    if request.POST:
+        conn = sqlite3.connect(settings.CRAPDB_PATH)
+        cursor = conn.cursor()
+
+        d = request.POST.dict()
+        query = d.get("query", None)
+
+        if query is not None:
+            try:
+                ret["flags"] = [x for x in cursor.execute(query)]
+                if not ret["flags"]:
+                    ret["error"] = "No flags found in database"
+            except Exception as e:
+                ret["error"] = "'{}' - {}".format(query, str(e))
+
+        conn.close()
+
+    return HttpResponse(json.dumps(ret))

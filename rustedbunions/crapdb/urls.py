@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'main/(?P<session_id>\w+)/$', views.main, name="main"),
     url(r'logout/(?P<session_id>\w+)/$', views.logout, name="logout"),
     url(r'getmodalflag/(?P<session_id>\w+)/$', views.getmodalflag, name="getmodalflag"),
+    url(r'querydb/(?P<session_id>\w+)/$', views.querydb, name="querydb"),
 ]

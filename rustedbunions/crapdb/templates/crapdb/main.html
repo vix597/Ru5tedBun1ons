@@ -6,6 +6,7 @@
     {% load static %}
     <link href="{% static 'crapdb/css/blog.css' %}" rel="stylesheet">
     <link href="{% static 'crapdb/css/matrix.css' %}" rel="stylesheet">
+    <link href="{% static 'crapdb/css/flyingflags.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -161,14 +162,15 @@
 
     {% load static %}
     <script src="{% static 'crapdb/js/matrix.js' %}"></script>
+    <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>
 
     <script>
-        var authorized = true;
+        var authorized = false;
         function openModal() {
             if (authorized) {
                 var session_id = $("#settingsButton").attr("sessionId");
                 $.ajax({
-                    url: "/crapdb/getmodalflag/" + session_id,
+                    url: "/crapdb/getmodalflag/" + session_id + "/",
                     type: "GET",
                     success: function(data) {
                         var json = JSON.parse(data);
@@ -185,10 +187,12 @@
 
         function bluePill() {
             var session_id = $("#settingsButton").attr("sessionId");
-            window.location = "/crapdb/logout/" + session_id;
+            window.location = "/crapdb/logout/" + session_id + "/";
         }
 
         function redPill() {
+            var session_id = $("#settingsButton").attr("sessionId");
+
             setTimeout(function() {
                 $("#matrix").css("display", "unset");
                 runMatrix();
@@ -196,7 +200,11 @@
                 // Triggers the background-color to transition to black
                 // because of CSS settings
                 $("#matrix").css("background-color", "black");
-            }, 1500);
+
+                setTimeout(function() {
+                    flagsForDays(session_id, csrf_token="{{ csrf_token }}");
+                }, 10000);
+            }, 1000);
         }
     </script>
 {% endblock %}

@@ -1,81 +1,52 @@
-  .wrap {
-    position: absolute;
-    overflow: hidden;
-    top: 10%;
-    right: 10%;
-    bottom: 85px;
-    left: 10%;
-    padding: 20px 50px;
-    display: block;
-    border-radius: 4px;
-    transform: translateY(20px);
-    transition: all 0.5s;
-    visibility: hidden;
-  }
-  .wrap .content {
-    opacity: 0;
-  }
-  .wrap:before {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    background: white;
-    content: "";
-    bottom: 10px;
-    left: 50%;
-    top: 95%;
-    color: #fff;
-    border-radius: 50%;
-    -webkit-transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-    transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  .wrap.active {
-    display: block;
-    visibility: visible;
-    box-shadow: 2px 3px 16px silver;
-    transition: all 600ms;
-    transform: translateY(0px);
-    transition: all 0.5s;
-  }
-  .wrap.active:before {
-    height: 2000px;
-    width: 2000px;
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    margin-left: -1000px;
-    margin-top: -1000px;
-    display: block;
-    -webkit-transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-    transition: all 600ms cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-  .wrap.active .content {
-    position: relative;
-    z-index: 1;
-    opacity: 1;
-    transition: all 600ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  }
-  
-  a.button {
-    padding: 11px 11px 13px 13px;
-    outline: none;
-    border-radius: 50%;
-    background: #007fed;
-    color: #fff;
-    font-size: 24px;
-    display: block;
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    top: auto;
-    margin-left: -25px;
-    transition: transform 0.25s;
-  }
-  a.button:hover {
-    text-decoration: none;
-    background: #2198ff;
-  }
-  a.button.active {
-    transform: rotate(135deg);
-    transition: transform 0.5s;
-  }
+/*
+Paragraph tags with the "pop-text" class will have a pop-up
+and dissappear animation applied to them when they are created.
+They should be created with parameters "top" and "left" populated
+since they are absolute positioned
+*/
+p.pop-text {
+    display: inline-block; /* Only as wide as the text */
+    font-weight: bold;
+    position: absolute; /* Position will be specified by "top" and "left" */
+    color: transparent;
+
+    /* Safari 4.0 - 8.0 */
+    -webkit-animation-name: pop;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-timing-function: ease-out;
+    -webkit-animation-delay: 0ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-direction: normal;
+    -webkit-animation-fill-mode: forwards; /* Safari 4.0 - 8.0 */
+
+    /* Standard syntax */
+    animation-name: pop;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-out;
+    animation-delay: 0ms;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: forwards;
+
+    z-index: 5;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes pop {
+    /* Scale from tiny to regular size for half the animation */
+    0% {-webkit-transform: scale(0.01,0.01);color: red;}
+    50% {-webkit-transform: scale(1,1);}
+
+    /* Then dissappear for the rest */
+    100% {color: transparent;}
+}
+
+/* Standard syntax */
+@keyframes pop {
+    /* Scale from tiny to regular size for half the animation */
+    0% {transform: scale(0.01,0.01); color: red;}
+    50% {transform: scale(1,1);}
+
+    /* Then dissappear for the rest */
+    100% {color: transparent;}
+}
