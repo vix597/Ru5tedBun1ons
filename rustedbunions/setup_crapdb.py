@@ -11,7 +11,7 @@ from rustedbunions import settings
 # NOTE: Make sure to change all these in deployment so answers can't just be taken from source
 #
 CRAPDB_SETUP = [
-    "CREATE TABLE flags (flag text, value int)",
+    "CREATE TABLE flags (flag text)",
     "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
     "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
     "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
