@@ -26,13 +26,17 @@ if __name__ == "__main__":
             )
         raise
 
-    from crapdb.views import cleanup, CLEANUP_EVENT
-    thread = threading.Thread(target=cleanup)
-    thread.start()
+    needs_cleanup = False
+    if "runserver" in sys.argv:
+        from crapdb.views import cleanup, CLEANUP_EVENT
+        thread = threading.Thread(target=cleanup)
+        thread.start()
+        needs_cleanup = True
 
     execute_from_command_line(sys.argv)
 
-    # App exiting
-    CLEANUP_EVENT.set()
-    print("Waiting up to 20 seconds for thread to finish...")
-    thread.join(timeout=20)
+    if needs_cleanup:
+        # App exiting
+        CLEANUP_EVENT.set()
+        print("Waiting up to 20 seconds for thread to finish...")
+        thread.join(timeout=20)

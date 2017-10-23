@@ -15,7 +15,7 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" href="{% url 'crapdb:logout' session_id=session_id %}">Logout</a>
-                    <a class="nav-link" onclick="openModal()" id="settingsButton" sessionId="{{ session_id }}" href="#">Edit Settings</a>
+                    <a class="nav-link" onclick="openModal()" id="settingsButton" href="#">Edit Settings</a>
                 </nav>
             </div>
         </div>
@@ -98,6 +98,20 @@
             </div><!-- /.blog-main -->
 
             <aside class="col-sm-3 ml-sm-auto blog-sidebar">
+                <div class="sidebar-module card" style="margin-bottom: 10px;padding-bottom: 0px;">
+                    <div class="card-body">
+                        <!--Points populated by jquery-->
+                        <p class="text-center" style="font: 24px arial;">
+                            $<span id="hackerBucks">0</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="sidebar-module" style="margin-bottom: 10px;">
+                    <input type="text" id="testflag" placeholder="Test a flag" name="checkflag">
+                    <button class="btn btn-primary btn-block" onclick="testFlag()">Test</button>
+                </div>
+
                 <div class="sidebar-module sidebar-module-inset">
                     <h4>About</h4>
                     <p>
@@ -171,10 +185,13 @@
     <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>
 
     <script>
+        // This prevents the user from ever accessing the modal
+        // Impossible to bypass this
         var authorized = false;
+
         function openModal() {
             if (authorized) {
-                var session_id = $("#settingsButton").attr("sessionId");
+                var session_id = localStorage.getItem("session_id");
                 $.ajax({
                     url: "/crapdb/getmodalflag/" + session_id + "/",
                     type: "GET",
@@ -192,12 +209,12 @@
         }
 
         function bluePill() {
-            var session_id = $("#settingsButton").attr("sessionId");
+            var session_id = localStorage.getItem("session_id");
             window.location = "/crapdb/logout/" + session_id + "/";
         }
 
         function redPill() {
-            var session_id = $("#settingsButton").attr("sessionId");
+            var session_id = localStorage.getItem("session_id");
 
             setTimeout(function() {
                 $("#matrix").css("display", "unset");
@@ -212,5 +229,63 @@
                 }, 10000);
             }, 1000);
         }
+
+        function testFlag() {
+            var session_id = localStorage.getItem("session_id");
+            var flag = $("#testflag").val();
+
+            $.ajax({
+                url: "/crapdb/checkflag/" + session_id + "/",
+                type: "POST",
+                data: {
+                    flag: flag,
+                    csrfmiddlewaretoken: "{{ csrf_token }}"
+                },
+                success: function(res) {
+                    res = JSON.parse(res);
+                    if (res.points) {
+                        // Update the claimed flags
+                        var flags = localStorage.getItem("flags");
+                        if (!flags) {
+                            console.log("No flags yet");
+                            flags = [];
+                        } else {
+                            flags = JSON.parse(flags);
+                            console.log("Parse current flags: ", flags);
+                        }
+
+                        if (flags.indexOf(flag) == -1) {
+                            flags.push(flag);
+                            console.log("Push new flag: ", flags);
+                            localStorage.setItem("flags", JSON.stringify(flags));
+
+                            var points = localStorage.getItem("points");
+                            if (points) {
+                                if (typeof points === "string") {
+                                    points = parseInt(points);
+                                }
+                            } else {
+                                points = 0;
+                            }
+
+                            if (!isNaN(points)) {
+                                points = points + res.points;
+                                localStorage.setItem("points", points);
+                                $("#hackerBucks").text(points);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            // Set the session ID in the browser's local storage for later
+            localStorage.setItem("session_id", "{{ session_id }}");
+            points = localStorage.getItem("points");
+            if (points) {
+                $("#hackerBucks").text(points);
+            }
+        });
     </script>
 {% endblock %}

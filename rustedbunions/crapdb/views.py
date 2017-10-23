@@ -98,6 +98,33 @@ def cleanup():
 
     print("Session cleanup monitor complete.")
 
+def get_flag_points(userflag):
+    '''
+    Get flag points from the real database. This
+    is actually done securely...no SQL injections
+    here
+    '''
+
+    # Normalize input
+    userflag = userflag.strip()
+
+    try:
+        from .models import Flag
+
+        #pylint: disable=E1101
+        for flagentry in Flag.objects.all():
+            flag = flagentry.flag
+            if userflag == flag:
+                return flagentry.value
+            flag = flag.replace("Flag={", '')
+            flag = flag.replace("}", '')
+            if userflag == flag:
+                return flagentry.value
+    except:
+        pass
+
+    return 0
+
 def index(request):
     context = {}
 
@@ -255,5 +282,26 @@ def querydb(request, session_id):
                 ret["error"] = "'{}' - {}".format(query, str(e))
 
         conn.close()
+
+    return HttpResponse(json.dumps(ret))
+
+def checkflag(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return redirect(reverse("crapdb:index") + "?error={}".format(
+            "No session or session expired"))
+
+    # Refresh the session so it doesn't expire
+    session.update()
+
+    ret = {"points": 0}
+
+    if request.POST:
+        d = request.POST.dict()
+        flag = d.get("flag", None)
+
+        if flag is not None:
+            ret["points"] = get_flag_points(flag)
 
     return HttpResponse(json.dumps(ret))
