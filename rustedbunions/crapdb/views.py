@@ -1,102 +1,14 @@
 import sqlite3
-import threading
-import time
 import json
-
-from uuid import uuid4
-from datetime import timedelta
-from datetime import datetime
 
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
 from django.template import loader
 
+from crapdb.session import Session
 from rustedbunions import settings
 
-CLEANUP_EVENT = threading.Event()
-
-class Session:
-    _registry = {}
-    _session_lock = threading.Lock()
-
-    @classmethod
-    def get_session(cls, oid):
-        session = cls._registry.get(oid)
-        if session:
-            return session
-
-        raise KeyError("no session found that matched object id " + oid)
-
-    def __init__(self, username, password, user_info=None):
-        self.username = username
-        self.password = password
-        self.user_info = user_info or []
-        self.oid = str(uuid4()).replace('-', '')
-        self.expires = datetime.utcnow() + timedelta(minutes=5)
-
-        with Session._session_lock:
-            Session._registry[self.oid] = self
-
-    def update(self):
-        if self.is_valid():
-            self.expires = datetime.utcnow() + timedelta(minutes=5)
-
-    def is_valid(self):
-        check = datetime.utcnow()
-        if check < self.expires:
-            return True
-        else:
-            return False
-
-    @classmethod
-    def validate(cls, username, password):
-        conn = sqlite3.connect(settings.CRAPDB_PATH)
-        cursor = conn.cursor()
-        query = ' '.join((
-            "SELECT username, password FROM users",
-            "WHERE username='" + username + "'",
-            "and password='" + password + "'"
-        ))
-        result = []
-
-        try:
-            result = [x for x in cursor.execute(query)]
-        except Exception as e:
-            conn.close()
-            raise Exception("'{}' - {}".format(query, str(e)))
-
-        conn.close()
-
-        if result:
-            return cls(username, password, user_info=result)
-        else:
-            return None
-
-    @classmethod
-    def logout(cls, session_id):
-        with cls._session_lock:
-            if session_id in cls._registry:
-                del cls._registry[session_id]
-
-def cleanup():
-    '''
-    Runs in a thread and cleans up expired sessions
-    '''
-    print("Session cleanup monitor running...")
-
-    while not CLEANUP_EVENT.is_set():
-        # Every 10 seconds cleanup sessions
-        time.sleep(10)
-        with Session._session_lock:
-            rem_oids = []
-            for session in Session._registry.values():
-                if not session.is_valid():
-                    print("Found expired session: ", session.oid)
-                    rem_oids.append(session.oid)
-            for oid in rem_oids:
-                del Session._registry[oid]
-
-    print("Session cleanup monitor complete.")
+from .models import Flag
 
 def get_flag_points(userflag):
     '''
@@ -104,13 +16,10 @@ def get_flag_points(userflag):
     is actually done securely...no SQL injections
     here
     '''
-
     # Normalize input
     userflag = userflag.strip()
 
     try:
-        from .models import Flag
-
         #pylint: disable=E1101
         for flagentry in Flag.objects.all():
             flag = flagentry.flag
@@ -199,7 +108,7 @@ def getpassword(request):
         else:
             query = ' '.join((
                 "SELECT password FROM users",
-                "WHERE username='" + username + "'",
+                "WHERE username='" + username + "' COLLATE NOCASE",
                 "AND answer='" + answer + "'"
             ))
             try:
@@ -225,7 +134,7 @@ def searchcrap(request):
         username = d.get("username", None)
 
         if username is not None:
-            query = "SELECT username, question FROM users WHERE username='" + username + "'"
+            query = "SELECT username, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
             try:
                 context["result"] = [x for x in cursor.execute(query)]
                 if not context["result"]:

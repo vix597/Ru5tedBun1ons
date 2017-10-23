@@ -3,6 +3,8 @@ import os
 import sys
 import threading
 
+from crapdb.session import Session
+
 if __name__ == "__main__":
     from rustedbunions import settings
     if not os.path.exists(settings.CRAPDB_PATH):
@@ -28,8 +30,7 @@ if __name__ == "__main__":
 
     needs_cleanup = False
     if "runserver" in sys.argv:
-        from crapdb.views import cleanup, CLEANUP_EVENT
-        thread = threading.Thread(target=cleanup)
+        thread = threading.Thread(target=Session.cleanup)
         thread.start()
         needs_cleanup = True
 
@@ -37,6 +38,6 @@ if __name__ == "__main__":
 
     if needs_cleanup:
         # App exiting
-        CLEANUP_EVENT.set()
-        print("Waiting up to 20 seconds for thread to finish...")
-        thread.join(timeout=20)
+        Session.CLEANUP_EVENT.set()
+        print("Waiting up to 3 seconds for thread to finish...")
+        thread.join(timeout=3)
