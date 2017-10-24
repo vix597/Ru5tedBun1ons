@@ -10,7 +10,7 @@ from rustedbunions import settings
 
 from .models import Flag
 
-def get_flag_points(userflag):
+def update_hacker_bucks_from_flag(session, userflag):
     '''
     Get flag points from the real database. This
     is actually done securely...no SQL injections
@@ -18,21 +18,33 @@ def get_flag_points(userflag):
     '''
     # Normalize input
     userflag = userflag.strip()
-
+    hacker_bucks = 0
+    matched_flag = None
     try:
         #pylint: disable=E1101
         for flagentry in Flag.objects.all():
             flag = flagentry.flag
+
+            # Check if it's equal
             if userflag == flag:
-                return flagentry.value
+                hacker_bucks = flagentry.value
+                matched_flag = flag
+
+            # If not, see if they just submitted the flag
+            # value b/w curly braces
             flag = flag.replace("Flag={", '')
             flag = flag.replace("}", '')
             if userflag == flag:
-                return flagentry.value
+                hacker_bucks = flagentry.value
+                matched_flag = flag
     except:
         pass
 
-    return 0
+    if hacker_bucks and matched_flag:
+        # If the flag hasn't already been claimed
+        if matched_flag not in session.claimed_flags:
+            session.claimed_flags.append(matched_flag)
+            session.hacker_bucks += hacker_bucks
 
 def index(request):
     context = {}
@@ -53,9 +65,6 @@ def main(request, session_id):
     except KeyError:
         return redirect(reverse("crapdb:index") + "?error={}".format(
             "Login failed. No session or session expired"))
-
-    # Refresh the session so it doesn't expire
-    session.update()
 
     context["session_id"] = session_id
     context["session"] = session
@@ -150,13 +159,10 @@ def searchcrap(request):
 
 def getmodalflag(request, session_id):
     try:
-        session = Session.get_session(session_id)
+        Session.get_session(session_id)
     except KeyError:
         return redirect(reverse("crapdb:index") + "?error={}".format(
             "No session or session expired"))
-
-    # Refresh the session so it doesn't expire
-    session.update()
 
     # NOTE: Change this flag before deploy
     return HttpResponse(json.dumps({
@@ -165,13 +171,10 @@ def getmodalflag(request, session_id):
 
 def querydb(request, session_id):
     try:
-        session = Session.get_session(session_id)
+        Session.get_session(session_id)
     except KeyError:
         return redirect(reverse("crapdb:index") + "?error={}".format(
             "No session or session expired"))
-
-    # Refresh the session so it doesn't expire
-    session.update()
 
     ret = {"flags": []}
 
@@ -201,16 +204,16 @@ def checkflag(request, session_id):
         return redirect(reverse("crapdb:index") + "?error={}".format(
             "No session or session expired"))
 
-    # Refresh the session so it doesn't expire
-    session.update()
-
-    ret = {"points": 0}
+    ret = {"hacker_bucks": session.hacker_bucks}
 
     if request.POST:
         d = request.POST.dict()
         flag = d.get("flag", None)
 
         if flag is not None:
-            ret["points"] = get_flag_points(flag)
+            # Set's the session's hacker_bucks and prevents
+            # getting points for the same flag more than once
+            update_hacker_bucks_from_flag(session, flag)
+            ret["hacker_bucks"] = session.hacker_bucks
 
     return HttpResponse(json.dumps(ret))

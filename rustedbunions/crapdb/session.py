@@ -16,7 +16,8 @@ class Session:
     @classmethod
     def get_session(cls, oid):
         session = cls._registry.get(oid)
-        if session:
+        if session and session.is_valid():
+            session.update()
             return session
 
         raise KeyError("no session found that matched object id " + oid)
@@ -24,9 +25,16 @@ class Session:
     def __init__(self, username, password, user_info=None):
         self.username = username
         self.password = password
+        self.hacker_bucks = 0
+        self.claimed_flags = [] # The list of flags claimed
+        self.actually_valid = False # True if the session resulted from no SQLi
         self.user_info = user_info or []
         self.oid = str(uuid4()).replace('-', '')
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
+
+        # Determines if this is actually a valid login or not
+        # This will set self.actually_valid accordingly
+        self.secure_validate()
 
         with Session._session_lock:
             Session._registry[self.oid] = self
@@ -65,6 +73,29 @@ class Session:
             return cls(username, password, user_info=result)
         else:
             return None
+
+    def secure_validate(self):
+        conn = sqlite3.connect(settings.CRAPDB_PATH)
+        cursor = conn.cursor()
+        
+        query = ' '.join((
+            "SELECT username, password FROM users",
+            "WHERE username=? COLLATE NOCASE",
+            "and password=?"
+        ))
+
+        result = None
+        try:
+            result = [x for x in cursor.execute(query, (self.username, self.password))]
+        except:
+            pass
+
+        conn.close()
+
+        if result:
+            self.actually_valid = True
+        else:
+            self.actually_valid = False
 
     @classmethod
     def logout(cls, session_id):

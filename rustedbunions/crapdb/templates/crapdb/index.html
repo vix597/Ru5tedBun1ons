@@ -47,6 +47,11 @@
 {% block script %}
     {{ block.super }}
 
+    <script>
+        // Sets a global variable with the page error if there is one
+        var pageError = "{{ error }}";
+    </script>
+
     {% load static %}
     <script src="{% static 'crapdb/js/index.js' %}"></script>
 {% endblock %}
