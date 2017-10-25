@@ -20,6 +20,8 @@ class Session:
         if session and session.is_valid():
             session.update()
             return session
+        elif session and not session.is_valid():
+            del cls._registry[oid]
 
         raise KeyError("no session found that matched object id " + oid)
 
@@ -115,8 +117,8 @@ class Session:
         print("Session cleanup monitor running...")
 
         while not Session.CLEANUP_EVENT.is_set():
-            # Every 1 second cleanup sessions
-            time.sleep(1)
+            # Every 5 minutes cleanup sessions
+            time.sleep(300)
             with Session._session_lock:
                 rem_oids = []
                 for session in Session._registry.values():

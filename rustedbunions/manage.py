@@ -29,7 +29,8 @@ if __name__ == "__main__":
         raise
 
     needs_cleanup = False
-    if "runserver" in sys.argv:
+    if "runserver" in sys.argv and not settings.DEBUG:
+        # Only bother with this in production
         thread = threading.Thread(target=Session.cleanup)
         thread.start()
         needs_cleanup = True
@@ -39,5 +40,5 @@ if __name__ == "__main__":
     if needs_cleanup:
         # App exiting
         Session.CLEANUP_EVENT.set()
-        print("Waiting up to 3 seconds for thread to finish...")
-        thread.join(timeout=3)
+        print("Waiting up to 5 minutes for thread to finish...")
+        thread.join(timeout=300)
