@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'querydb/(?P<session_id>\w+)/$', views.querydb, name="querydb"),
     url(r'checkflag/(?P<session_id>\w+)/$', views.checkflag, name="checkflag"),
     url(r'getpin/(?P<session_id>\w+)/$', views.getpin, name="getpin"),
+    url(r'getpinflag/(?P<session_id>\w+)/$', views.getpinflag, name="getpinflag"),
 ]

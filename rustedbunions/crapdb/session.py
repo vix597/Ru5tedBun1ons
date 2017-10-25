@@ -28,6 +28,7 @@ class Session:
         self.username = username
         self.password = password
         self.hacker_bucks = 0
+        self.lifetime_hacker_bucks = self.hacker_bucks
         self.claimed_flags = [] # The list of flags claimed
         self.actually_valid = False # True if the session resulted from no SQLi
         self.pin = random.randint(1337, 9999) # The user's random PIN number

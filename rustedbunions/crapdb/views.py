@@ -46,6 +46,7 @@ def update_hacker_bucks_from_flag(session, userflag):
         if matched_flag not in session.claimed_flags:
             session.claimed_flags.append(matched_flag)
             session.hacker_bucks += hacker_bucks
+            session.lifetime_hacker_bucks += hacker_bucks
 
 def index(request):
     context = {}
@@ -237,11 +238,59 @@ def checkflag(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def getpin(request, session_id):
+    PIN_PRICE = 15 # 15 hacker bucks to get the pin
+    
     try:
         session = Session.get_session(session_id)
     except KeyError:
         return HttpResponse(json.dumps({
             "redirect": "No session or session expired."}))
 
-    ret = {"pin_hash": hashlib.md5(str(session.pin).encode('utf-8')).hexdigest()}
+    if session.hacker_bucks < PIN_PRICE:
+        return HttpResponse(json.dumps({
+            "error": "Brutal force requires ${} hacker bucks to play".format(
+                PIN_PRICE
+            )
+        }))
+
+    # Charge the hacker bucks
+    session.hacker_bucks -= PIN_PRICE
+
+    ret = {
+        "pin_hash": hashlib.md5(str(session.pin).encode('utf-8')).hexdigest(),
+        "hacker_bucks": session.hacker_bucks
+    }
+    return HttpResponse(json.dumps(ret))
+
+def getpinflag(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
+
+    ret = {}
+
+    if request.POST:
+        d = request.POST.dict()
+        pin = d.get("pin", None)
+
+        if pin is not None:
+            try:
+                pin = int(pin)
+                if pin < 1 or pin > 9999:
+                    raise ValueError()
+
+                if pin == session.pin:
+                    # NOTE: Change this value before deploy
+                    ret = {
+                        "flag": "Flag={__PLACEHOLDER_FLAG__}"
+                    }
+            except ValueError:
+                ret = {
+                    "error": "Provided PIN is not a valid integer in the range 1 - 9999"
+                }
+        else:
+            ret = {"error": "No PIN provided in POST request"}
+
     return HttpResponse(json.dumps(ret))
