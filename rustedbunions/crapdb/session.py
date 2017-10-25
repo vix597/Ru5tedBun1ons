@@ -1,6 +1,7 @@
 import sqlite3
 import threading
 import time
+import random
 from uuid import uuid4
 from datetime import datetime
 from datetime import timedelta
@@ -23,11 +24,13 @@ class Session:
         raise KeyError("no session found that matched object id " + oid)
 
     def __init__(self, username, password, user_info=None):
+        random.seed() # uses current system time
         self.username = username
         self.password = password
         self.hacker_bucks = 0
         self.claimed_flags = [] # The list of flags claimed
         self.actually_valid = False # True if the session resulted from no SQLi
+        self.pin = random.randint(1337, 9999) # The user's random PIN number
         self.user_info = user_info or []
         self.oid = str(uuid4()).replace('-', '')
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)

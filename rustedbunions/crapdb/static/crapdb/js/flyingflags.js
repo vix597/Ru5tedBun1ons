@@ -2,6 +2,9 @@
 // CSS3 is also a pretty cool guy
 //
 
+// Stores the interval ID for the popThoseFlags() method
+var flyingFlagsIntervalId = null;
+
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -46,8 +49,10 @@ function flagsForDays(session_id, csrf_token) {
             var res = JSON.parse(res);
             if (res.error) {
                 console.log("Query DB error: ", res.error);
+            } else if (res.redirect) {
+                window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
             } else if (res.flags && res.flags.length) {
-                setInterval(function() {
+                flyingFlagsIntervalId = setInterval(function() {
                     popThoseFlags(res.flags);
                 }, 1500);
             } else {

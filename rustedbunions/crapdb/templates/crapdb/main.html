@@ -7,6 +7,7 @@
     <link href="{% static 'crapdb/css/blog.css' %}" rel="stylesheet">
     <link href="{% static 'crapdb/css/matrix.css' %}" rel="stylesheet">
     <link href="{% static 'crapdb/css/flyingflags.css' %}" rel="stylesheet">
+    <link href="{% static 'crapdb/css/hackerstyle.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -15,7 +16,8 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
-                    <a class="nav-link" onclick="openModal()" id="settingsButton" href="#">Edit Settings</a>
+                    <a class="nav-link" onclick="openModal()" id="settingsButton" href="#">Super Admin Settings</a>
+                    <a class="nav-link" onclick='numpadChallenge("{{ session_id }}")' id="numpadButton" href="#">Brutal Force</a>
                 </nav>
             </div>
         </div>
@@ -98,11 +100,6 @@
                         perl cookie char.
                     </p>
                 </div><!-- /.blog-post -->
-
-                <nav class="blog-pagination">
-                    <a class="btn btn-outline-primary" href="#">Older</a>
-                    <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
-                </nav>
             </div><!-- /.blog-main -->
 
             <aside class="col-sm-3 ml-sm-auto blog-sidebar">
@@ -117,12 +114,18 @@
                     </div>
                 </div>
 
-                <div class="sidebar-module" style="margin-bottom: 10px;">
-                    <input type="text" id="testflag" placeholder="Test a flag" name="checkflag">
+                <div class="sidebar-module form-group">
+                    <input
+                        class="form-control"
+                        type="text"
+                        id="testflag"
+                        placeholder="Test a flag"
+                        name="checkflag">
+
                     <button
                         style="margin-top: 8px;"
-                        class="btn btn-primary btn-block" 
-                        onclick="testFlag()">Test</button>
+                        class="btn btn-success btn-block" 
+                        onclick="testFlag()">Get Hacker Bucks</button>
                 </div>
 
                 <div class="sidebar-module sidebar-module-inset">
@@ -151,7 +154,8 @@
     <footer class="blog-footer">
         <p>Blog template built for 
             <a href="#">Bootstrap</a> by 
-            <a href="#">@mdo</a>.
+            <a href="#">@mdo</a>. Modified
+            for hackers by <a href="#">#RustyBunions</a>
         </p>
         <p>
             <a href="#">Back to top</a>
@@ -168,7 +172,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalBody"></p>
+                    <p id="modalBody">
+                        <!-- Flag goes here eventually -->
+                    </p>
                     <p>
                         You take the blue pill, the story ends. You wake up in your bed and believe whatever
                         you want to believe. You take the red pill, you stay in Wonderland, and I show you
@@ -178,11 +184,29 @@
                     <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="redPill()">Red Pill</button>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="numpadModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom-width: 2px;">
+                    <div class="form-group" style="width: 100%;">
+                        <label for="testcode">4 digit PIN</label>
+                        <input
+                            class="form-control numpad-screen"
+                            type="number" id="testcode"
+                            name="testcode" placeholder="0000"
+                            min="0" max="9999">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
 
@@ -198,6 +222,8 @@
     {% load static %}
     <script src="{% static 'crapdb/js/matrix.js' %}"></script>
     <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>
+    <script src="{% static 'crapdb/js/numpad.js' %}"></script>
+    <script src="{% static 'crapdb/js/md5.min.js' %}"></script>
 
     <script>
         // This prevents the user from ever accessing the modal
@@ -211,13 +237,18 @@
                     url: "/crapdb/getmodalflag/" + session_id + "/",
                     type: "GET",
                     success: function(data) {
-                        var json = JSON.parse(data);
-                        $("#modalBody").text(json.flag);
+                        var res = JSON.parse(data);
+                        if (res.redirect) {
+                            window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
+                            return;
+                        }
+
+                        $("#modalBody").text(res.flag);
                         $("#settingsModal").modal({show: true});
                     }
                 });
             } else {
-                alert("Not authorized!");
+                alert("Javascript validation failed. You are not super admin. authorized=" + authorized);
             }
         }
 
@@ -233,10 +264,28 @@
                 // because of CSS settings
                 $("#matrix").css("background-color", "black");
 
+                // Start popping up flags like crazy after 10 seconds of matrix
                 setTimeout(function() {
                     flagsForDays(session_id, csrf_token="{{ csrf_token }}");
+
+                    // Stop popping up the flags 10 seconds later
+                    setTimeout(function() {
+                        stopFlyingFlags();
+
+                        // Start the numpad challed 1 seconds after
+                        // the flags stop
+                        setTimeout(function() {
+                            numpadChallenge(session_id);
+                        }, 1000);
+                    }, 10000);
                 }, 10000);
             }, 1000);
+        }
+
+        function stopFlyingFlags() {
+            if (flyingFlagsIntervalId) {
+                clearInterval(flyingFlagsIntervalId);
+            }
         }
 
         function testFlag() {
@@ -252,6 +301,10 @@
                 },
                 success: function(res) {
                     res = JSON.parse(res);
+                    if (res.redirect) {
+                        window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
+                    }
+
                     if (res.hacker_bucks) {
                         $("#hackerBucks").text(res.hacker_bucks);
                     }

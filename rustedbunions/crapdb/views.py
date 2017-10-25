@@ -1,5 +1,6 @@
 import sqlite3
 import json
+import hashlib
 
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
@@ -115,12 +116,29 @@ def getpassword(request):
         if username is None or answer is None:
             context["error"] = "You must provide an answer"
         else:
+            # Query that will filter out SQLi
+            # because the user values are passed to execure as parameters
+            no_sqli_query = ' '.join((
+                "SELECT password FROM users",
+                "WHERE username=? COLLATE NOCASE",
+                "AND answer=?"
+            ))
+
+            # This query is suceptible to SQLi b/c user values are concatenated
+            # to the string
             query = ' '.join((
                 "SELECT password FROM users",
                 "WHERE username='" + username + "' COLLATE NOCASE",
                 "AND answer='" + answer + "'"
             ))
+
+            context["actually_valid"] = False
             try:
+                res = [x for x in cursor.execute(no_sqli_query, (username, answer))]
+                if res:
+                    # They got it right with no SQLi
+                    context["actually_valid"] = True
+
                 context["password"] = [x for x in cursor.execute(query)]
                 if not context["password"]:
                     context["error"] = "Wrong answer"
@@ -161,8 +179,8 @@ def getmodalflag(request, session_id):
     try:
         Session.get_session(session_id)
     except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format(
-            "No session or session expired"))
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
 
     # NOTE: Change this flag before deploy
     return HttpResponse(json.dumps({
@@ -173,8 +191,8 @@ def querydb(request, session_id):
     try:
         Session.get_session(session_id)
     except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format(
-            "No session or session expired"))
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
 
     ret = {"flags": []}
 
@@ -201,8 +219,8 @@ def checkflag(request, session_id):
     try:
         session = Session.get_session(session_id)
     except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format(
-            "No session or session expired"))
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
 
     ret = {"hacker_bucks": session.hacker_bucks}
 
@@ -216,4 +234,14 @@ def checkflag(request, session_id):
             update_hacker_bucks_from_flag(session, flag)
             ret["hacker_bucks"] = session.hacker_bucks
 
+    return HttpResponse(json.dumps(ret))
+
+def getpin(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
+
+    ret = {"pin_hash": hashlib.md5(str(session.pin).encode('utf-8')).hexdigest()}
     return HttpResponse(json.dumps(ret))

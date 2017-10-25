@@ -1,0 +1,104 @@
+body {
+    background-color: black;
+    font-family: "Courier New", Courier, monospace;
+    color: green;
+}
+
+div.blog-header {
+    border-bottom-color: green;
+}
+
+.blog-title {
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 48px;
+}
+
+.blog-masthead {
+    background-color: black;
+    border-color: green;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.nav-link, a {
+    color: lightcoral;
+}
+
+a:visited.nav-link, a:visited {
+    color: lightcoral;
+}
+
+a:hover.nav-link, a:hover {
+    color: darkred;
+}
+
+.blog-post-title,
+.blog-post-meta,
+.blog-footer,
+.sidebar-module.sidebar-module-inset,
+.sidebar-module.sidebar-module-inset h4,
+.sidebar-module h4,
+.sidebar-module.card,
+.modal-title,
+.modal-header > button.close {
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.blog-footer,
+.sidebar-module.sidebar-module-inset,
+.sidebar-module.card {
+    background-color: black;
+    border-style: solid;
+    border-color: green;
+    border-width: 2px;
+}
+
+.sidebar-module.card > .card-body,
+.sidebar-module.card {
+    padding: 5px;
+}
+
+input.form-control,
+input:focus.form-control,
+input:active.form-control,
+.modal-body,
+.modal-header,
+.modal-footer {
+    background-color: black;
+    border-style: solid;
+    border-width: 1px;
+    border-color: green;
+    color: green;
+    font-family: "Courier New", Courier, monospace;
+}
+
+button.btn-success {
+    background-color: green;
+    border-color: green;
+}
+
+button.btn-danger {
+    background-color: darkred;
+    border-color: darkred;
+}
+
+button.btn-primary {
+    background-color: darkblue;
+    border-color: darkblue;
+}
+
+.modal-body,
+.modal-header,
+.modal-footer {
+    border-width: 2px;
+}
+
+.modal-header {
+    border-bottom-width: 0px;
+}
+
+.modal-footer {
+    border-top-width: 0px;
+}
