@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'checkflag/(?P<session_id>\w+)/$', views.checkflag, name="checkflag"),
     url(r'getpin/(?P<session_id>\w+)/$', views.getpin, name="getpin"),
     url(r'getpinflag/(?P<session_id>\w+)/$', views.getpinflag, name="getpinflag"),
+    url(r'getencmsg/(?P<session_id>\w+)/$', views.getencmsg, name="getencmsg"),
+    url(r'getrotflag/(?P<session_id>\w+)/$', views.getrotflag, name="getrotflag"),
 ]

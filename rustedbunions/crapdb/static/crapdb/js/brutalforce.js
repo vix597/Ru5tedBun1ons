@@ -1,5 +1,5 @@
 
-function printWelcome() {
+function printBrutalWelcome() {
     $("#numpadButton").text("Brutal Force");
     $("#numpadModal").modal({show: true});
 
@@ -14,7 +14,7 @@ function printWelcome() {
 function brutalForce(session_id) {
     var pin_hash = localStorage.getItem("pin_hash");
     if (pin_hash) {
-        printWelcome();
+        printBrutalWelcome();
         return;
     }
 
@@ -36,7 +36,7 @@ function brutalForce(session_id) {
             $("#hackerBucks").text(res.hacker_bucks);
 
             localStorage.setItem("pin_hash", res.pin_hash);
-            printWelcome();
+            printBrutalWelcome();
         }
     });
 }
@@ -72,6 +72,7 @@ function submitPin(pin_number, display_alert=false) {
                 res = JSON.parse(data);
                 if (res.error) {
                     errorAlert(res.error, target=$("#numpadModalFooter"));
+                    return;
                 }
 
                 successAlert(res.flag, target=$("#numpadModalFooter"), prepend=true, autoclose=0);

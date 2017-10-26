@@ -69,7 +69,7 @@ def main(request, session_id):
             "Login failed. No session or session expired"))
 
     context["session_id"] = session_id
-    context["session"] = session
+    context["session"] = session.to_json()
     template = loader.get_template('crapdb/main.html')
     return HttpResponse(template.render(context, request))
 
@@ -292,5 +292,59 @@ def getpinflag(request, session_id):
                 }
         else:
             ret = {"error": "No PIN provided in POST request"}
+
+    return HttpResponse(json.dumps(ret))
+
+def getencmsg(request, session_id):
+    ENC_PRICE = 50
+
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
+
+    if session.hacker_bucks < ENC_PRICE:
+        return HttpResponse(json.dumps({
+            "error": "ROT? requires ${} hacker bucks to play".format(
+                ENC_PRICE
+            )
+        }))
+
+    # Charge the hacker bucks
+    session.hacker_bucks -= ENC_PRICE
+
+    ret = {
+        "encrypted_message": session.encrypted_message,
+        "hacker_bucks": session.hacker_bucks
+    }
+    return HttpResponse(json.dumps(ret))
+
+def getrotflag(request, session_id):
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        return HttpResponse(json.dumps({
+            "redirect": "No session or session expired."}))
+
+    ret = {}
+
+    if request.POST:
+        d = request.POST.dict()
+        answer = d.get("answer", None)
+
+        if answer is not None:
+            print("***CHECK: ", answer.strip().lower(), " ***AND*** ", session.message)
+            if answer.strip().lower() == session.message:
+                # NOTE: Change this value before deploy
+                ret = {
+                    "flag": "Flag={__PLACEHOLDER_FLAG__}"
+                }
+            else:
+                ret = {
+                    "error": "Provided answer does not match"
+                }
+        else:
+            ret = {"error": "No answer provided in POST request"}
 
     return HttpResponse(json.dumps(ret))

@@ -18,6 +18,7 @@
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
                     <a class="nav-link" onclick="openModal()" id="settingsButton" href="#">Super Admin Settings</a>
                     <a class="nav-link" onclick='brutalForce("{{ session_id }}")' id="numpadButton" href="#">Brutal Force ($15)</a>
+                    <a class="nav-link" onclick='rot("{{ session_id }}")' id="rotButton" href="#">ROT? ($50)</a>
                 </nav>
             </div>
         </div>
@@ -36,10 +37,10 @@
                 {% if not session.password %}
                     {% verbatim %}
                         <!-- NOTE: Change flag value before release -->
-                        <p class="lead blog-description">How'd you get in here without a Flag={__PLACEHOLDER_FLAG__}</p>
+                        <p>How'd you get in here without a Flag={__PLACEHOLDER_FLAG__}</p>
                     {% endverbatim %}
                 {% elif session.actually_valid %}
-                    <p class="lead blog-description">
+                    <p>
                         No SQLi earns you a flag: 
                         {% verbatim %}
                             <!-- NOTE: Change value before release -->
@@ -199,7 +200,7 @@
                     <div class="form-group" style="width: 100%;">
                         <label for="testpin">4 digit PIN</label>
                         <input
-                            class="form-control numpad-screen"
+                            class="form-control"
                             type="number" id="testpin"
                             name="testpin" placeholder="0000"
                             min="0" max="9999">
@@ -212,6 +213,31 @@
                         onclick="submitPin($('#testpin').val(), display_alert=true)">Submit PIN</button>
                 </div>
                 <div class="modal-body" id="numpadModalFooter" style="border-top: 0px;">
+                    <!-- Receives alerts if any -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="rotModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="form-group" style="width: 100%;">
+                        <label for="testmsg" id="cipher-text"></label>
+                        <input
+                            class="form-control"
+                            type="text" id="cleartext"
+                            name="cleartext" placeholder="What's that say?">
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        onclick="submitAnswer($('#cleartext').val())">Submit Answer</button>
+                </div>
+                <div class="modal-body" id="rotModalFooter" style="border-top: 0px;">
                     <!-- Receives alerts if any -->
                 </div>
             </div>
@@ -235,6 +261,7 @@
     <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>
     <script src="{% static 'crapdb/js/brutalforce.js' %}"></script>
     <script src="{% static 'crapdb/js/md5.min.js' %}"></script>
+    <script src="{% static 'crapdb/js/rot.js' %}"></script>
 
     <script>
         // This prevents the user from ever accessing the modal
@@ -282,12 +309,6 @@
                     // Stop popping up the flags 10 seconds later
                     setTimeout(function() {
                         stopFlyingFlags();
-
-                        // Start the numpad challed 1 seconds after
-                        // the flags stop
-                        setTimeout(function() {
-                            brutalForce(session_id);
-                        }, 1000);
                     }, 10000);
                 }, 10000);
             }, 1000);
@@ -375,6 +396,12 @@
             var pin_hash = localStorage.getItem("pin_hash");
             if (pin_hash) {
                 $("#numpadButton").text("Brutal Force");
+            }
+
+            var encrypted_message = localStorage.getItem("encrypted_message");
+            if (encrypted_message) {
+                $("#rotButton").text("ROT?");
+                $("#cipher-text").text(encrypted_message);
             }
         });
     </script>

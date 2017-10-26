@@ -2,6 +2,8 @@
 // HTML5 is a pretty cool guy
 //
 
+var drawLoop = null;
+
 function runMatrix() {
     var canvas = document.getElementById("matrix");
     var context = canvas.getContext("2d");
@@ -71,5 +73,15 @@ function runMatrix() {
     }
 
     // Draw every 33 milliseconds
-    setInterval(draw, 33);
+    drawLoop = setInterval(draw, 33);
+}
+
+function stopMatrix(element) {
+    if (drawLoop) {
+        clearInterval(drawLoop);
+
+        setTimeout(function() {
+            element.css("display", "none");
+        }, 8000);
+    }
 }
