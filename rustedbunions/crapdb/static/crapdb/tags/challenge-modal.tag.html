@@ -1,0 +1,26 @@
+<challenge-modal>
+    <div class="modal" ref="modal" tabindex="-1" role="dialog" id="{ modal_id }">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <yield from="modal-header"></yield>
+                </div>
+                <div class="modal-body">
+                    <yield from="modal-body"></yield>
+                </div>
+                <div class="{ modal_footer_class }" 
+                    style="{ modal_footer_class == 'modal-body' ? style='border-top: 0px;': ''}">
+                    <yield from="modal-footer"></yield>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var tag = this;
+        tag.modal_id = opts.modalId || "challenge-modal";
+
+        // Sometimes instead of a "modal-footer" we want another "modal-body"
+        tag.modal_footer_class = opts.modalFooterClass || "modal-footer";
+    </script>
+</challenge-modal>

@@ -1,20 +1,13 @@
 
-function printRotWelcome() {
+function openRotModal() {
     $("#rotButton").text("ROT?");
     $("#rotModal").modal({show: true});
-
-    console.log("Welcome to the crypto challenge.");
-    console.log("Using the console, the answer can be submitted");
-    console.log("by calling 'submitAnswer(answer)' where");
-    console.log("'answer' is the decrypted message. The function");
-    console.log("will print a flag on success and an error on");
-    console.log("failure. Good luck!");
 }
 
 function rot(session_id) {
     var encrypted_message = localStorage.getItem("encrypted_message");
     if (encrypted_message) {
-        printRotWelcome();
+        openRotModal();
         return;
     }
 
@@ -36,7 +29,7 @@ function rot(session_id) {
             $("#hackerBucks").text(res.hacker_bucks);
             $("#cipher-text").text(res.encrypted_message);
             localStorage.setItem("encrypted_message", res.encrypted_message);
-            printRotWelcome();
+            openRotModal();
         }
     });
 }

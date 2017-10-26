@@ -4,10 +4,15 @@
     {{ block.super }}
 
     {% load static %}
+    <link href="{% static 'crapdb/css/challenge/matrix.css' %}" rel="stylesheet">
+    <link href="{% static 'crapdb/css/challenge/flyingflags.css' %}" rel="stylesheet">
     <link href="{% static 'crapdb/css/blog.css' %}" rel="stylesheet">
-    <link href="{% static 'crapdb/css/matrix.css' %}" rel="stylesheet">
-    <link href="{% static 'crapdb/css/flyingflags.css' %}" rel="stylesheet">
     <link href="{% static 'crapdb/css/hackerstyle.css' %}" rel="stylesheet">
+
+    <!-- Load Riot Tags -->
+    <script src="{% static 'crapdb/tags/blog-content.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'crapdb/tags/blog-glitch-content.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'crapdb/tags/challenge-modal.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
@@ -28,6 +33,7 @@
                 {% if session.username %}
                     <h1 class="blog-title">Welcome {{ session.username }}</h1>
                 {% else %}
+                    <!-- Flag for logging in without a username -->
                     {% verbatim %}
                         <!-- NOTE: Change flag value before release -->
                         <h1 class="blog-title">Welcome Flag={__PLACEHOLDER_FLAG__?}</h1>
@@ -35,11 +41,13 @@
                 {% endif %}
 
                 {% if not session.password %}
+                    <!-- Flag for logging in without a password -->
                     {% verbatim %}
                         <!-- NOTE: Change flag value before release -->
                         <p>How'd you get in here without a Flag={__PLACEHOLDER_FLAG__}</p>
                     {% endverbatim %}
                 {% elif session.actually_valid %}
+                    <!-- Flag for logging in with legit creds (no SQLi) -->
                     <p>
                         No SQLi earns you a flag: 
                         {% verbatim %}
@@ -58,65 +66,20 @@
 
     <main role="main" class="container">
         <div class="row">
-            <div class="col-sm-8 blog-main">
-                <div class="blog-post">
-                    <h2 class="blog-post-title">Hacking The World</h2>
-                    <p class="blog-post-meta">January 1, 2014 by <a href="#">Dingus</a></p>
-                    <p>
-                      Haxx0r ipsum long win syn fopen infinite loop echo todo Donald Knuth gobble 
-                      buffer root char January 1, 1970 malloc bin emacs. Back door leet continue 
-                      I'm sorry Dave, I'm afraid I can't do that python flood race condition flush 
-                      recursively crack bubble sort fatal. Warez over clock overflow dereference 
-                      L0phtCrack throw null port packet.
-                    </p>
-                    <hr>
-                    <p>
-                        All your base are belong to us spoof <a href="#">Trojan horse</a> mountain dew tcp d00dz 
-                        infinite loop recursively. Giga daemon function script kiddies unix root 
-                        it's a feature case suitably small values stack trace exception stack. 
-                        Void baz syn protected regex January 1, 1970 buffer firewall ascii giga 
-                        ddos <strong>Dennis Ritchie</strong> cat warez.
-                    </p>
-                    <ul>
-                        <li>Leapfrog continue Trojan horse fail.</li>
-                        <li>buffer perl stack do kilo overflow</li>
-                        <li>Leslie Lamport fork char ip grep.</li>
-                    </ul>
-                </div><!-- /.blog-post -->
-
-                <div class="blog-post">
-                    <h2 class="blog-post-title">Hacking Only Part Of The World</h2>
-                    <p class="blog-post-meta">December 23, 2013 by <a href="#">Bingus</a></p>
-                    <p>
-                        Gc echo loop public case foo January 1, 1970 system break if xss perl 
-                        fatal /dev/null cd int new bubble sort it's a feature gnu. Strlen cache 
-                        try catch bypass eof warez tcp vi python else deadlock fail worm foad 
-                        null regex wombat gurfle exception hello world Linus Torvalds. Tunnel 
-                        in daemon man pages lib epoch recursively infinite loop grep alloc 
-                        highjack error win ctl-c L0phtCrack d00dz.
-                    </p>
-                    <p>
-                        Linus Torvalds Leslie Lamport cd bit rsa terminal baz while fail flood 
-                        grep system worm foad bin pwned. Port emacs boolean hash ip highjack 
-                        deadlock snarf hack the mainframe giga mutex then tunnel in continue 
-                        back door access try catch. Todo Dennis Ritchie finally bubble sort 
-                        perl cookie char.
-                    </p>
-                </div><!-- /.blog-post -->
-            </div><!-- /.blog-main -->
+            <blog-content class="col-sm-8 blog-main"></blog-content>
 
             <aside class="col-sm-3 ml-sm-auto blog-sidebar">
                 <div class="sidebar-module card" style="margin-bottom: 10px;padding-bottom: 0px;">
                     <div class="card-body">
                         <h4 class="card-title text-center">Hacker Bucks</h4>
-
+        
                         <!--Points populated by jquery-->
                         <p class="text-center" style="font: 24px arial;">
                             $<span id="hackerBucks">{{ session.hacker_bucks }}</span>
                         </p>
                     </div>
                 </div>
-
+        
                 <div class="sidebar-module form-group">
                     <input
                         class="form-control"
@@ -124,13 +87,13 @@
                         id="testflag"
                         placeholder="Test a flag"
                         name="checkflag">
-
+        
                     <button
                         style="margin-top: 8px;"
                         class="btn btn-success btn-block" 
                         onclick="testFlag()">Get Hacker Bucks</button>
                 </div>
-
+        
                 <div class="sidebar-module sidebar-module-inset">
                     <h4>About</h4>
                     <p>
@@ -138,7 +101,7 @@
                         regex gnu. Epoch char bytes ban memory leak thread race condition.
                     </p>
                 </div>
-
+        
                 <div class="sidebar-module">
                     <h4>Archives</h4>
                     <ol class="list-unstyled">
@@ -165,84 +128,72 @@
         </p>
     </footer>
 
-    <div class="modal" tabindex="-1" role="dialog" id="settingsModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">How'd you get here?</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="modalBody">
-                        <!-- Flag goes here eventually -->
-                    </p>
-                    <p>
-                        You take the blue pill, the story ends. You wake up in your bed and believe whatever
-                        you want to believe. You take the red pill, you stay in Wonderland, and I show you
-                        how deep the rabbit hole goes.
-                    </p>
-                    <button type="button" class="btn btn-primary" onclick="logout()">Blue Pill</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="redPill()">Red Pill</button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <challenge-modal modal-id="settingsModal">
+        <yield to="modal-header">
+            <h5 class="modal-title">How'd you get here?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </yield>
+        <yield to="modal-body">
+            <p id="modalBody">
+                <!-- Flag goes here eventually -->
+            </p>
+            <p>
+                You take the blue pill, the story ends. You wake up in your bed and believe whatever
+                you want to believe. You take the red pill, you stay in Wonderland, and I show you
+                how deep the rabbit hole goes.
+            </p>
+            <button type="button" class="btn btn-primary" onclick="logout()">Blue Pill</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="redPill()">Red Pill</button>
+        </yield>
+        <yield to="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+        </yield>
+    </challenge-modal>
 
-    <div class="modal" tabindex="-1" role="dialog" id="numpadModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="form-group" style="width: 100%;">
-                        <label for="testpin">4 digit PIN</label>
-                        <input
-                            class="form-control"
-                            type="number" id="testpin"
-                            name="testpin" placeholder="0000"
-                            min="0" max="9999">
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <button
-                        type="button"
-                        class="btn btn-success"
-                        onclick="submitPin($('#testpin').val(), display_alert=true)">Submit PIN</button>
-                </div>
-                <div class="modal-body" id="numpadModalFooter" style="border-top: 0px;">
-                    <!-- Receives alerts if any -->
-                </div>
+    <challenge-modal modal-id="numpadModal" modal-footer-class="modal-body">
+        <yield to="modal-header">
+            <div class="form-group" style="width: 100%;">
+                <label for="testpin">4 digit PIN</label>
+                <input
+                    class="form-control"
+                    type="number" id="testpin"
+                    name="testpin" placeholder="0000"
+                    min="0" max="9999">
             </div>
-        </div>
-    </div>
+        </yield>
+        <yield to="modal-body">
+            <button
+                type="button"
+                class="btn btn-success"
+                onclick="submitPin($('#testpin').val(), display_alert=true)">Submit PIN</button>
+        </yield>
+        <yield to="modal-footer">
+            <div id="numpadModalFooter"></div>
+        </yield>
+    </challenge-modal>
 
-    <div class="modal" tabindex="-1" role="dialog" id="rotModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="form-group" style="width: 100%;">
-                        <label for="testmsg" id="cipher-text"></label>
-                        <input
-                            class="form-control"
-                            type="text" id="cleartext"
-                            name="cleartext" placeholder="What's that say?">
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <button
-                        type="button"
-                        class="btn btn-success"
-                        onclick="submitAnswer($('#cleartext').val())">Submit Answer</button>
-                </div>
-                <div class="modal-body" id="rotModalFooter" style="border-top: 0px;">
-                    <!-- Receives alerts if any -->
-                </div>
+    <challenge-modal modal-id="rotModal" modal-footer-class='modal-body'>
+        <yield to="modal-header">
+            <div class="form-group" style="width: 100%;">
+                <label for="testmsg" id="cipher-text"></label>
+                <input
+                    class="form-control"
+                    type="text" id="cleartext"
+                    name="cleartext" placeholder="What's that say?">
             </div>
-        </div>
-    </div>
+        </yield>
+        <yield to="modal-body">
+            <button
+                type="button"
+                class="btn btn-success"
+                onclick="submitAnswer($('#cleartext').val())">Submit Answer</button>
+        </yield>
+        <yield to="modal-footer">
+            <div id="rotModalFooter"></div>
+        </yield>
+    </challenge-modal>
 
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
@@ -257,11 +208,14 @@
         crossorigin="anonymous"></script>
 
     {% load static %}
-    <script src="{% static 'crapdb/js/matrix.js' %}"></script>
-    <script src="{% static 'crapdb/js/flyingflags.js' %}"></script>
-    <script src="{% static 'crapdb/js/brutalforce.js' %}"></script>
-    <script src="{% static 'crapdb/js/md5.min.js' %}"></script>
-    <script src="{% static 'crapdb/js/rot.js' %}"></script>
+    <!-- Load the challenge JS files -->
+    <script src="{% static 'crapdb/js/challenge/matrix.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/flyingflags.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/brutalforce.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/rot.js' %}"></script>
+
+    <!-- External deps -->
+    <script src="{% static 'crapdb/js/external/md5.min.js' %}"></script>
 
     <script>
         // This prevents the user from ever accessing the modal
@@ -388,6 +342,9 @@
         }
 
         $(document).ready(function() {
+            riot.mount("blog-content");
+            riot.mount("challenge-modal");
+
             // Set the session ID in the browser's local storage for later
             localStorage.setItem("session_id", "{{ session_id }}");
             // Set the csrf_token in the local storage for later
