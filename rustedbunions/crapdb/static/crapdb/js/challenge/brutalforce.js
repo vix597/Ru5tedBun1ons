@@ -71,18 +71,26 @@ function submitPin(pin_number, display_alert=false) {
             success: function(data) {
                 res = JSON.parse(data);
                 if (res.error) {
-                    errorAlert(res.error, target=$("#numpadModalFooter"));
+                    errorAlert(res.error, options={
+                        target: $("#numpadModalFooter")
+                    });
                     return;
                 }
 
-                successAlert(res.flag, target=$("#numpadModalFooter"), prepend=true, autoclose=0);
+                successAlert(res.flag, options={
+                    target:$("#numpadModalFooter"),
+                    autoclose: 0
+                });
             }
         });
         return true;
     }
 
     if (display_alert) {
-        errorAlert("Invalid PIN", target=$("#numpadModalFooter"), prepend=true, autoclose=1500);
+        errorAlert("Invalid PIN", options={
+            target: $("#numpadModalFooter"),
+            autoclose: 1500
+        });
     }
 
     return false;

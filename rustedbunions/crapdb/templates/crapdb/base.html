@@ -12,7 +12,7 @@
             <title>C4n y0u H4ck 1t</title>
 
             <!-- Bootstrap CSS -->
-            <link rel="stylesheet" 
+            <link rel="stylesheet"
                 href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" 
                 integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" 
                 crossorigin="anonymous">
@@ -66,6 +66,10 @@
                 src="https://cdnjs.cloudflare.com/ajax/libs/riot/3.7.3/riot+compiler.min.js" 
                 integrity="sha256-GHA3LYZISL25HCo1Hu8hAxdb96gNplLLnVDsl0MKamM=" 
                 crossorigin="anonymous"></script>
+
+            {% load static %}
+            <!-- Load the core JS for the site -->
+            <script src="{% static 'crapdb/js/core.js' %}"></script>
         {% endblock %}
     </body>
 </html>

@@ -21,7 +21,7 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
-                    <a class="nav-link" onclick="openModal()" id="settingsButton" href="#">Super Admin Settings</a>
+                    <a class="nav-link" onclick="superAdmin()" id="settingsButton" href="#">Super Admin Settings</a>
                     <a class="nav-link" onclick='brutalForce("{{ session_id }}")' id="numpadButton" href="#">Brutal Force ($15)</a>
                     <a class="nav-link" onclick='rot("{{ session_id }}")' id="rotButton" href="#">ROT? ($50)</a>
                 </nav>
@@ -32,11 +32,20 @@
             <div class="container">
                 {% if session.username %}
                     <h1 class="blog-title">Welcome {{ session.username }}</h1>
+
+                    {% if session.username|length <= 8 %}
+                        <!-- Flag for logging in with shortest SQLi -->
+                        <p>
+                            <!-- NOTE: Change flag value before release -->
+                            You logged in with the shortest possible SQLi for this site. 
+                            Here ya go: <br>Flag={__PLACEHOLDER_FLAG__}
+                        </p>
+                    {% endif %}
                 {% else %}
                     <!-- Flag for logging in without a username -->
                     {% verbatim %}
                         <!-- NOTE: Change flag value before release -->
-                        <h1 class="blog-title">Welcome Flag={__PLACEHOLDER_FLAG__?}</h1>
+                        <h1 class="blog-title">Welcome Flag={__PLACEHOLDER_FLAG__}</h1>
                     {% endverbatim %}
                 {% endif %}
 
@@ -56,7 +65,9 @@
                         {% endverbatim %}
                     </p>
                 {% else %}
-                    <p>SQLi doesn't deserve a flag you big jerk</p>
+                    {% if session.username and session.username|length > 8 or not session.username %}
+                        <p>SQLi doesn't deserve a flag you big jerk</p>
+                    {% endif %}
                 {% endif %}
 
                 <p>NOTE: Session timout after 30 minutes of idle time</p>
@@ -81,16 +92,10 @@
                 </div>
         
                 <div class="sidebar-module form-group">
-                    <input
-                        class="form-control"
-                        type="text"
-                        id="testflag"
-                        placeholder="Test a flag"
-                        name="checkflag">
+                    <input class="form-control" type="text" id="testflag"
+                        placeholder="Test a flag" name="checkflag">
         
-                    <button
-                        style="margin-top: 8px;"
-                        class="btn btn-success btn-block" 
+                    <button style="margin-top: 8px;" class="btn btn-success btn-block" 
                         onclick="testFlag()">Get Hacker Bucks</button>
                 </div>
         
@@ -118,14 +123,11 @@
     </main><!-- /.container -->
 
     <footer class="blog-footer">
-        <p>Blog template built for 
-            <a href="#">Bootstrap</a> by 
+        <p>Blog template built for <a href="#">Bootstrap</a> by 
             <a href="#">@mdo</a>. Modified
             for hackers by <a href="#">#RustyBunions</a>
         </p>
-        <p>
-            <a href="#">Back to top</a>
-        </p>
+        <p><a href="#">Back to top</a></p>
     </footer>
 
     <challenge-modal modal-id="settingsModal">
@@ -136,9 +138,7 @@
             </button>
         </yield>
         <yield to="modal-body">
-            <p id="modalBody">
-                <!-- Flag goes here eventually -->
-            </p>
+            <p id="modalBody"><!-- Flag goes here eventually --></p>
             <p>
                 You take the blue pill, the story ends. You wake up in your bed and believe whatever
                 you want to believe. You take the red pill, you stay in Wonderland, and I show you
@@ -156,17 +156,12 @@
         <yield to="modal-header">
             <div class="form-group" style="width: 100%;">
                 <label for="testpin">4 digit PIN</label>
-                <input
-                    class="form-control"
-                    type="number" id="testpin"
-                    name="testpin" placeholder="0000"
-                    min="0" max="9999">
+                <input class="form-control" type="number" id="testpin"
+                    name="testpin" placeholder="0000" min="0" max="9999">
             </div>
         </yield>
         <yield to="modal-body">
-            <button
-                type="button"
-                class="btn btn-success"
+            <button type="button" class="btn btn-success"
                 onclick="submitPin($('#testpin').val(), display_alert=true)">Submit PIN</button>
         </yield>
         <yield to="modal-footer">
@@ -178,16 +173,12 @@
         <yield to="modal-header">
             <div class="form-group" style="width: 100%;">
                 <label for="testmsg" id="cipher-text"></label>
-                <input
-                    class="form-control"
-                    type="text" id="cleartext"
+                <input class="form-control" type="text" id="cleartext"
                     name="cleartext" placeholder="What's that say?">
             </div>
         </yield>
         <yield to="modal-body">
-            <button
-                type="button"
-                class="btn btn-success"
+            <button type="button" class="btn btn-success"
                 onclick="submitAnswer($('#cleartext').val())">Submit Answer</button>
         </yield>
         <yield to="modal-footer">
@@ -222,7 +213,7 @@
         // Impossible to bypass this
         var authorized = false;
 
-        function openModal() {
+        function superAdmin() {
             if (authorized) {
                 var session_id = localStorage.getItem("session_id");
                 $.ajax({
@@ -302,43 +293,6 @@
             var session_id = localStorage.getItem("session_id");
             localStorage.clear();
             window.location = "/crapdb/logout/" + session_id + "/";
-        }
-
-        function bootstrapAlert(msg, target=$(".blog-header"), prepend=true, cls="alert-danger", autoclose=4000) {
-            var alert = $("<div class='alert alert-dismissible fade show' role='alert'>")
-                .addClass(cls)
-                .text(msg)
-                .append($("<button type='button' class='close' data-dismiss='alert' aria-label='Close'>")
-                    .append($("<span aria-hidden='true'>").html("&times;")));
-
-            var bootstrap_alert = false;
-            if (prepend && (typeof target.prepend === "function")) {
-                target.prepend(alert);
-                bootstrap_alert = true;
-            } else if (typeof target.append === "function") {
-                target.append(alert);
-                bootstrap_alert = true;
-            } else {
-                alert(error);
-            }
-
-            if (bootstrap_alert) {
-                alert.alert();
-                
-                if (autoclose) {
-                    setTimeout(function() {
-                        alert.alert('close');
-                    }, autoclose);
-                }
-            }
-        }
-
-        function errorAlert(error, target=$(".blog-header"), prepend=true, autoclose=4000) {
-            bootstrapAlert(error, target=target, prepend=prepend, cls="alert-danger", autoclose=autoclose);
-        }
-
-        function successAlert(msg, target=$(".blog-header"), prepend=true, autoclose=4000) {
-            bootstrapAlert(msg, target, prepend, cls="alert-success", autoclose=autoclose);
         }
 
         $(document).ready(function() {

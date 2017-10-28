@@ -60,12 +60,17 @@ function submitAnswer(answer) {
             res = JSON.parse(data);
             if (res.error) {
                 console.log(res.error);
-                errorAlert(res.error, target=$("#rotModalFooter"));
+                errorAlert(res.error, options={
+                    target: $("#rotModalFooter")
+                });
                 return;
             }
 
             console.log(res.flag);
-            successAlert(res.flag, target=$("#rotModalFooter"), prepend=true, autoclose=0);
+            successAlert(res.flag, options={
+                target: $("#rotModalFooter"),
+                autoclose: 0
+            });
         }
     });
 }

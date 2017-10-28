@@ -1,6 +1,8 @@
 //
 // HTML5 is a pretty cool guy
 //
+// Matrix adapted from http://thecodeplayer.com/walkthrough/matrix-rain-animation-html5-canvas-javascript
+//
 
 var drawLoop = null;
 
