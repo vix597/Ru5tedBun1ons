@@ -35,9 +35,9 @@ CRAPDB_SETUP = [
     "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
     "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
     "CREATE TABLE users (username text, password text, question text, answer text)",
-    "INSERT INTO users VALUES ('Admin', 'H4ckm31FYOUC4n!@*&$#', 'I AM ADMIN', 'I AM ALWAYS WATCHING')",
-    "INSERT INTO users VALUES ('Joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
-    "INSERT INTO users VALUES ('JackBlack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question')"
+    "INSERT INTO users VALUES ('admin', 'H4ckm31FYOUC4n!@*&$#', 'I AM ADMIN', 'I AM ALWAYS WATCHING')",
+    "INSERT INTO users VALUES ('joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
+    "INSERT INTO users VALUES ('jackblack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question')"
 ]
 
 if __name__ == "__main__":
