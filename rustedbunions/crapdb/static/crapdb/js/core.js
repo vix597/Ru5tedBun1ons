@@ -1,5 +1,5 @@
 //
-// Methods to add alerts to the page
+// Methods to add alerts to the page and send ajax requests
 //
 
 function bootstrapAlert(msg, options={}) {

@@ -4,7 +4,8 @@ function openRotModal() {
     $("#rotModal").modal({show: true});
 }
 
-function rot(session_id) {
+function rot() {
+    var session_id = localStorage.getItem("session_id");
     var encrypted_message = localStorage.getItem("encrypted_message");
     if (encrypted_message) {
         openRotModal();

@@ -1,0 +1,16 @@
+<challenge-modal modal-id="brutalForceModal" modal-footer-class="modal-body">
+    <yield to="modal-header">
+        <div class="form-group" style="width: 100%;">
+            <label for="testpin">4 digit PIN</label>
+            <input class="form-control" type="number" id="testpin"
+                name="testpin" placeholder="0000" min="0" max="9999">
+        </div>
+    </yield>
+    <yield to="modal-body">
+        <button type="button" class="btn btn-success"
+            onclick="submitPin($('#testpin').val(), display_alert=true)">Submit PIN</button>
+    </yield>
+    <yield to="modal-footer">
+        <div id="brutalForceModalFooter"></div>
+    </yield>
+</challenge-modal>

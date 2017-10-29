@@ -34,8 +34,11 @@ function popThoseFlags(flags) {
     }
 }
 
-function flagsForDays(session_id, csrf_token) {
+function flagsForDays() {
     query = "SELECT flag from flags";
+
+    var session_id = localStorage.getItem("session_id");
+    var csrf_token = localStorage.getItem("csrf_token");
 
     // Load the flags
     $.ajax({
@@ -60,4 +63,10 @@ function flagsForDays(session_id, csrf_token) {
             }
         }
     });
+}
+
+function stopFlyingFlags() {
+    if (flyingFlagsIntervalId) {
+        clearInterval(flyingFlagsIntervalId);
+    }
 }

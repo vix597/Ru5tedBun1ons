@@ -1,0 +1,16 @@
+<challenge-modal modal-id="rotModal" modal-footer-class='modal-body'>
+    <yield to="modal-header">
+        <div class="form-group" style="width: 100%;">
+            <label for="testmsg" id="cipher-text"></label>
+            <input class="form-control" type="text" id="cleartext"
+                name="cleartext" placeholder="What's that say?">
+        </div>
+    </yield>
+    <yield to="modal-body">
+        <button type="button" class="btn btn-success"
+            onclick="submitAnswer($('#cleartext').val())">Submit Answer</button>
+    </yield>
+    <yield to="modal-footer">
+        <div id="rotModalFooter"></div>
+    </yield>
+</challenge-modal>

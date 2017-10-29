@@ -1,7 +1,7 @@
 
 function printBrutalWelcome() {
-    $("#numpadButton").text("Brutal Force");
-    $("#numpadModal").modal({show: true});
+    $("#brutalForceButton").text("Brutal Force");
+    $("#brutalForceModal").modal({show: true});
 
     console.log("Welcome to the brutal force challenge.");
     console.log("Using the console, a PIN can be submitted");
@@ -11,7 +11,8 @@ function printBrutalWelcome() {
     console.log("failure. Good luck!");
 }
 
-function brutalForce(session_id) {
+function brutalForce() {
+    var session_id = localStorage.getItem("session_id");
     var pin_hash = localStorage.getItem("pin_hash");
     if (pin_hash) {
         printBrutalWelcome();
@@ -72,13 +73,13 @@ function submitPin(pin_number, display_alert=false) {
                 res = JSON.parse(data);
                 if (res.error) {
                     errorAlert(res.error, options={
-                        target: $("#numpadModalFooter")
+                        target: $("#brutalForceModalFooter")
                     });
                     return;
                 }
 
                 successAlert(res.flag, options={
-                    target:$("#numpadModalFooter"),
+                    target:$("#brutalForceModalFooter"),
                     autoclose: 0
                 });
             }
@@ -88,7 +89,7 @@ function submitPin(pin_number, display_alert=false) {
 
     if (display_alert) {
         errorAlert("Invalid PIN", options={
-            target: $("#numpadModalFooter"),
+            target: $("#brutalForceModalFooter"),
             autoclose: 1500
         });
     }

@@ -33,9 +33,9 @@ def update_hacker_bucks_from_flag(session, userflag):
 
             # If not, see if they just submitted the flag
             # value b/w curly braces
-            flag = flag.replace("Flag={", '')
-            flag = flag.replace("}", '')
-            if userflag == flag:
+            pure_flag = flag.replace("Flag={", '')
+            pure_flag = pure_flag.replace("}", '')
+            if userflag == pure_flag:
                 hacker_bucks = flagentry.value
                 matched_flag = flag
     except:

@@ -5,6 +5,33 @@
 //
 
 var drawLoop = null;
+var auto_reset = true;
+
+function redPill() {
+    // go deeper
+
+    setTimeout(function() {
+        $("#matrix").css("display", "unset");
+        runMatrix();
+
+        // Triggers the background-color to transition to black
+        // because of CSS settings
+        $("#matrix").css("background-color", "black");
+
+        // Start popping up flags like crazy after 10 seconds of matrix
+        setTimeout(function() {
+            flagsForDays();
+
+            // Stop popping up the flags 10 seconds later
+            setTimeout(function() {
+                stopFlyingFlags();
+                setTimeout(function() {
+                    stopMatrix($("#matrix"));
+                }, 1000)
+            }, 10000);
+        }, 10000);
+    }, 1000);
+}
 
 function runMatrix() {
     var canvas = document.getElementById("matrix");
@@ -66,7 +93,7 @@ function runMatrix() {
             
             // Sending the drop back to the top randomly after it has crossed the screen
             // Adding a randomness to the reset to make the drops scattered on the Y axis
-            if(drops[i]*font_size > canvas.height && Math.random() > 0.975)
+            if(drops[i]*font_size > canvas.height && Math.random() > 0.975 && auto_reset)
                 drops[i] = 0;
 
             // Incrementing Y coordinate
@@ -80,10 +107,21 @@ function runMatrix() {
 
 function stopMatrix(element) {
     if (drawLoop) {
-        clearInterval(drawLoop);
+        auto_reset = false; // Don't reset the characters to the top of the screen
+        var tmpDrawLoop = drawLoop;
+        runMatrix(); // Because this will create another drawLoop
+
+        element.css("background-color", "transparent");
 
         setTimeout(function() {
+            clearInterval(tmpDrawLoop);
+            clearInterval(drawLoop);
             element.css("display", "none");
+            element.css("width", "0px");
+            element.css("height", "0px");
+            element.css("position", "absolute");
+            element.css("top", "0px");
+            element.css("left", "0px");
         }, 8000);
     }
 }

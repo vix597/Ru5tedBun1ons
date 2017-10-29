@@ -1,0 +1,25 @@
+<challenge-modal modal-id="superAdminModal">
+    <yield to="modal-header">
+        <h5 class="modal-title">How'd you get here?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </yield>
+    <yield to="modal-body">
+        <p id="superAdminModalBody"><!-- Flag goes here eventually --></p>
+        <p>
+            You take the blue pill, the story ends. You wake up in your bed and believe whatever
+            you want to believe. You take the red pill, you stay in Wonderland, and I show you
+            how deep the rabbit hole goes.
+        </p>
+
+        <button type="button" class="btn btn-primary"
+            onclick="logout()">Blue Pill</button>
+
+        <button type="button" class="btn btn-danger"
+            data-dismiss="modal" onclick="redPill()">Red Pill</button>
+    </yield>
+    <yield to="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+    </yield>
+</challenge-modal>
