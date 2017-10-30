@@ -1,0 +1,19 @@
+{% extends 'crapdb/base.html' %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to JackIT!</h1>
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+
+    <!-- Loads the MelonJS game engine-->
+    <script
+        src="https://cdn.jsdelivr.net/npm/melonjs@4.1.1/build/melonjs.min.js"
+        integrity="sha256-p82jsTvXuUELwrZOrX1pwalN20SvBpsjIowiWcSZ8ZU="
+        crossorigin="anonymous"></script>
+{% endblock %}
