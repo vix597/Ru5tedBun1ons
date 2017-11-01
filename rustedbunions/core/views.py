@@ -1,3 +1,9 @@
+import json
+
+from django.shortcuts import redirect, reverse
+from django.http import HttpResponse
+
+from .session import Session
 from .models import Flag
 
 def update_hacker_bucks_from_flag(session, userflag):
@@ -36,3 +42,25 @@ def update_hacker_bucks_from_flag(session, userflag):
             session.claimed_flags.append(matched_flag)
             session.hacker_bucks += hacker_bucks
             session.lifetime_hacker_bucks += hacker_bucks
+
+
+def get_session(session_id, fail_url="crapdb:index",
+                error="No session or session expired",
+                http_response=False):
+    '''
+    Returns a tuple of (status, session or redirect)
+     - If status is True the second element is a session object
+     - If status is False the second element is a django redirect
+    '''
+    session = None
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        if not http_response:
+            return (False, redirect(reverse(fail_url) + "?error={}".format(
+                error)))
+        else:
+            return False, HttpResponse(json.dumps({
+                "redirect": error}))
+
+    return (True, session)

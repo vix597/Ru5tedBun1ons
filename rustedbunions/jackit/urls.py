@@ -3,5 +3,5 @@ from . import views
 
 app_name = "jackit"
 urlpatterns = [
-    url(r'^$', views.index, name="index"),
+    url(r'(?P<session_id>\w+)/$', views.index, name="index"),
 ]

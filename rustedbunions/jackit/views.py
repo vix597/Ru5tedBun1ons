@@ -1,20 +1,19 @@
 from django.http import HttpResponse
-from django.shortcuts import redirect, reverse
 from django.template import loader
 
-from core.session import Session
+from core.views import get_session
+
+#pylint: disable=E1101
 
 def index(request, session_id):
     context = {}
-    session = None
+    status, obj = get_session(
+        session_id, error="Login failed. No session or session expired")
+    if not status:
+        return obj # On fail obj is a redirect
+    session = obj # On success obj is the session
 
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format(
-            "No session or session expired"))
-
-    # TODO: Finish this
-
+    context["session_id"] = session_id
+    context["session"] = session.to_json()
     template = loader.get_template('jackit/index.html')
     return HttpResponse(template.render(context, request))

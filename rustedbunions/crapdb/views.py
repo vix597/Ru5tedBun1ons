@@ -2,13 +2,15 @@ import sqlite3
 import json
 import hashlib
 
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.template import loader
 
 from core.session import Session
-from core.views import update_hacker_bucks_from_flag
+from core.views import update_hacker_bucks_from_flag, get_session
 from rustedbunions import settings
+
+#pylint: disable=E1101
 
 def index(request):
     context = {}
@@ -22,13 +24,11 @@ def index(request):
 
 def main(request, session_id):
     context = {}
-    session = None
-
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return redirect(reverse("crapdb:index") + "?error={}".format(
-            "Login failed. No session or session expired"))
+    status, obj = get_session(
+        session_id, error="Login failed. No session or session expired")
+    if not status:
+        return obj # On fail obj is a redirect
+    session = obj # On success obj is the session
 
     context["session_id"] = session_id
     context["session"] = session.to_json()
@@ -139,11 +139,9 @@ def searchcrap(request):
     return HttpResponse(template.render(context, request))
 
 def getmodalflag(request, session_id):
-    try:
-        Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
 
     # NOTE: Change this flag before deploy
     return HttpResponse(json.dumps({
@@ -151,11 +149,9 @@ def getmodalflag(request, session_id):
     }))
 
 def querydb(request, session_id):
-    try:
-        Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
 
     ret = {"flags": []}
 
@@ -179,11 +175,10 @@ def querydb(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def checkflag(request, session_id):
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj # obj is session on success
 
     ret = {"hacker_bucks": session.hacker_bucks}
 
@@ -202,11 +197,10 @@ def checkflag(request, session_id):
 def getpin(request, session_id):
     PIN_PRICE = 15 # 15 hacker bucks to get the pin
     
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj # object is session on success
 
     if session.hacker_bucks < PIN_PRICE:
         return HttpResponse(json.dumps({
@@ -225,11 +219,10 @@ def getpin(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def getpinflag(request, session_id):
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
 
     ret = {}
 
@@ -260,11 +253,10 @@ def getpinflag(request, session_id):
 def getencmsg(request, session_id):
     ENC_PRICE = 50
 
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
 
     if session.hacker_bucks < ENC_PRICE:
         return HttpResponse(json.dumps({
@@ -283,11 +275,10 @@ def getencmsg(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def getrotflag(request, session_id):
-    try:
-        session = Session.get_session(session_id)
-    except KeyError:
-        return HttpResponse(json.dumps({
-            "redirect": "No session or session expired."}))
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
 
     ret = {}
 
