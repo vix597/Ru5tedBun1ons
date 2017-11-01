@@ -3,15 +3,15 @@ import os
 import sys
 import threading
 
-from crapdb.session import Session
-
 if __name__ == "__main__":
+    # Must be set before accessing settings
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rustedbunions.settings")
+
     from rustedbunions import settings
     if not os.path.exists(settings.CRAPDB_PATH):
         print("Run setup_site.sh first to create the crapdb.sqlite3 file and set permissions")
         sys.exit(1)
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rustedbunions.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
@@ -27,6 +27,9 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
+
+    # Loads initial data for Session
+    from core.session import Session
 
     needs_cleanup = False
     if "runserver" in sys.argv and not settings.DEBUG:
