@@ -25,12 +25,13 @@ class Session:
 
     @classmethod
     def get_session(cls, oid):
-        session = cls._registry.get(oid)
-        if session and session.is_valid():
-            session.update()
-            return session
-        elif session and not session.is_valid():
-            del cls._registry[oid]
+        with cls._session_lock:
+            session = cls._registry.get(oid)
+            if session and session.is_valid():
+                session.update()
+                return session
+            elif session and not session.is_valid():
+                del cls._registry[oid]
 
         raise KeyError("no session found that matched object id " + oid)
 
