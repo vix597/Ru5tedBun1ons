@@ -38,7 +38,9 @@
             {% endblock %}
 
             <footer class="footer">
-                <p>&copy; {% now "Y" %} rustedbunions.com</p>
+                {% block footer %}
+                    <p>&copy; {% now "Y" %} rustedbunions.com</p>
+                {% endblock %}
             </footer>
         </div>
 

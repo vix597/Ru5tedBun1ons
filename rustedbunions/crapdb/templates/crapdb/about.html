@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+
+{% block head %}
+    {{ block.super }}
+
+    {% load static %}
+    <link href="{% static 'crapdb/css/about.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    {% load static %}
+    <h1>About Us</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'crapdb/img/bunion1.jpg' %}" alt="BUNION">
+                    <div class="card-body">
+                        <p class="card-text">
+                            *.* brute force bar gcc interpreter strlen blob grep python fopen
+                            endif while hack the mainframe alloc. If headers back door wombat
+                            segfault tcp machine code flood. Sql stack mega error gurfle cache
+                            January 1, 1970 continue giga true packet sniffer do warez foad var
+                            worm Donald Knuth stack trace.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'crapdb/img/bunion2.jpg' %}" alt="BUNION">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Bar injection false function true Leslie Lamport sudo firewall
+                            epoch vi socket do wannabee mountain dew leet boolean. Client
+                            January 1, 1970 ifdef irc rm -rf packet sniffer rsa fatal cat
+                            pwned worm regex salt bang chown gcc malloc *.*. Then void leapfrog
+                            cd segfault script kiddies highjack syn gobble memory leak gc tcp
+                            cache lib I'm compiling printf all your base are belong to us.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'crapdb/img/bunion3.jpg' %}" alt="BUNION">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Haxx0r ipsum ban machine code spoof public shell flood todo foad else
+                            cache stack frack /dev/null new mutex protected. Hack the mainframe
+                            Dennis Ritchie I'm sorry Dave, I'm afraid I can't do that gobble.
+                            Brute force if void ack headers L0phtCrack strlen afk mountain dew
+                            hack the mainframe stack trace fopen d00dz double giga sudo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <p>&copy; {% now "Y" %} rustedbunions.com | <a href="{% url 'crapdb:index' %}">home</a></p>
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+{% endblock %}

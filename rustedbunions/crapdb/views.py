@@ -22,6 +22,10 @@ def index(request):
     template = loader.get_template('crapdb/index.html')
     return HttpResponse(template.render(context, request))
 
+def about(request):
+    template = loader.get_template('crapdb/about.html')
+    return HttpResponse(template.render({}, request))
+
 def main(request, session_id):
     context = {}
     status, obj = get_session(

@@ -46,7 +46,10 @@
             </div>
         {% endif %}
     </div>
+{% endblock %}
 
+{% block footer %}
+    <p>&copy; {% now "Y" %} rustedbunions.com | <a href="{% url 'crapdb:about' %}">about</a></p>
 {% endblock %}
 
 {% block script %}

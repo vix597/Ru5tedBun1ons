@@ -32,7 +32,7 @@
                 {% if session.username %}
                     <h1 class="blog-title">Welcome {{ session.username }}</h1>
 
-                    {% if session.username|length <= 8 %}
+                    {% if session.username|length <= 8 and not session.actually_valid %}
                         <!-- Flag for logging in with shortest SQLi -->
                         <p>
                             <!-- NOTE: Change flag value before release -->
@@ -135,6 +135,10 @@
     {% include "./challenge/superadmin.html" %}
 
     <canvas id="matrix" style="display:none"></canvas>
+{% endblock %}
+
+{% block footer %}
+    <p>&copy; {% now "Y" %} rustedbunions.com | <a href="{% url 'crapdb:about' %}">about</a></p>
 {% endblock %}
 
 {% block script %}
