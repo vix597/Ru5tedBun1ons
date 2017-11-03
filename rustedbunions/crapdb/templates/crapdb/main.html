@@ -23,6 +23,7 @@
                     <a class="nav-link" onclick="superAdmin()" id="settingsButton" href="#">Super Admin Settings</a>
                     <a class="nav-link" onclick='brutalForce()' id="brutalForceButton" href="#">Brutal Force ($6)</a>
                     <a class="nav-link" onclick='rot()' id="rotButton" href="#">ROT? ($25)</a>
+                    <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Game Time!</a>
                 </nav>
             </div>
         </div>
@@ -216,6 +217,11 @@
             var session_id = localStorage.getItem("session_id");
             localStorage.clear();
             window.location = "/crapdb/logout/" + session_id + "/";
+        }
+
+        function jackit() {
+            var session_id = localStorage.getItem("session_id");
+            window.location = "/jackit/" + session_id + "/";
         }
 
         $(document).ready(function() {
