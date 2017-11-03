@@ -10,3 +10,10 @@ __Each team will be assigned 1 host IP to root around for flags__
 * 1 impossible flag (no points...you won't get it)
 
 __To Login:__ `rdesktop -u Bunions -p password TEAM_IP`
+
+### CTF Web Challenges (451 pts total)
+
+__Navigate to https://rustedbunions.com and get it done!
+
+Website source code @ https://github.com/vix597/Ru5tedBun1ons/tree/master/rustedbunions
+
