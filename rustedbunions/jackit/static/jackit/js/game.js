@@ -1,16 +1,12 @@
-
-/* Game namespace */
 var game = {
 
-    // an object where to store game information
     data : {
         // score
         score : 0
     },
 
-
     // Run on page load.
-    "onload" : function () {
+    onload : function () {
         console.log("On load. Initialize...");
 
         // Initialize the video.
@@ -35,7 +31,7 @@ var game = {
     },
 
     // Run on game resources loaded.
-    "loaded" : function () {
+    loaded : function () {
         console.log("Loaded.");
 
         me.state.set(me.state.MENU, new game.TitleScreen());
@@ -43,6 +39,11 @@ var game = {
 
         // add our player entity in the entity pool
         me.pool.register("mainPlayer", game.PlayerEntity);
+
+        // enable the keyboard
+        me.input.bindKey(me.input.KEY.LEFT, "left");
+        me.input.bindKey(me.input.KEY.RIGHT, "right");
+        me.input.bindKey(me.input.KEY.X, "jump", true);
 
         // Start the game.
         me.state.change(me.state.PLAY);
