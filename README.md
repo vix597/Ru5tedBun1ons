@@ -13,8 +13,6 @@ __To Login:__ `rdesktop -u Bunions -p password TEAM_IP`
 
 ### CTF Web Challenges (451 pts total)
 
-__Navigate to https://rustedbunions.com and get it done!__
-
-__Website source code @ https://github.com/vix597/Ru5tedBun1ons/tree/master/rustedbunions__
-
-__THE SOURCE CODE IS WORTH LOOKING AT....MAYBE A FLAG IN THERE!__
+1. __Navigate to https://rustedbunions.com and get it done!__
+1. __Website source code @ https://github.com/vix597/Ru5tedBun1ons/tree/master/rustedbunions__
+1. __THE SOURCE CODE IS WORTH LOOKING AT....MAYBE A FLAG IN THERE!__
