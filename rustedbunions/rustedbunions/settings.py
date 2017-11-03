@@ -26,7 +26,7 @@ DEPLOY_PROTECTED_DIR = os.path.join("/", "home", "protected")
 # in the source code on github...it is valid...it's the only flag in the source
 # code that I didn't change. Great Job! You're looking in the right places.
 #
-SECRET_KEY = 'Flag={FINALLY!_someone_looked_@_S0URC3}'
+SECRET_KEY = 'flag{FINALLY!_someone_looked_@_S0URC3}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
