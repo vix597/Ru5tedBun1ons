@@ -26,10 +26,10 @@ function redPill() {
             setTimeout(function() {
                 stopFlyingFlags();
                 setTimeout(function() {
-                    stopMatrix($("#matrix"));
+                    stopMatrix();
                 }, 1000)
-            }, 10000);
-        }, 10000);
+            }, 7000);
+        }, 5000);
     }, 1000);
 }
 
@@ -105,23 +105,17 @@ function runMatrix() {
     drawLoop = setInterval(draw, 33);
 }
 
-function stopMatrix(element) {
+function stopMatrix() {
     if (drawLoop) {
         auto_reset = false; // Don't reset the characters to the top of the screen
         var tmpDrawLoop = drawLoop;
         runMatrix(); // Because this will create another drawLoop
 
-        element.css("background-color", "transparent");
-
         setTimeout(function() {
             clearInterval(tmpDrawLoop);
             clearInterval(drawLoop);
-            element.css("display", "none");
-            element.css("width", "0px");
-            element.css("height", "0px");
-            element.css("position", "absolute");
-            element.css("top", "0px");
-            element.css("left", "0px");
-        }, 8000);
+            // Reload b/c I can't figure out how to get rid of the matrix element
+            window.location = "/crapdb/main/" + localStorage.getItem("session_id");
+        }, 7000);
     }
 }
