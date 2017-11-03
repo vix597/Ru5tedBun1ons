@@ -22,8 +22,8 @@ game.resources = [
     /*
      * Maps.
      */
-    { name: "area01", type: "tmx", src: static_url + "jackit/data/map/area01.tmx" },
-    { name: "area02", type: "tmx", src: static_url + "jackit/data/map/area02.tmx" },
+    { name: "level01", type: "tmx", src: static_url + "jackit/data/map/level01.tmx" },
+    //{ name: "level02", type: "tmx", src: static_url + "jackit/data/map/level02.tmx" },
 
     /*
      * Background music.
