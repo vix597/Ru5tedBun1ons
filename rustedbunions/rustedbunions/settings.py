@@ -87,7 +87,7 @@ if DEBUG:
     CRAPDB_PATH = os.path.join(BASE_DIR, 'crapdb.sqlite3')
 else:
     DATABASE_PATH = os.path.join(DEPLOY_PROTECTED_DIR, "database", "db.sqlite3")
-    CRAPDB_PATH = os.path.join(DEPLOY_PROTECTED_DIR, 'crapdb.sqlite3')
+    CRAPDB_PATH = os.path.join(DEPLOY_PROTECTED_DIR, "database", 'crapdb.sqlite3')
 
 DATABASES = {
     'default': {
