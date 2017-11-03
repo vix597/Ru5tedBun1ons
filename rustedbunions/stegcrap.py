@@ -121,6 +121,8 @@ if __name__ == "__main__":
                     diff = l - len(password)
                     password = password + "*" * diff
                 message = sxor(password, message.decode('utf-8')).decode('utf-8')
+            else:
+                message = message.decode('utf-8')
             print("Message:", message)
     else:
         if not args.un_steg:
