@@ -8,7 +8,7 @@ if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "rustedbunions.settings")
 
     from rustedbunions import settings
-    if not os.path.exists(settings.CRAPDB_PATH):
+    if not os.path.exists(settings.CRAPDB_PATH) and "runserver" in sys.argv:
         print("Run setup_site.sh first to create the crapdb.sqlite3 file and set permissions")
         sys.exit(1)
 
