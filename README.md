@@ -1,37 +1,13 @@
-# Ru5tedBun1ons2.0
-My bunions...they're so rusty again again (3.0)!
+# Ru5tedBun1ons 4.0
+My bunions...they're so rusty for a fourth time!
 
-Host range 172.18.30.0 - 172.18.30.255
+__Each team will be assigned 1 host IP to root around for flags__
 
-4 machines:
-* 2 Windows 10
-* 1 Windows 7
-* 1 Ubuntu 16.something
+### RDP Challenges (248 pts total)
 
-4 flags...maybe 5?
-1. 100pts
-1. 100pts
-1. 200pts
-1. 200pts
-1. ??? interview ???
+__RDP on TEAM_IP:3389__
+* 8 flags - 4 easy (12pts each), 4 hard (50pts each) 
+  * The easy flags are basically free points
+* 1 impossible flag (no points...you won't get it)
 
-RDP runs on `3389`. Other stuff runs on other ports. How about you figure that out yourself...
-1. Ping scan/Port scan
-```
-nmap -sn -n -T4 172.18.30.0-255
-nmap -sS -n -T4 --top-ports 1000 172.18.30.0-255
-```
-1. Scan range with nmap and find hosts with 3389. Try the `rdesktop` kali command to log into the hosts
-1. On the 1 host not running 3389....maybe try to `netcat` to the port for some fun times - I think this is running: https://github.com/vix597/vulny
-
-This should work for RDP on one of those machines:
-```
-Username: hacking
-password: hacking
-```
-
-Actually I think `hacking` is the username for all of em....The passwords are probably different though. Here's some hashes...They look like md5
-```
-hacking:70c1db56f301c9e337b0099bd4174b28
-hacking:c51210df4715cde6a9ce8792f4f2bdb2
-```
+__To Login:__ `rdesktop -u Bunions -p password TEAM_IP`
