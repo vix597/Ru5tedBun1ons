@@ -199,7 +199,7 @@ def checkflag(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def getpin(request, session_id):
-    PIN_PRICE = 15 # 15 hacker bucks to get the pin
+    PIN_PRICE = 6 # 6 hacker bucks to get the pin
     
     status, obj = get_session(session_id, http_response=True)
     if not status:
@@ -255,7 +255,7 @@ def getpinflag(request, session_id):
     return HttpResponse(json.dumps(ret))
 
 def getencmsg(request, session_id):
-    ENC_PRICE = 50
+    ENC_PRICE = 25
 
     status, obj = get_session(session_id, http_response=True)
     if not status:

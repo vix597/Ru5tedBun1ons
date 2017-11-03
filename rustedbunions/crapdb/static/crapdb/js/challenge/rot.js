@@ -39,7 +39,7 @@ function submitAnswer(answer) {
     var encrypted_message = localStorage.getItem("encrypted_message");
     if (!encrypted_message) {
         console.log("The encrypted message has not been retrieved yet.");
-        console.log("Click on the 'ROT?' link and pay $50 to");
+        console.log("Click on the 'ROT?' link and pay $25 to");
         console.log("start the challenge");
         return false;
     }
