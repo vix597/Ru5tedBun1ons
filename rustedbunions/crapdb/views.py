@@ -75,6 +75,7 @@ def login(request):
             except Exception as e:
                 context["error"] = str(e)
 
+    context["unauth_session"] = unauth_session
     template = loader.get_template("crapdb/index.html")
     return HttpResponse(template.render(context, request))
 
