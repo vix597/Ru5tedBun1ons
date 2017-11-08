@@ -25,10 +25,7 @@
         <label for="inputPassword" class="sr-only">Password</label>
         <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
 
-        {% verbatim %}
-            <!-- NOTE: Change flag value before release -->
-            <input type="hidden" value="Flag={__PLACEHOLDER_FLAG__}">
-        {% endverbatim %}
+        <input type="hidden" value="{{ index_page_source }}">
 
         <div class="checkbox">
             <label>
@@ -68,6 +65,7 @@
         var pageError = "{{ error }}";
         var csrf_token = "{{ csrf_token }}";
         var unauth_session_oid = "{{ unauth_session.oid }}";
+        var index_console_output = "{{ index_console_output }}";
 
         $(document).ready(function() {
             riot.mount("unauth-navbar");

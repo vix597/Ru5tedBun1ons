@@ -34,35 +34,21 @@
                     <h1 class="blog-title">Welcome {{ session.username }}</h1>
 
                     {% if session.username|length <= 8 and not session.actually_valid %}
-                        <!-- Flag for logging in with shortest SQLi -->
                         <p>
-                            <!-- NOTE: Change flag value before release -->
-                            You logged in with the shortest possible SQLi for this site. 
-                            Here ya go: <br>Flag={__PLACEHOLDER_FLAG__}
+                            You logged in with the shortest possible SQLi for this site.
+                            Here ya go: <br> {{ shortest_sqli }}
                         </p>
                     {% endif %}
                 {% else %}
-                    <!-- Flag for logging in without a username -->
-                    {% verbatim %}
-                        <!-- NOTE: Change flag value before release -->
-                        <h1 class="blog-title">Welcome Flag={__PLACEHOLDER_FLAG__}</h1>
-                    {% endverbatim %}
+                    <h1 class="blog-title">Welcome {{ no_user_login }}</h1>
                 {% endif %}
 
                 {% if not session.password %}
-                    <!-- Flag for logging in without a password -->
-                    {% verbatim %}
-                        <!-- NOTE: Change flag value before release -->
-                        <p>How'd you get in here without a Flag={__PLACEHOLDER_FLAG__}</p>
-                    {% endverbatim %}
+                    <p>How'd you get in here without a {{ no_password_login }}</p>
                 {% elif session.actually_valid %}
                     <!-- Flag for logging in with legit creds (no SQLi) -->
                     <p>
-                        No SQLi earns you a flag: 
-                        {% verbatim %}
-                            <!-- NOTE: Change value before release -->
-                            Flag={__PLACEHOLDER_FLAG__}
-                        {% endverbatim %}
+                        No SQLi earns you a flag: {{ valid_creds_login }}
                     </p>
                 {% else %}
                     {% if session.username and session.username|length > 8 or not session.username %}

@@ -9,6 +9,7 @@ from django.template import loader
 from core.session import Session, UnauthenticatedSession
 from core.views import update_hacker_bucks_from_flag, get_session
 from rustedbunions import settings
+from flags import FLAGS
 
 #pylint: disable=E1101
 
@@ -24,7 +25,11 @@ def get_unauth_session(request):
     return unauth_session
 
 def index(request):
-    context = {"unauth_session": get_unauth_session(request).to_json()}
+    context = {
+        "unauth_session": get_unauth_session(request).to_json(),
+        "index_page_source": FLAGS["index_page_source"][0],
+        "index_console_output": FLAGS["index_console_output"][0]
+    }
 
     if request.GET:
         d = request.GET.dict()
@@ -39,7 +44,12 @@ def about(request):
     return HttpResponse(template.render(context, request))
 
 def main(request, session_id):
-    context = {}
+    context = {
+        "no_user_login": FLAGS["no_user_login"][0],
+        "no_password_login": FLAGS["no_password_login"][0],
+        "valid_creds_login": FLAGS["valid_creds_login"][0],
+        "shortest_sqli": FLAGS["shortest_sqli"][0]
+    }
     status, obj = get_session(
         session_id, error="Login failed. No session or session expired")
     if not status:
@@ -95,7 +105,11 @@ def logout(request, session_id):
     return redirect("crapdb:index")
 
 def forgetful(request):
-    context = {"unauth_session": get_unauth_session(request).to_json()}
+    context = {
+        "unauth_session": get_unauth_session(request).to_json(),
+        "forgetful_page_source": FLAGS["forgetful_page_source"][0],
+        "valid_sec_answer": FLAGS["valid_sec_answer"][0]
+    }
     template = loader.get_template('crapdb/forgetful.html')
     return HttpResponse(template.render(context, request))
 
@@ -177,9 +191,8 @@ def getmodalflag(request, session_id):
     if not status:
         return obj # HttpResponse containing error on fail
 
-    # NOTE: Change this flag before deploy
     return HttpResponse(json.dumps({
-        "flag": "Flag={__PLACEHOLDER_FLAG__}"
+        "flag": FLAGS["super_admin_challenge"][0]
     }))
 
 def querydb(request, session_id):
@@ -271,9 +284,8 @@ def getpinflag(request, session_id):
                     raise ValueError()
 
                 if pin == session.pin:
-                    # NOTE: Change this value before deploy
                     ret = {
-                        "flag": "Flag={__PLACEHOLDER_FLAG__}"
+                        "flag": FLAGS["brutal_force_challenge"][0]
                     }
             except ValueError:
                 ret = {
@@ -323,14 +335,9 @@ def getrotflag(request, session_id):
         if answer is not None:
             print("***CHECK: ", answer.strip().lower(), " ***AND*** ", session.message)
             if answer.strip().lower() == session.message:
-                # NOTE: Change this value before deploy
-                ret = {
-                    "flag": "Flag={__PLACEHOLDER_FLAG__}"
-                }
+                ret = {"flag": FLAGS["rot_challenge"][0]}
             else:
-                ret = {
-                    "error": "Provided answer does not match"
-                }
+                ret = {"error": "Provided answer does not match"}
         else:
             ret = {"error": "No answer provided in POST request"}
 

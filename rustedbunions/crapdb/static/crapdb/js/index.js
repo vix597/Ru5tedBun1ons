@@ -22,8 +22,7 @@ var isChrome = !!window.chrome && !!window.chrome.webstore;
 var isBlink = (isChrome || isOpera) && !!window.CSS;
 
 $(document).ready(function() {
-    // NOTE: Change flag before deploy
-    console.log("Does anyone look at the console? Flag={__PLACEHOLDER_FLAG__}");
+    console.log("Does anyone look at the console? ", index_console_output);
 
     if (pageError) {
         localStorage.clear();

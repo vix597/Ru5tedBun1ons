@@ -6,34 +6,30 @@ import os
 import sys
 import sqlite3
 from rustedbunions import settings
+from flags import FLAGS
 
-#
-# NOTE: Make sure to change all these in deployment so answers can't just be taken from source
-#
-# -------------- INCLUDING THE CREDS FOR THE USERS ---------------
-# 
 CRAPDB_SETUP = [
     "CREATE TABLE flags (flag text)",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
-    "INSERT INTO flags VALUES ('Flag={__PLACEHOLDER_FLAG__}')",
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table1"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table2"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table3"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table4"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table5"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table6"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table7"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table8"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table9"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table10"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table11"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table12"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table13"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table14"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table15"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table16"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table17"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table18"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table19"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table20"][0]),
     "CREATE TABLE users (username text, password text, question text, answer text)",
     "INSERT INTO users VALUES ('admin', 'H4ckm31FYOUC4n!@*&$#', 'I AM ADMIN', 'I AM ALWAYS WATCHING')",
     "INSERT INTO users VALUES ('joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
