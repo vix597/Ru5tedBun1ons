@@ -6,9 +6,14 @@
     <!-- Custom styles for signin page -->
     {% load static %}
     <link href="{% static 'crapdb/css/signin.css' %}" rel="stylesheet">
+
+    <!-- Load Riot Tags -->
+    <script src="{% static 'crapdb/tags/unauth-navbar.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
+    <unauth-navbar hacker-bucks="{{ unauth_session.hacker_bucks }}"></unauth-navbar>
+
     <form class="form-signin" action="{% url 'crapdb:searchcrap' %}" method="POST">
         {% csrf_token %}
 
@@ -98,5 +103,9 @@
         function goBack() {
             window.location = "/";
         }
+
+        $(document).ready(function() {
+            riot.mount("unauth-navbar");
+        });
     </script>
 {% endblock %}

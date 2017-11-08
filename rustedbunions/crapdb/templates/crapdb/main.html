@@ -90,15 +90,15 @@
                         </p>
                     </div>
                 </div>
-        
+
                 <div class="sidebar-module form-group">
                     <input class="form-control" type="text" id="testflag"
                         placeholder="Test a flag" name="checkflag" onkeydown="testFlagKeyDown(event)">
-        
+
                     <button style="margin-top: 8px;" class="btn btn-success btn-block" 
                         onclick="testFlag()">Get Hacker Bucks</button>
                 </div>
-        
+
                 <div class="sidebar-module sidebar-module-inset">
                     <h4>About</h4>
                     <p>
@@ -106,7 +106,7 @@
                         regex gnu. Epoch char bytes ban memory leak thread race condition.
                     </p>
                 </div>
-        
+
                 <div class="sidebar-module">
                     <h4>Archives</h4>
                     <ol class="list-unstyled">
@@ -186,31 +186,6 @@
             if (event.key == "Enter") {
                 testFlag();
             }
-        }
-
-        function testFlag() {
-            var session_id = localStorage.getItem("session_id");
-            var flag = $("#testflag").val();
-            $("#testflag").val("");
-
-            $.ajax({
-                url: "/crapdb/checkflag/" + session_id + "/",
-                type: "POST",
-                data: {
-                    flag: flag,
-                    csrfmiddlewaretoken: "{{ csrf_token }}"
-                },
-                success: function(res) {
-                    res = JSON.parse(res);
-                    if (res.redirect) {
-                        window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
-                    }
-
-                    if (res.hacker_bucks) {
-                        $("#hackerBucks").text(res.hacker_bucks);
-                    }
-                }
-            });
         }
 
         function logout() {

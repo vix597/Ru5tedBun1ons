@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^$', index_view, name='index'),
     url(r'^crapdb/', include('crapdb.urls')),
     url(r'^jackit/', include('jackit.urls')),
+    url(r'^core/', include('core.urls')),
     url(r'^admin/', admin.site.urls),
 ]

@@ -16,6 +16,77 @@ MOVIE_QUOTES = []
 with open(os.path.join(settings.BASE_DIR, "movie_quotes.txt")) as f:
     MOVIE_QUOTES.extend(f.readlines())
 
+class UnauthenticatedSession:
+    '''
+    Represents an unauthenticated session that stores hacker bucks between
+    authenticated sessions
+    '''
+    _registry = {}
+    _session_lock = threading.Lock()
+    SESSION_TIMEOUT = 30 # 30 minute session timeout
+    CLEANUP_EVENT = threading.Event()
+
+    @classmethod
+    def get_session(cls, oid):
+        with cls._session_lock:
+            session = cls._registry.get(oid)
+            if session and session.is_valid():
+                session.update()
+                return session
+            elif session and not session.is_valid():
+                del cls._registry[oid]
+
+        return UnauthenticatedSession(oid=oid) # Create a new one
+
+    def __init__(self, oid=None):
+        self.oid = oid or str(uuid4()).replace('-', '')
+        self.hacker_bucks = 0
+        self.lifetime_hacker_bucks = self.hacker_bucks
+        self.claimed_flags = []
+        self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
+
+        with UnauthenticatedSession._session_lock:
+            UnauthenticatedSession._registry[self.oid] = self
+
+    def to_json(self):
+        return {
+            "oid": self.oid,
+            "hacker_bucks": self.hacker_bucks,
+            "expires": self.expires
+        }
+
+    def is_valid(self):
+        check = datetime.utcnow()
+        if check < self.expires:
+            return True
+        else:
+            return False
+
+    def update(self):
+        if self.is_valid():
+            self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
+
+    @staticmethod
+    def cleanup():
+        '''
+        Runs in a thread and cleans up expired unauth sessions
+        '''
+        print("Unauth Session cleanup monitor running...")
+
+        while not UnauthenticatedSession.CLEANUP_EVENT.is_set():
+            # Every 5 minutes cleanup sessions
+            time.sleep(300)
+            with UnauthenticatedSession._session_lock:
+                rem_oids = []
+                for session in UnauthenticatedSession._registry.values():
+                    if not session.is_valid():
+                        print("Found expired unauth session: ", session.oid)
+                        rem_oids.append(session.oid)
+                for oid in rem_oids:
+                    del UnauthenticatedSession._registry[oid]
+
+        print("Unauth Session cleanup monitor complete.")
+
 class Session:
     _registry = {}
     _session_lock = threading.Lock()

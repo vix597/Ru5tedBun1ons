@@ -3,7 +3,7 @@ import json
 from django.shortcuts import redirect, reverse
 from django.http import HttpResponse
 
-from .session import Session
+from .session import Session, UnauthenticatedSession
 from .models import Flag
 
 def update_hacker_bucks_from_flag(session, userflag):
@@ -43,7 +43,6 @@ def update_hacker_bucks_from_flag(session, userflag):
             session.hacker_bucks += hacker_bucks
             session.lifetime_hacker_bucks += hacker_bucks
 
-
 def get_session(session_id, fail_url="crapdb:index",
                 error="No session or session expired",
                 http_response=False):
@@ -64,3 +63,17 @@ def get_session(session_id, fail_url="crapdb:index",
                 "redirect": error}))
 
     return (True, session)
+
+def checkflag(request, session_id):
+    unauth_session = UnauthenticatedSession.get_session(session_id)
+    ret = {"hacker_bucks": unauth_session.hacker_bucks}
+
+    if request.POST:
+        d = request.POST.dict()
+        flag = d.get("flag", None)
+
+        if flag is not None:
+            update_hacker_bucks_from_flag(unauth_session, flag)
+            ret["hacker_bucks"] = unauth_session.hacker_bucks
+
+    return HttpResponse(json.dumps(ret))

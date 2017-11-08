@@ -6,18 +6,13 @@
     <!-- Custom styles for signin page -->
     {% load static %}
     <link href="{% static 'crapdb/css/signin.css' %}" rel="stylesheet">
+
+    <!-- Load Riot Tags -->
+    <script src="{% static 'crapdb/tags/unauth-navbar.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
-    <nav class="navbar fixed-top navbar-light navbar-dark bg-primary justify-content-between">
-        <div class="container">
-            <a class="navbar-brand" href="/">Bunions</a>
-            <form class="form-inline">
-                <input class="form-control mr-sm-2" type="text" placeholder="Test a Flag">
-                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Get Hacket Bucks</button>
-            </form>
-        </div>
-    </nav>
+    <unauth-navbar hacker-bucks="{{ unauth_session.hacker_bucks }}"></unauth-navbar>
 
     <form class="form-signin" action="{% url 'crapdb:login' %}" method="POST">
         {% csrf_token %}
@@ -71,5 +66,11 @@
     <script>
         // Sets a global variable with the page error if there is one
         var pageError = "{{ error }}";
+        var csrf_token = "{{ csrf_token }}";
+        var unauth_session_oid = "{{ unauth_session.oid }}";
+
+        $(document).ready(function() {
+            riot.mount("unauth-navbar");
+        });
     </script>
 {% endblock %}

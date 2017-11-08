@@ -1,0 +1,25 @@
+<unauth-navbar>
+    <nav class="navbar fixed-top navbar-light navbar-dark bg-primary justify-content-between">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                Hacker Bucks: $<span id="hackerBucks">{ hackerBucks }</span>
+            </a>
+            <div class="form-inline">
+                <input class="form-control mr-sm-2" type="text" id="testflag" placeholder="Test a Flag" onkeydown="{ testFlagKeyDown }">
+
+                <button class="btn btn-outline-light my-2 my-sm-0" onclick="testFlag()">Get Hacket Bucks</button>
+            </div>
+        </div>
+    </nav>
+    <script>
+        var tag = this;
+        tag.hackerBucks = opts.hackerBucks || 0;
+
+        tag.testFlagKeyDown = function(e) {
+            e.preventUpdate = true;
+            if (e.key == "Enter") {
+                testFlag();
+            }
+        }
+    </script>
+</unauth-navbar>

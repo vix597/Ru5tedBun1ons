@@ -2,6 +2,9 @@
 // Methods to add alerts to the page and send ajax requests
 //
 
+var unauth_session_oid = undefined;
+var csrf_token = undefined;
+
 function bootstrapAlert(msg, options={}) {
     var defaults = {
         target:$(".blog-header"),
@@ -49,4 +52,46 @@ function errorAlert(error, options={}) {
 function successAlert(msg, options={}) {
     options.cls = "alert-success";
     bootstrapAlert(msg, options=options);
+}
+
+function testFlag() {
+    var session_id = unauth_session_oid;
+    var token = csrf_token;
+
+    if (!session_id) {
+        session_id = localStorage.getItem("session_id");
+    }
+
+    if (!token) {
+        token = localStorage.getItem("csrf_token");
+    }
+
+    var flag = $("#testflag").val();
+    $("#testflag").val("");
+
+    var url = null;
+    if (unauth_session_oid) {
+        url = "/core/checkflag/" + session_id + "/";
+    } else {
+        url = "/crapdb/checkflag/" + session_id + "/";
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+            flag: flag,
+            csrfmiddlewaretoken: token
+        },
+        success: function(res) {
+            res = JSON.parse(res);
+            if (res.redirect) {
+                window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
+            }
+
+            if (res.hacker_bucks) {
+                $("#hackerBucks").text(res.hacker_bucks);
+            }
+        }
+    });
 }

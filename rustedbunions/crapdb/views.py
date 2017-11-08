@@ -6,14 +6,25 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.template import loader
 
-from core.session import Session
+from core.session import Session, UnauthenticatedSession
 from core.views import update_hacker_bucks_from_flag, get_session
 from rustedbunions import settings
 
 #pylint: disable=E1101
 
+def get_unauth_session(request):
+    unauth_session = None
+
+    if "unauth_session" not in request.session:
+        unauth_session = UnauthenticatedSession()
+        request.session["unauth_session"] = unauth_session.oid
+    else:
+        unauth_session = UnauthenticatedSession.get_session(request.session["unauth_session"])
+
+    return unauth_session
+
 def index(request):
-    context = {}
+    context = {"unauth_session": get_unauth_session(request).to_json()}
 
     if request.GET:
         d = request.GET.dict()
@@ -23,8 +34,9 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 def about(request):
+    context = {"unauth_session": get_unauth_session(request).to_json()}
     template = loader.get_template('crapdb/about.html')
-    return HttpResponse(template.render({}, request))
+    return HttpResponse(template.render(context, request))
 
 def main(request, session_id):
     context = {}
@@ -41,6 +53,7 @@ def main(request, session_id):
 
 def login(request):
     context = {}
+    unauth_session = get_unauth_session(request)
 
     if request.POST:
         d = request.POST.dict()
@@ -51,6 +64,11 @@ def login(request):
             try:
                 session = Session.validate(username, password)
                 if session is not None:
+                    # Update the new session with the current hacker bucks and flags
+                    session.claimed_flags = unauth_session.claimed_flags
+                    session.hacker_bucks = unauth_session.hacker_bucks
+                    session.lifetime_hacker_bucks = unauth_session.lifetime_hacker_bucks
+
                     return redirect("crapdb:main", session_id=session.oid)
                 else:
                     context["error"] = "Username/Password combination does not exist"
@@ -61,12 +79,23 @@ def login(request):
     return HttpResponse(template.render(context, request))
 
 def logout(request, session_id):
+    unauth_session = get_unauth_session(request)
+
+    try:
+        # Update the unauth session with the hacker bucks and flags
+        session = Session.get_session(session_id)
+        unauth_session.claimed_flags = session.claimed_flags
+        unauth_session.hacker_bucks = session.hacker_bucks
+        unauth_session.lifetime_hacker_bucks = session.lifetime_hacker_bucks
+    except KeyError:
+        pass
+
     Session.logout(session_id)
     return redirect("crapdb:index")
 
 def forgetful(request):
+    context = {"unauth_session": get_unauth_session(request).to_json()}
     template = loader.get_template('crapdb/forgetful.html')
-    context = {}
     return HttpResponse(template.render(context, request))
 
 def getpassword(request):
