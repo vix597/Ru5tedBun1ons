@@ -9,6 +9,16 @@
 {% endblock %}
 
 {% block content %}
+    <nav class="navbar fixed-top navbar-light navbar-dark bg-primary justify-content-between">
+        <div class="container">
+            <a class="navbar-brand" href="/">Bunions</a>
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="text" placeholder="Test a Flag">
+                <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Get Hacket Bucks</button>
+            </form>
+        </div>
+    </nav>
+
     <form class="form-signin" action="{% url 'crapdb:login' %}" method="POST">
         {% csrf_token %}
 
