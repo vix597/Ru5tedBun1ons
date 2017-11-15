@@ -14,10 +14,13 @@ if __name__ == "__main__":
     from core.models import Flag
     from flags import FLAGS
 
-    # TODO: Don't add duplicate flags
-
     for flag in FLAGS.values():
-        f = Flag()
-        f.flag = flag[0]
-        f.value = flag[1]
-        f.save()
+        #pylint: disable=E1101
+        search = Flag.objects.filter(flag=flag[0])
+        if not search:
+            f = Flag()
+            f.flag = flag[0]
+            f.value = flag[1]
+            f.save()
+        else:
+            print("Not adding flag: '{}'. Already in DB".format(flag[0]))
