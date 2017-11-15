@@ -73,4 +73,4 @@ class Challenge:
         '''
         if self.solved:
             return self.meta.flag
-        raise ChallengeNotSolvedError()
+        raise ChallengeNotSolvedError("{} challenge has not been solved".format(self.meta.name))

@@ -17,6 +17,13 @@ class SuperAdmin(Challenge):
         self.solved = True
         self.purchased = True
 
+    def to_json(self):
+        obj = super().to_json()
+        obj.update({
+            "flag": self.meta.flag
+        })
+        return obj
+
     def check(self, answer):
         self.solved = True
         return True

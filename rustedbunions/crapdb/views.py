@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.template import loader
 
-from core.challenge import NotEnoughHackerBucksError
+from core.challenge import NotEnoughHackerBucksError, ChallengeNotSolvedError
 from core.session import Session, AuthenticatedSession
 from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session
 from rustedbunions import settings
@@ -242,7 +242,10 @@ def super_admin_challenge_get_flag(request, session_id):
     if not status:
         return obj # HttpResponse containing error on fail
     session = obj
-    return HttpResponse(json.dumps(challenge_get_flag(session, "super_admin")))
+    try:
+        return HttpResponse(json.dumps(challenge_get_flag(session, "super_admin")))
+    except ChallengeNotSolvedError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
 
 def brutal_force_challenge_get(request, session_id):
     status, obj = get_session(session_id, http_response=True)
@@ -259,9 +262,9 @@ def brutal_force_challenge_get(request, session_id):
         return HttpResponse(json.dumps({"error": str(e)}))
 
     ret = {
-        "pin_hash": challenge.pin_hash,
         "hacker_bucks": session.hacker_bucks
     }
+    ret.update(challenge.to_json())
     return HttpResponse(json.dumps(ret))
 
 def brutal_force_challenge_get_flag(request, session_id):
@@ -277,7 +280,10 @@ def brutal_force_challenge_get_flag(request, session_id):
         pin = d.get("pin", None)
 
         if pin is not None:
-            ret = challenge_get_flag(session, "brutal_force", answer=pin)
+            try:
+                ret = challenge_get_flag(session, "brutal_force", answer=pin)
+            except ChallengeNotSolvedError as e:
+                ret = {"error": str(e)}
         else:
             ret = {"error": "No PIN provided in POST request"}
 
@@ -298,9 +304,9 @@ def rot_challenge_get(request, session_id):
         return HttpResponse(json.dumps({"error": str(e)}))
 
     ret = {
-        "encrypted_message": challenge.encrypted_message,
         "hacker_bucks": session.hacker_bucks
     }
+    ret.update(challenge.to_json())
     return HttpResponse(json.dumps(ret))
 
 def rot_challenge_get_flag(request, session_id):
@@ -316,7 +322,10 @@ def rot_challenge_get_flag(request, session_id):
         answer = d.get("answer", None)
 
         if answer is not None:
-            ret = challenge_get_flag(session, "rot", answer=answer)
+            try:
+                ret = challenge_get_flag(session, "rot", answer=answer)
+            except ChallengeNotSolvedError as e:
+                ret = {"error": str(e)}
         else:
             ret = {"error": "No answer provided in POST request"}
 

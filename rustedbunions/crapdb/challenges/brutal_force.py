@@ -21,6 +21,13 @@ class BrutalForce(Challenge):
         self.pin = random.randint(666, 9999) # The user's random PIN number
         self.pin_hash = hashlib.md5(str(self.pin).encode('utf-8')).hexdigest()
 
+    def to_json(self):
+        obj = super().to_json()
+        obj.update({
+            "pin_hash": self.pin_hash
+        })
+        return obj
+
     def check(self, answer):
         try:
             answer = int(answer)
