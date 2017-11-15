@@ -29,15 +29,13 @@ if __name__ == "__main__":
         raise
 
     # Loads initial data for Session
-    from core.session import Session, UnauthenticatedSession
+    from core.session import Session
 
     needs_cleanup = False
     if "runserver" in sys.argv and not settings.DEBUG:
         # Only bother with this in production
         thread = threading.Thread(target=Session.cleanup)
-        unauth_thread = threading.Thread(target=UnauthenticatedSession.cleanup)
         thread.start()
-        unauth_thread.start()
         needs_cleanup = True
 
     execute_from_command_line(sys.argv)
@@ -45,8 +43,5 @@ if __name__ == "__main__":
     if needs_cleanup:
         # App exiting
         Session.CLEANUP_EVENT.set()
-        UnauthenticatedSession.CLEANUP_EVENT.set()
         print("Waiting up to 5 minutes for thread to finish...")
         thread.join(timeout=300)
-        print("Waiting up to 5 minutes for unauth thread to finish...")
-        unauth_thread.join(timeout=300)

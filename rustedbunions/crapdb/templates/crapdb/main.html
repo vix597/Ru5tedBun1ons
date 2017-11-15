@@ -21,8 +21,20 @@
                 <nav class="nav">
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
                     <a class="nav-link" onclick="superAdmin()" id="settingsButton" href="#">Super Admin Settings</a>
-                    <a class="nav-link" onclick='brutalForce()' id="brutalForceButton" href="#">Brutal Force ($6)</a>
-                    <a class="nav-link" onclick='rot()' id="rotButton" href="#">ROT? ($25)</a>
+                    <a class="nav-link" onclick='brutalForce()' id="brutalForceButton" href="#">
+                        {% if session.challenges.brutal_force.purchased %}
+                            Brutal Force
+                        {% else %}
+                            Brutal Force ($ {{ session.challenges.brutal_force.meta.price }})
+                        {% endif %}
+                    </a>
+                    <a class="nav-link" onclick='rot()' id="rotButton" href="#">
+                        {% if session.challenges.rot.purchased %}
+                            ROT?
+                        {% else %}
+                            ROT? (${{ session.challenges.rot.meta.price }})
+                        {% endif %}
+                    </a>
                     <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Game Time!</a>
                 </nav>
             </div>
@@ -150,7 +162,7 @@
             if (authorized) {
                 var session_id = localStorage.getItem("session_id");
                 $.ajax({
-                    url: "/crapdb/getmodalflag/" + session_id + "/",
+                    url: "/crapdb/superadmin/" + session_id + "/",
                     type: "GET",
                     success: function(data) {
                         var res = JSON.parse(data);

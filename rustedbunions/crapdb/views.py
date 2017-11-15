@@ -1,28 +1,17 @@
 import sqlite3
 import json
-import hashlib
 
 from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.template import loader
 
-from core.session import Session, UnauthenticatedSession
-from core.views import update_hacker_bucks_from_flag, get_session
+from core.challenge import NotEnoughHackerBucksError
+from core.session import Session, AuthenticatedSession
+from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session
 from rustedbunions import settings
 from flags import FLAGS
 
 #pylint: disable=E1101
-
-def get_unauth_session(request):
-    unauth_session = None
-
-    if "unauth_session" not in request.session:
-        unauth_session = UnauthenticatedSession()
-        request.session["unauth_session"] = unauth_session.oid
-    else:
-        unauth_session = UnauthenticatedSession.get_session(request.session["unauth_session"])
-
-    return unauth_session
 
 def index(request):
     context = {
@@ -72,13 +61,10 @@ def login(request):
 
         if username is not None and password is not None:
             try:
-                session = Session.validate(username, password)
+                session = AuthenticatedSession.validate(username, password)
                 if session is not None:
                     # Update the new session with the current hacker bucks and flags
-                    session.claimed_flags = unauth_session.claimed_flags
-                    session.hacker_bucks = unauth_session.hacker_bucks
-                    session.lifetime_hacker_bucks = unauth_session.lifetime_hacker_bucks
-
+                    session.from_other_session(unauth_session)
                     return redirect("crapdb:main", session_id=session.oid)
                 else:
                     context["error"] = "Username/Password combination does not exist"
@@ -95,13 +81,11 @@ def logout(request, session_id):
     try:
         # Update the unauth session with the hacker bucks and flags
         session = Session.get_session(session_id)
-        unauth_session.claimed_flags = session.claimed_flags
-        unauth_session.hacker_bucks = session.hacker_bucks
-        unauth_session.lifetime_hacker_bucks = session.lifetime_hacker_bucks
+        unauth_session.from_other_session(session)
     except KeyError:
         pass
 
-    Session.logout(session_id)
+    AuthenticatedSession.logout(session_id)
     return redirect("crapdb:index")
 
 def forgetful(request):
@@ -186,15 +170,6 @@ def searchcrap(request):
     template = loader.get_template("crapdb/forgetful.html")
     return HttpResponse(template.render(context, request))
 
-def getmodalflag(request, session_id):
-    status, obj = get_session(session_id, http_response=True)
-    if not status:
-        return obj # HttpResponse containing error on fail
-
-    return HttpResponse(json.dumps({
-        "flag": FLAGS["super_admin_challenge"][0]
-    }))
-
 def querydb(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
@@ -241,31 +216,55 @@ def checkflag(request, session_id):
 
     return HttpResponse(json.dumps(ret))
 
-def getpin(request, session_id):
-    PIN_PRICE = 6 # 6 hacker bucks to get the pin
-    
+def challenge_get(session, challenge_id):
+    challenge = session.get_challenge(challenge_id)
+    if challenge is None:
+        raise KeyError("No challenge found with id: {}".format(challenge_id))
+
+    # Raises exception NotEnoughHackerBucksError on fail
+    session.hacker_bucks = challenge.purchase(session.hacker_bucks)
+    return challenge
+
+def challenge_get_flag(session, challenge_id, answer=""):
+    challenge = session.get_challenge(challenge_id)
+    if challenge is None:
+        raise KeyError("No challenge found with id: {}".format(challenge_id))
+
+    if not challenge.purchased:
+        return {"error": "{} has not been purchased yet".format(challenge.meta.name)}
+    if challenge and challenge.check(answer):
+        # Raised exception ChallengeNotSolvedError on fail
+        return {"flag": challenge.get_flag()}
+    return {"error": "Invalid challenge answer"}
+
+def super_admin_challenge_get_flag(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+    return HttpResponse(json.dumps(challenge_get_flag(session, "super_admin")))
+
+def brutal_force_challenge_get(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
         return obj # HttpResponse containing error on fail
     session = obj # object is session on success
 
-    if session.hacker_bucks < PIN_PRICE:
-        return HttpResponse(json.dumps({
-            "error": "Brutal force requires ${} hacker bucks to play".format(
-                PIN_PRICE
-            )
-        }))
-
-    # Charge the hacker bucks
-    session.hacker_bucks -= PIN_PRICE
+    challenge = None
+    try:
+        challenge = challenge_get(session, "brutal_force")
+    except NotEnoughHackerBucksError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+    except KeyError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
 
     ret = {
-        "pin_hash": hashlib.md5(str(session.pin).encode('utf-8')).hexdigest(),
+        "pin_hash": challenge.pin_hash,
         "hacker_bucks": session.hacker_bucks
     }
     return HttpResponse(json.dumps(ret))
 
-def getpinflag(request, session_id):
+def brutal_force_challenge_get_flag(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
         return obj # HttpResponse containing error on fail
@@ -278,49 +277,33 @@ def getpinflag(request, session_id):
         pin = d.get("pin", None)
 
         if pin is not None:
-            try:
-                pin = int(pin)
-                if pin < 1 or pin > 9999:
-                    raise ValueError()
-
-                if pin == session.pin:
-                    ret = {
-                        "flag": FLAGS["brutal_force_challenge"][0]
-                    }
-            except ValueError:
-                ret = {
-                    "error": "Provided PIN is not a valid integer in the range 1 - 9999"
-                }
+            ret = challenge_get_flag(session, "brutal_force", answer=pin)
         else:
             ret = {"error": "No PIN provided in POST request"}
 
     return HttpResponse(json.dumps(ret))
 
-def getencmsg(request, session_id):
-    ENC_PRICE = 25
-
+def rot_challenge_get(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
         return obj # HttpResponse containing error on fail
     session = obj
 
-    if session.hacker_bucks < ENC_PRICE:
-        return HttpResponse(json.dumps({
-            "error": "ROT? requires ${} hacker bucks to play".format(
-                ENC_PRICE
-            )
-        }))
-
-    # Charge the hacker bucks
-    session.hacker_bucks -= ENC_PRICE
+    challenge = None
+    try:
+        challenge = challenge_get(session, "rot")
+    except NotEnoughHackerBucksError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+    except KeyError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
 
     ret = {
-        "encrypted_message": session.encrypted_message,
+        "encrypted_message": challenge.encrypted_message,
         "hacker_bucks": session.hacker_bucks
     }
     return HttpResponse(json.dumps(ret))
 
-def getrotflag(request, session_id):
+def rot_challenge_get_flag(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
         return obj # HttpResponse containing error on fail
@@ -333,11 +316,7 @@ def getrotflag(request, session_id):
         answer = d.get("answer", None)
 
         if answer is not None:
-            print("***CHECK: ", answer.strip().lower(), " ***AND*** ", session.message)
-            if answer.strip().lower() == session.message:
-                ret = {"flag": FLAGS["rot_challenge"][0]}
-            else:
-                ret = {"error": "Provided answer does not match"}
+            ret = challenge_get_flag(session, "rot", answer=answer)
         else:
             ret = {"error": "No answer provided in POST request"}
 

@@ -20,7 +20,7 @@ function brutalForce() {
     }
 
     $.ajax({
-        url: "/crapdb/getpin/" + session_id + "/",
+        url: "/crapdb/brutalforce/" + session_id + "/",
         type: "GET",
         success: function(data) {
             var res = JSON.parse(data);
@@ -63,7 +63,7 @@ function submitPin(pin_number, display_alert=false) {
 
         // Check and make sure we're good
         $.ajax({
-            url: "/crapdb/getpinflag/" + session_id + "/",
+            url: "/crapdb/brutalforceflag/" + session_id + "/",
             type: "POST",
             data: {
                 pin: pin_number,

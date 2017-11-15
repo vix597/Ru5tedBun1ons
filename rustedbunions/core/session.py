@@ -1,33 +1,25 @@
 import sqlite3
 import threading
 import time
-import random
-import string
-import os
-from uuid import uuid4
 from datetime import datetime
 from datetime import timedelta
 
+from core.util import ObjectId
 from rustedbunions import settings
 
-MOVIE_QUOTES = []
-
-# Load all the movie quotes
-with open(os.path.join(settings.BASE_DIR, "movie_quotes.txt")) as f:
-    MOVIE_QUOTES.extend(f.readlines())
-
-class UnauthenticatedSession:
+class Session:
     '''
-    Represents an unauthenticated session that stores hacker bucks between
-    authenticated sessions
+    Base session class.
     '''
+
+    _challenge_registry = {}
     _registry = {}
     _session_lock = threading.Lock()
     SESSION_TIMEOUT = 30 # 30 minute session timeout
     CLEANUP_EVENT = threading.Event()
 
     @classmethod
-    def get_session(cls, oid):
+    def get_session(cls, oid, create=False):
         with cls._session_lock:
             session = cls._registry.get(oid)
             if session and session.is_valid():
@@ -35,32 +27,50 @@ class UnauthenticatedSession:
                 return session
             elif session and not session.is_valid():
                 del cls._registry[oid]
+        
+        raise KeyError("no session found that matched object id " + oid)
 
-        return UnauthenticatedSession(oid=oid) # Create a new one
+    @classmethod
+    def register_challenge(cls, challenge_cls):
+        cls._challenge_registry[challenge_cls.meta.challenge_id] = challenge_cls
 
     def __init__(self, oid=None):
-        self.oid = oid or str(uuid4()).replace('-', '')
+        self.oid = oid or ObjectId()
         self.hacker_bucks = 0
-        self.lifetime_hacker_bucks = self.hacker_bucks
+        self.lifetime_hacker_bucks = 0
         self.claimed_flags = []
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
+        self.challenges = {}
 
-        with UnauthenticatedSession._session_lock:
-            UnauthenticatedSession._registry[self.oid] = self
+        # Load up unique versions of each challenge for this session
+        for challenge_id, challenge_cls in self._challenge_registry.items():
+            self.challenges[challenge_id] = challenge_cls()
+
+        with self._session_lock:
+            self._registry[self.oid] = self
 
     def to_json(self):
         return {
             "oid": self.oid,
             "hacker_bucks": self.hacker_bucks,
-            "expires": self.expires
+            "lifetime_hacker_bucks": self.lifetime_hacker_bucks,
+            "expires": self.expires,
+            "challenges": {cid: c.to_json() for cid, c in self.challenges.items()}
         }
+
+    def get_challenge(self, challenge_id):
+        return self.challenges.get(challenge_id, None)
+
+    def from_other_session(self, other):
+        self.claimed_flags = other.claimed_flags
+        self.hacker_bucks = other.hacker_bucks
+        self.lifetime_hacker_bucks = other.lifetime_hacker_bucks
+        for other_challenge_id, other_challenge in other.challenges.items():
+            self.challenges[other_challenge_id].from_other_challenge(other_challenge)
 
     def is_valid(self):
         check = datetime.utcnow()
-        if check < self.expires:
-            return True
-        else:
-            return False
+        return check < self.expires
 
     def update(self):
         if self.is_valid():
@@ -69,102 +79,59 @@ class UnauthenticatedSession:
     @staticmethod
     def cleanup():
         '''
-        Runs in a thread and cleans up expired unauth sessions
+        Runs in a thread and cleans up expired sessions
         '''
-        print("Unauth Session cleanup monitor running...")
+        print("Session cleanup monitor running...")
 
-        while not UnauthenticatedSession.CLEANUP_EVENT.is_set():
+        while not Session.CLEANUP_EVENT.is_set():
             # Every 5 minutes cleanup sessions
             time.sleep(300)
-            with UnauthenticatedSession._session_lock:
+            with Session._session_lock:
                 rem_oids = []
-                for session in UnauthenticatedSession._registry.values():
+                for session in Session._registry.values():
                     if not session.is_valid():
-                        print("Found expired unauth session: ", session.oid)
+                        print("Found expired session: ", session.oid)
                         rem_oids.append(session.oid)
                 for oid in rem_oids:
-                    del UnauthenticatedSession._registry[oid]
+                    del Session._registry[oid]
 
-        print("Unauth Session cleanup monitor complete.")
+        print("Session cleanup monitor complete.")
 
-class Session:
-    _registry = {}
-    _session_lock = threading.Lock()
-    SESSION_TIMEOUT = 30 # 30 minute session timeout
-    CLEANUP_EVENT = threading.Event()
-    ALPHABET = string.ascii_lowercase
+class UnauthenticatedSession(Session):
+    '''
+    Represents an unauthenticated session that stores hacker bucks between
+    authenticated sessions
+    '''
 
-    @classmethod
-    def get_session(cls, oid):
-        with cls._session_lock:
-            session = cls._registry.get(oid)
-            if session and session.is_valid():
-                session.update()
-                return session
-            elif session and not session.is_valid():
-                del cls._registry[oid]
+    def __init__(self, oid=None):
+        super().__init__(oid=oid)
 
-        raise KeyError("no session found that matched object id " + oid)
+class AuthenticatedSession(Session):
+    '''
+    Represents an authenticated session that stores hacker bucks and challenges
+    '''
 
-    def __init__(self, username, password, user_info=None):
-        random.seed() # uses current system time
+    def __init__(self, username, password):
+        super().__init__()
         self.username = username
         self.password = password
-        self.hacker_bucks = 0
-        self.lifetime_hacker_bucks = self.hacker_bucks
-        self.claimed_flags = [] # The list of flags claimed
         self.actually_valid = False # True if the session resulted from no SQLi
-        self.pin = random.randint(1337, 9999) # The user's random PIN number
-        self.key = random.randint(1, 25) # pick a random shift b/w 1 and 25
-        self.message = MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES))].strip().lower()
-        self.encrypted_message = self.shifttext(self.key, self.message)
-        self.user_info = user_info or []
-        self.oid = str(uuid4()).replace('-', '')
-        self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
 
         # Determines if this is actually a valid login or not
         # This will set self.actually_valid accordingly
         self.secure_validate()
 
-        with Session._session_lock:
-            Session._registry[self.oid] = self
-
     def to_json(self):
         '''
         Leaves out the secrets that should remain on the server
         '''
-        return {
+        d = super().to_json()
+        d.update({
             "username": self.username,
             "password": self.password,
-            "hacker_bucks": self.hacker_bucks,
-            "user_info": self.user_info,
-            "oid": self.oid,
-            "expires": self.expires,
             "actually_valid": self.actually_valid
-        }
-
-    def update(self):
-        if self.is_valid():
-            self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
-
-    def is_valid(self):
-        check = datetime.utcnow()
-        if check < self.expires:
-            return True
-        else:
-            return False
-
-    def shifttext(self, shift, msg):
-        msg = msg.strip().lower()
-        data = []
-        for c in msg:
-            if c.strip() and c in self.ALPHABET:
-                data.append(self.ALPHABET[(self.ALPHABET.index(c) + shift) % 26])
-            else:
-                data.append(c)
-
-        output = ''.join(data)
-        return output
+        })
+        return d
 
     @classmethod
     def validate(cls, username, password):
@@ -186,7 +153,7 @@ class Session:
         conn.close()
 
         if result:
-            return cls(username, password, user_info=result)
+            return cls(username, password)
         else:
             return None
 
@@ -218,24 +185,3 @@ class Session:
         with cls._session_lock:
             if session_id in cls._registry:
                 del cls._registry[session_id]
-
-    @staticmethod
-    def cleanup():
-        '''
-        Runs in a thread and cleans up expired sessions
-        '''
-        print("Session cleanup monitor running...")
-
-        while not Session.CLEANUP_EVENT.is_set():
-            # Every 5 minutes cleanup sessions
-            time.sleep(300)
-            with Session._session_lock:
-                rem_oids = []
-                for session in Session._registry.values():
-                    if not session.is_valid():
-                        print("Found expired session: ", session.oid)
-                        rem_oids.append(session.oid)
-                for oid in rem_oids:
-                    del Session._registry[oid]
-
-        print("Session cleanup monitor complete.")

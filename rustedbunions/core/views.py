@@ -64,16 +64,34 @@ def get_session(session_id, fail_url="crapdb:index",
 
     return (True, session)
 
+def get_unauth_session(request):
+    unauth_session = None
+
+    if "unauth_session" not in request.session:
+        unauth_session = UnauthenticatedSession()
+        request.session["unauth_session"] = unauth_session.oid
+    else:
+        try:
+            unauth_session = Session.get_session(request.session["unauth_session"])
+        except KeyError:
+            unauth_session = UnauthenticatedSession(oid=request.session["unauth_session"])
+
+    return unauth_session
+
 def checkflag(request, session_id):
-    unauth_session = UnauthenticatedSession.get_session(session_id)
-    ret = {"hacker_bucks": unauth_session.hacker_bucks}
+    try:
+        session = Session.get_session(session_id)
+    except KeyError:
+        session = UnauthenticatedSession(oid=session_id)
+
+    ret = {"hacker_bucks": session.hacker_bucks}
 
     if request.POST:
         d = request.POST.dict()
         flag = d.get("flag", None)
 
         if flag is not None:
-            update_hacker_bucks_from_flag(unauth_session, flag)
-            ret["hacker_bucks"] = unauth_session.hacker_bucks
+            update_hacker_bucks_from_flag(session, flag)
+            ret["hacker_bucks"] = session.hacker_bucks
 
     return HttpResponse(json.dumps(ret))

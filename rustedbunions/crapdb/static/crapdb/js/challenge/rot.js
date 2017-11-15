@@ -13,7 +13,7 @@ function rot() {
     }
 
     $.ajax({
-        url: "/crapdb/getencmsg/" + session_id + "/",
+        url: "/crapdb/rot/" + session_id + "/",
         type: "GET",
         success: function(data) {
             var res = JSON.parse(data);
@@ -51,7 +51,7 @@ function submitAnswer(answer) {
 
     // Check and make sure we're good
     $.ajax({
-        url: "/crapdb/getrotflag/" + session_id + "/",
+        url: "/crapdb/rotflag/" + session_id + "/",
         type: "POST",
         data: {
             answer: answer,
