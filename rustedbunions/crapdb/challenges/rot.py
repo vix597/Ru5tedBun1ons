@@ -50,13 +50,14 @@ class Rot(Challenge):
         self.generate_enc_message()
 
     def purchase(self, hacker_bucks):
-        super().purchase(hacker_bucks)
+        return_bucks = super().purchase(hacker_bucks)
         self.timeout = datetime.utcnow() + timedelta(minutes=self.ROT_TIMEOUT)
+        return return_bucks
 
     def to_json(self):
         obj = super().to_json()
         obj.update({
-            "timeout": self.timeout,
+            "timeout": self.timeout.timestamp() if self.timeout is not None else 0,
             "encrypted_message": self.encrypted_message
         })
         return obj

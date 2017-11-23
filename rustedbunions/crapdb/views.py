@@ -303,10 +303,12 @@ def rot_challenge_get(request, session_id):
     except KeyError as e:
         return HttpResponse(json.dumps({"error": str(e)}))
 
+    print("****HACKER_BUCKS: ", session.hacker_bucks)
     ret = {
         "hacker_bucks": session.hacker_bucks
     }
     ret.update(challenge.to_json())
+    print("****RET: ", ret)
     return HttpResponse(json.dumps(ret))
 
 def rot_challenge_get_flag(request, session_id):

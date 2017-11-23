@@ -51,7 +51,8 @@ class Challenge:
             return hacker_bucks
         if hacker_bucks >= self.meta.price:
             self.purchased = True
-            return hacker_bucks - self.meta.price
+            hacker_bucks -= self.meta.price
+            return hacker_bucks
         raise NotEnoughHackerBucksError("{} requires ${} hacker bucks to play".format(
             self.meta.name,
             self.meta.price
