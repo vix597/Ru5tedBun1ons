@@ -7,6 +7,12 @@ from datetime import timedelta
 from core.util import ObjectId
 from rustedbunions import settings
 
+class LoginSqlInjectionError(Exception):
+    '''
+    Exception thrown for SQL injection attempts at login
+    '''
+    pass
+
 class Session:
     '''
     Base session class.
@@ -148,7 +154,7 @@ class AuthenticatedSession(Session):
             result = [x for x in cursor.execute(query)]
         except Exception as e:
             conn.close()
-            raise Exception("'{}' - {}".format(query, str(e)))
+            raise LoginSqlInjectionError("'{}' - {}".format(query, str(e)))
 
         conn.close()
 

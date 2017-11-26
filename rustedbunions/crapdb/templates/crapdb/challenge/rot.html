@@ -1,6 +1,8 @@
 <challenge-modal modal-id="rotModal" modal-footer-class='modal-body'>
     <yield to="modal-header">
         <div class="form-group" style="width: 100%;">
+            <h4>Time remaining: <span id="rot_timer"></span></h4>
+            <h4>Solved <span id="num_solved"></span> of <span id="num_to_solve"></span></h4>
             <label for="testmsg" id="cipher-text"></label>
             <input class="form-control" type="text" id="cleartext"
                 name="cleartext" placeholder="What's that say?">

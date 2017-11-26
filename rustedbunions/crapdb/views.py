@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.template import loader
 
 from core.challenge import NotEnoughHackerBucksError, ChallengeNotSolvedError
-from core.session import Session, AuthenticatedSession
+from core.session import Session, AuthenticatedSession, LoginSqlInjectionError
 from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session
 from rustedbunions import settings
 from flags import FLAGS
@@ -68,7 +68,7 @@ def login(request):
                     return redirect("crapdb:main", session_id=session.oid)
                 else:
                     context["error"] = "Username/Password combination does not exist"
-            except Exception as e:
+            except LoginSqlInjectionError as e:
                 context["error"] = str(e)
 
     context["unauth_session"] = unauth_session
@@ -226,26 +226,33 @@ def challenge_get(session, challenge_id):
     return challenge
 
 def challenge_get_flag(session, challenge_id, answer=""):
+    ret = {"success": False}
     challenge = session.get_challenge(challenge_id)
     if challenge is None:
-        raise KeyError("No challenge found with id: {}".format(challenge_id))
+        raise KeyError("No challenge found with ID: {}".format(challenge_id))
 
     if not challenge.purchased:
         return {"error": "{} has not been purchased yet".format(challenge.meta.name)}
-    if challenge and challenge.check(answer):
-        # Raised exception ChallengeNotSolvedError on fail
-        return {"flag": challenge.get_flag()}
-    return {"error": "Invalid challenge answer"}
+
+    res = challenge.check(answer)
+    if res:
+        ret["success"] = True
+        try:
+            flag = challenge.get_flag()
+            ret["flag"] = flag
+        except ChallengeNotSolvedError:
+            pass # Answer was right but challenge isn't solved yet
+    else:
+        ret["error"] = "Invalid challenge answer"
+
+    return ret
 
 def super_admin_challenge_get_flag(request, session_id):
     status, obj = get_session(session_id, http_response=True)
     if not status:
         return obj # HttpResponse containing error on fail
     session = obj
-    try:
-        return HttpResponse(json.dumps(challenge_get_flag(session, "super_admin")))
-    except ChallengeNotSolvedError as e:
-        return HttpResponse(json.dumps({"error": str(e)}))
+    return HttpResponse(json.dumps(challenge_get_flag(session, "super_admin")))
 
 def brutal_force_challenge_get(request, session_id):
     status, obj = get_session(session_id, http_response=True)
@@ -280,10 +287,7 @@ def brutal_force_challenge_get_flag(request, session_id):
         pin = d.get("pin", None)
 
         if pin is not None:
-            try:
-                ret = challenge_get_flag(session, "brutal_force", answer=pin)
-            except ChallengeNotSolvedError as e:
-                ret = {"error": str(e)}
+            ret = challenge_get_flag(session, "brutal_force", answer=pin)
         else:
             ret = {"error": "No PIN provided in POST request"}
 
@@ -324,10 +328,14 @@ def rot_challenge_get_flag(request, session_id):
         answer = d.get("answer", None)
 
         if answer is not None:
+            ret = challenge_get_flag(session, "rot", answer=answer)
             try:
-                ret = challenge_get_flag(session, "rot", answer=answer)
-            except ChallengeNotSolvedError as e:
-                ret = {"error": str(e)}
+                challenge = challenge_get(session, "rot")
+                ret.update(challenge.to_json())
+            except NotEnoughHackerBucksError as e:
+                return HttpResponse(json.dumps({"error": str(e)}))
+            except KeyError as e:
+                return HttpResponse(json.dumps({"error": str(e)}))
         else:
             ret = {"error": "No answer provided in POST request"}
 
