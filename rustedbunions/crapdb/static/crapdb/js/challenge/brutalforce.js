@@ -53,7 +53,7 @@ function submitPin(pin_number, display_alert=false) {
 
     $("#testpin").val(pin_number);
 
-    var result = md5(pin_number);
+    var result = sha256(pin_number.toString());
     if (result == pin_hash) {
         var session_id = localStorage.getItem("session_id");
         var csrf_token = localStorage.getItem("csrf_token");

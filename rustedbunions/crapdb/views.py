@@ -245,6 +245,8 @@ def challenge_get_flag(session, challenge_id, answer=""):
     else:
         ret["error"] = "Invalid challenge answer"
 
+    # Throw the challenge JSON on there for good measure
+    ret.update(challenge.to_json())
     return ret
 
 def super_admin_challenge_get_flag(request, session_id):
@@ -307,12 +309,10 @@ def rot_challenge_get(request, session_id):
     except KeyError as e:
         return HttpResponse(json.dumps({"error": str(e)}))
 
-    print("****HACKER_BUCKS: ", session.hacker_bucks)
     ret = {
         "hacker_bucks": session.hacker_bucks
     }
     ret.update(challenge.to_json())
-    print("****RET: ", ret)
     return HttpResponse(json.dumps(ret))
 
 def rot_challenge_get_flag(request, session_id):
@@ -329,13 +329,6 @@ def rot_challenge_get_flag(request, session_id):
 
         if answer is not None:
             ret = challenge_get_flag(session, "rot", answer=answer)
-            try:
-                challenge = challenge_get(session, "rot")
-                ret.update(challenge.to_json())
-            except NotEnoughHackerBucksError as e:
-                return HttpResponse(json.dumps({"error": str(e)}))
-            except KeyError as e:
-                return HttpResponse(json.dumps({"error": str(e)}))
         else:
             ret = {"error": "No answer provided in POST request"}
 

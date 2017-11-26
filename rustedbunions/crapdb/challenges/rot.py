@@ -1,6 +1,9 @@
 import os
 import random
 import string
+import json
+import hashlib
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -39,15 +42,12 @@ class Rot(Challenge):
         # They will have 1 minute to solve from purchase
         self.timeout = None
 
-        # Number solved so far
-        self.num_solved = 0
-
         # Number of seconds remaining to solve
         self.remaining_time = 0
 
-        self.key = 0
-        self.message = ""
-        self.encrypted_message = ""
+        self.messages = []
+        self.encrypted_messages = []
+        self.message_hashes = []
 
     def purchase(self, hacker_bucks):
         return_bucks = super().purchase(hacker_bucks)
@@ -59,8 +59,7 @@ class Rot(Challenge):
         now = datetime.utcnow()
         self.timeout = now + timedelta(minutes=self.ROT_TIMEOUT)
         self.remaining_time = (self.timeout - now).total_seconds()
-        self.num_solved = 0
-        self.generate_enc_message()
+        self.generate_enc_messages()
 
     def is_expired(self):
         if self.timeout:
@@ -72,31 +71,39 @@ class Rot(Challenge):
 
     def update(self):
         if self.is_expired():
-            print("*****TIMER EXPIRED!")
             self.reset()
         elif self.timeout is None:
             self.reset()
 
     def to_json(self):
         obj = super().to_json()
-
         self.update()
 
         obj.update({
             "num_to_solve": self.num_to_solve,
-            "num_solved": self.num_solved,
             "remaining_time": self.remaining_time,
-            "encrypted_message": self.encrypted_message
+            "encrypted_messages": self.encrypted_messages,
+            "message_hashes": self.message_hashes
         })
         return obj
 
-    def generate_enc_message(self):
-        # Pick a random shift b/w 1 and 25
-        self.key = random.randint(1, 25)
-        # Pick a random movie quote
-        self.message = MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower()
-        # Generate the crypto message
-        self.encrypted_message = self.shifttext(self.key, self.message)
+    def generate_enc_messages(self):
+        self.messages = []
+        self.encrypted_messages = []
+        self.message_hashes = []
+
+        for i in range(self.num_to_solve):
+            # Pick a random shift b/w 1 and 25
+            key = random.randint(1, 25)
+
+            # Pick a random movie quote
+            self.messages.append(MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower())
+
+            # Generate the crypto message
+            self.encrypted_messages.append(self.shifttext(key, self.messages[i]))
+
+            # Store the clear-text hash to send to the user
+            self.message_hashes.append(hashlib.sha256(str(self.messages[i]).encode('utf-8')).hexdigest())
 
     def shifttext(self, shift, msg):
         msg = msg.strip().lower()
@@ -114,16 +121,20 @@ class Rot(Challenge):
         # Update will only change the message if the timer is expired
         self.update()
 
-        if answer.strip().lower() == self.message:
-            self.num_solved += 1
-            if self.num_solved >= self.num_to_solve:
-                self.solved = True
-            else:
-                # Create a new one to solve
-                self.generate_enc_message()
+        try:
+            answer = json.loads(answer)
+        except:
+            print("Unable to parse provided JSON")
+            return False
+
+        if not isinstance(answer, list):
+            print("The answer should be a list of all solved messages")
+        elif set(answer) == set(self.messages):
+            self.solved = True
             return True
         else:
-            print("\"", answer.strip().lower(), "\" != \"", self.message, "\"", sep='')
+            print("No match. Answers: ", answer)
+            print("Messages: ", self.messages)
         return False
 
 Session.register_challenge(Rot)
