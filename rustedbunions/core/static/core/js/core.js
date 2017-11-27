@@ -90,7 +90,15 @@ function testFlag() {
             }
 
             if (res.hacker_bucks) {
-                $("#hackerBucks").text(res.hacker_bucks);
+                if (res.error) {
+                    var hackerBucks = res.hacker_bucks;
+                    $("#hackerBucks").text(res.error);
+                    setTimeout(function() {
+                        $("#hackerBucks").text(hackerBucks);
+                    }, 1000);
+                } else {
+                    $("#hackerBucks").text(res.hacker_bucks);
+                }
             }
         }
     });

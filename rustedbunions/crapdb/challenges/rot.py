@@ -14,10 +14,17 @@ from flags import FLAGS
 from rustedbunions import settings
 
 MOVIE_QUOTES = []
+WORDS = []
 
 # Load all the movie quotes
 with open(os.path.join(settings.BASE_DIR, "movie_quotes.txt")) as f:
     MOVIE_QUOTES.extend(f.readlines())
+
+# Load all the 4 letter or longer words
+with open(os.path.join(settings.BASE_DIR, "words_alpha.txt")) as f:
+    for line in f.readlines():
+        if len(line) >= 4:
+            WORDS.append(line)
 
 class Rot(Challenge):
     ALPHABET = string.ascii_lowercase
@@ -26,7 +33,7 @@ class Rot(Challenge):
     meta = ChallengeMetadata(
         challenge_id="rot",
         name="ROT?",
-        description="Ancient crytpo",
+        description="Ancient crypto",
         price=25,
         value=FLAGS["rot_challenge"][1],
         flag=FLAGS["rot_challenge"][0]
@@ -96,14 +103,26 @@ class Rot(Challenge):
             # Pick a random shift b/w 1 and 25
             key = random.randint(1, 25)
 
-            # Pick a random movie quote
-            self.messages.append(MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower())
+            # Do we pick a movie quote, or some random words?
+            if random.randint(0, 1):
+                # Pick a random movie quote
+                self.messages.append(MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower())
+            else:
+                # Make a random message
+                self.messages.append(self.make_random_message())
 
             # Generate the crypto message
             self.encrypted_messages.append(self.shifttext(key, self.messages[i]))
 
             # Store the clear-text hash to send to the user
             self.message_hashes.append(hashlib.sha256(str(self.messages[i]).encode('utf-8')).hexdigest())
+
+    def make_random_message(self):
+        length = random.randint(5, 20)
+        msg_list = []
+        for i in range(length):
+            msg_list.append(WORDS[random.randint(0, len(WORDS) - 1)].strip().lower())
+        return ' '.join(msg_list)
 
     def shifttext(self, shift, msg):
         msg = msg.strip().lower()

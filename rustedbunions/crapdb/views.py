@@ -7,7 +7,7 @@ from django.template import loader
 
 from core.challenge import NotEnoughHackerBucksError, ChallengeNotSolvedError
 from core.session import Session, AuthenticatedSession, LoginSqlInjectionError
-from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session
+from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session, FlagAlreadyClaimedError
 from rustedbunions import settings
 from flags import FLAGS
 
@@ -211,8 +211,11 @@ def checkflag(request, session_id):
         if flag is not None:
             # Set's the session's hacker_bucks and prevents
             # getting points for the same flag more than once
-            update_hacker_bucks_from_flag(session, flag)
-            ret["hacker_bucks"] = session.hacker_bucks
+            try:
+                update_hacker_bucks_from_flag(session, flag)
+                ret["hacker_bucks"] = session.hacker_bucks
+            except FlagAlreadyClaimedError:
+                ret["error"] = "Already Claimed"
 
     return HttpResponse(json.dumps(ret))
 

@@ -6,6 +6,9 @@ from django.http import HttpResponse
 from .session import Session, UnauthenticatedSession
 from .models import Flag
 
+class FlagAlreadyClaimedError(Exception):
+    pass
+
 def update_hacker_bucks_from_flag(session, userflag):
     '''
     Get flag points from the real database. This
@@ -42,6 +45,8 @@ def update_hacker_bucks_from_flag(session, userflag):
             session.claimed_flags.append(matched_flag)
             session.hacker_bucks += hacker_bucks
             session.lifetime_hacker_bucks += hacker_bucks
+        else:
+            raise FlagAlreadyClaimedError()
 
 def get_session(session_id, fail_url="crapdb:index",
                 error="No session or session expired",
@@ -91,7 +96,10 @@ def checkflag(request, session_id):
         flag = d.get("flag", None)
 
         if flag is not None:
-            update_hacker_bucks_from_flag(session, flag)
-            ret["hacker_bucks"] = session.hacker_bucks
+            try:
+                update_hacker_bucks_from_flag(session, flag)
+                ret["hacker_bucks"] = session.hacker_bucks
+            except FlagAlreadyClaimedError:
+                ret["error"] = "Already claimed"
 
     return HttpResponse(json.dumps(ret))
