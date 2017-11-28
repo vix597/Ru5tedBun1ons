@@ -39,7 +39,11 @@
 
             <footer class="footer">
                 {% block footer %}
-                    <p>&copy; {% now "Y" %} rustedbunions.com</p>
+                    <p>
+                        &copy; {% now "Y" %} rustedbunions.com |
+                        <a href="{% url 'crapdb:about' %}">about</a>
+                        | <a href="{% url 'leaderboard:index' %}">leaderboard</a>
+                    </p>
                 {% endblock %}
             </footer>
         </div>

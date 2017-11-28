@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crapdb.apps.CrapdbConfig',
     'jackit.apps.JackitConfig',
+    'leaderboard.apps.LeaderboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

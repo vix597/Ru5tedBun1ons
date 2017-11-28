@@ -8,7 +8,7 @@
     <link href="{% static 'crapdb/css/signin.css' %}" rel="stylesheet">
 
     <!-- Load Riot Tags -->
-    <script src="{% static 'crapdb/tags/unauth-navbar.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'core/tags/unauth-navbar.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
@@ -83,10 +83,6 @@
             </div>
         {% endif %}
     {% endif %}
-{% endblock %}
-
-{% block footer %}
-    <p>&copy; {% now "Y" %} rustedbunions.com | <a href="{% url 'crapdb:about' %}">about</a></p>
 {% endblock %}
 
 {% block script %}

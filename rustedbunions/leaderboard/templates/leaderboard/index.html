@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+
+{% block head %}
+    {{ block.super }}
+
+    {% load static %}
+    <link href="{% static 'leaderboard/css/index.css' %}" rel="stylesheet">
+
+    <!-- Load Riot Tags -->
+    <script src="{% static 'core/tags/unauth-navbar.tag.html' %}" type='riot/tag'></script>
+{% endblock %}
+
+{% block content %}
+    <unauth-navbar hacker-bucks="{{ unauth_session.hacker_bucks }}"></unauth-navbar>
+
+    <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="submitScore()">Submit Score</button>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Lifetime Hacker Bucks</th>
+                <th scope="col">Total Playtime</th>
+                <th scope="col">Flags Found</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for leader in leaderboard %}
+                <tr>
+                    <td>{{ leader.name }}</td>
+                    <td>{{ leader.lifetime_hacker_bucks }}</td>
+                    <td>{{ leader.playtime }}</td>
+                    <td>{{ leader.flags_found }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block footer %}
+    <p>&copy; {% now "Y" %} rustedbunions.com | <a href="{% url 'crapdb:index' %}">home</a></p>
+{% endblock %}
+
+{% block script %}
+    {{ block.super }}
+
+    <script>
+        var unauth_session_oid = "{{ unauth_session.oid }}";
+        var csrf_token = "{{ csrf_token }}";
+        var name = "test";
+
+        function submitScore() {
+            $.ajax({
+                url: "/leaderboard/submit/",
+                type: "POST",
+                data: {
+                    name: name,
+                    csrfmiddlewaretoken: csrf_token
+                },
+                complete: function() {
+                    // Reload the page
+                    window.location = "/leaderboard/";
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            riot.mount("unauth-navbar");
+        });
+    </script>
+{% endblock %}

@@ -45,6 +45,7 @@ class Session:
         self.hacker_bucks = 0
         self.lifetime_hacker_bucks = 0
         self.claimed_flags = []
+        self.creation_time = datetime.utcnow()
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
         self.challenges = {}
 
@@ -61,6 +62,7 @@ class Session:
             "hacker_bucks": self.hacker_bucks,
             "lifetime_hacker_bucks": self.lifetime_hacker_bucks,
             "expires": self.expires,
+            "creation_time": self.creation_time,
             "challenges": {cid: c.to_json() for cid, c in self.challenges.items()}
         }
 
