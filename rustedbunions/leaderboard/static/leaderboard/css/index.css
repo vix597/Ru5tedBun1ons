@@ -1,5 +1,7 @@
 body {
     padding-top: 60px;
+    background-color: #eee;
+    padding-bottom: 40px;
 }
 
 form.form-inline {

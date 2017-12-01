@@ -45,6 +45,7 @@ function startTimer(seconds, display) {
         seconds = seconds - 1;
 
         if (seconds < 0) {
+            stopTimer(display);
             rot(reload=true);
         }
     }, 1000);
@@ -116,8 +117,12 @@ function rotSubmitAnswer(answer, callback=null) {
             res = JSON.parse(data);
             console.log("Result: ", res);
 
-            $("#num_solved").text(res.num_solved);
-            $("#cipher-text").text(res.encrypted_message);
+            rotNumSolved = res.num_solved;
+            rotEncryptedMessage = res.encrypted_message;
+
+            $("#num_solved").text(rotNumSolved);
+            $("#cipher-text").text(rotEncryptedMessage);
+            startTimer(res.remaining_time, $("#rot_timer"));
 
             if (!res.success) {
                 if (res.error) {
@@ -137,7 +142,7 @@ function rotSubmitAnswer(answer, callback=null) {
                 });
             } else {
                 if (callback) {
-                    callback(true);
+                    callback();
                 }
             }
         }
