@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.http import HttpResponse
 from django.template import loader
@@ -34,15 +35,19 @@ def submit(request):
         d = request.POST.dict()
         name = d.get("name", None)
 
-        if name is not None:
+        if name:
             session = get_unauth_session(request)
-            leader = LeaderboardEntry()
-            leader.lifetime_hacker_bucks = session.lifetime_hacker_bucks
-            leader.flags_found = len(session.claimed_flags)
-            leader.hacker_bucks = session.hacker_bucks
-            leader.name = name
-            leader.save()
+            if not session.lifetime_hacker_bucks:
+                ret["error"] = "What makes you think you belong on the leaderboard?"
+            else:
+                leader = LeaderboardEntry()
+                leader.lifetime_hacker_bucks = session.lifetime_hacker_bucks
+                leader.flags_found = len(session.claimed_flags)
+                leader.hacker_bucks = session.hacker_bucks
+                leader.name = name
+                leader.playtime = str(datetime.utcnow() - session.creation_time)
+                leader.save()
         else:
             ret["error"] = "No name provided for leaderboard entry"
-  
+
     return HttpResponse(json.dumps(ret))

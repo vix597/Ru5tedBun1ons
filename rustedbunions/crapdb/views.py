@@ -156,7 +156,7 @@ def searchcrap(request):
         username = d.get("username", None)
 
         if username is not None:
-            query = "SELECT username, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
+            query = "SELECT username, paid, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
             try:
                 context["result"] = [x for x in cursor.execute(query)]
                 if not context["result"]:

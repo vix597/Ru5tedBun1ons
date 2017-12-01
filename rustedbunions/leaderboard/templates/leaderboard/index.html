@@ -13,7 +13,15 @@
 {% block content %}
     <unauth-navbar hacker-bucks="{{ unauth_session.hacker_bucks }}"></unauth-navbar>
 
-    <button type="button" class="btn btn-secondary btn-lg btn-block" onclick="submitScore()">Submit Score</button>
+    <div id="error"></div>
+
+    <form class="form-inline col-md-12" onsubmit="submitScore(event)" action="#">
+        <div class="form-group">
+            <label for="inputName" class="sr-only">Nickname</label>
+            <input type="text" class="form-control" id="inputName" placeholder="Nickname" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Score</button>
+    </form>
 
     <table class="table table-striped">
         <thead>
@@ -47,9 +55,13 @@
     <script>
         var unauth_session_oid = "{{ unauth_session.oid }}";
         var csrf_token = "{{ csrf_token }}";
-        var name = "test";
 
-        function submitScore() {
+        function submitScore(e) {
+            e.preventDefault(); // Prevent the submit from redirecting automatically
+
+            var name = $("#inputName").val();
+            $("#inputName").val(''); // Clear nickname on submit
+
             $.ajax({
                 url: "/leaderboard/submit/",
                 type: "POST",
@@ -57,9 +69,18 @@
                     name: name,
                     csrfmiddlewaretoken: csrf_token
                 },
-                complete: function() {
-                    // Reload the page
-                    window.location = "/leaderboard/";
+                success: function(res) {
+                    res = JSON.parse(res);
+
+                    if (res.error) {
+                        console.log("Failed: ", res.error);
+                        errorAlert(res.error, options={
+                            target: $("#error")
+                        });
+                    } else {
+                        // Reload the page
+                        window.location = "/leaderboard/";
+                    }
                 }
             });
         }

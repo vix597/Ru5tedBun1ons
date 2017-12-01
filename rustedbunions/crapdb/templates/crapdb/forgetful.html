@@ -40,6 +40,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Username</th>
+                        <th scope="col">Paid User?</th>
                         <th scope="col">Security Question</th>
                         <th scope="col">Answer</th>
                         <th scope="col">Get Password</th>
@@ -49,7 +50,14 @@
                     {% for name in result %}
                         <tr>
                             <td>{{ name.0 }}</td>
-                            <td>{{ name.1 }}</td>
+                            <td>
+                                {% if name.1 %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                            <td>{{ name.2 }}</td>
                             <td>
                                 <input
                                     type="text"

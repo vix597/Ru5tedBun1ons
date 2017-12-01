@@ -30,10 +30,11 @@ CRAPDB_SETUP = [
     "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table18"][0]),
     "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table19"][0]),
     "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table20"][0]),
-    "CREATE TABLE users (username text, password text, question text, answer text)",
-    "INSERT INTO users VALUES ('admin', 'H4ckm31FYOUC4n!@*&$#', 'I AM ADMIN', 'I AM ALWAYS WATCHING')",
-    "INSERT INTO users VALUES ('joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman')",
-    "INSERT INTO users VALUES ('jackblack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question')"
+    "CREATE TABLE users (username text, password text, question text, answer text, paid integer)",
+    "INSERT INTO users VALUES ('admin', 'H4ckm31FYOUC4n!@*&$#', 'I AM ADMIN', 'I AM ALWAYS WATCHING', 0)",
+    "INSERT INTO users VALUES ('joey', 'Sup3rS3cr3t', 'Who is Your daddy', 'spiderman', 0)",
+    "INSERT INTO users VALUES ('jackblack', 'Sch00lOfRock', 'THE PICK OF DESTINY', 'That is not a question', 0)",
+    "INSERT INTO users VALUES ('SirPaysALot', 'IPayAL0t!', 'Did I pay?', 'Why yes, I did for sure!', 1)"
 ]
 
 if __name__ == "__main__":

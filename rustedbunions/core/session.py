@@ -73,6 +73,7 @@ class Session:
         self.claimed_flags = other.claimed_flags
         self.hacker_bucks = other.hacker_bucks
         self.lifetime_hacker_bucks = other.lifetime_hacker_bucks
+        self.creation_time = other.creation_time
         for other_challenge_id, other_challenge in other.challenges.items():
             self.challenges[other_challenge_id].from_other_challenge(other_challenge)
 
@@ -123,6 +124,7 @@ class AuthenticatedSession(Session):
         super().__init__()
         self.username = username
         self.password = password
+        self.paid = False
         self.actually_valid = False # True if the session resulted from no SQLi
 
         # Determines if this is actually a valid login or not
@@ -137,9 +139,32 @@ class AuthenticatedSession(Session):
         d.update({
             "username": self.username,
             "password": self.password,
-            "actually_valid": self.actually_valid
+            "actually_valid": self.actually_valid,
+            "paid": self.paid
         })
         return d
+
+    @classmethod
+    def is_paid_user(cls, username):
+        conn = sqlite3.connect(settings.CRAPDB_PATH)
+        cursor = conn.cursor()
+        query = ' '.join((
+            "SELECT username, paid FROM users",
+            "WHERE username=? COLLATE NOCASE",
+            "and paid=1"
+        ))
+
+        result = None
+        try:
+            result = [x for x in cursor.execute(query, (username,))]
+        except:
+            pass
+
+        conn.close()
+
+        if result:
+            return True
+        return False
 
     @classmethod
     def validate(cls, username, password):
@@ -161,7 +186,14 @@ class AuthenticatedSession(Session):
         conn.close()
 
         if result:
-            return cls(username, password)
+            session = cls(username, password)
+            user = result[0][0]
+            if cls.is_paid_user(user):
+                if session.actually_valid:
+                    session.paid = True
+                    return session
+                raise LoginSqlInjectionError("'{}' is a paid user and cannot be hacked into.".format(user))
+            return session
         else:
             return None
 
