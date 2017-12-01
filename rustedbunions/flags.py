@@ -51,5 +51,6 @@ FLAGS = {
     "stego2":("flag{TEST45}", 15),
     "stego3":("flag{TEST46}", 25),
     "github_issue":("flag{TEST47}", 10),
-    "github_commit":("flag{TEST48}", 10)
+    "github_commit":("flag{TEST48}", 10),
+    "paid_content_challenge": ("flag{TEST49}", 25)
 }

@@ -336,3 +336,32 @@ def rot_challenge_get_flag(request, session_id):
             ret = {"error": "No answer provided in POST request"}
 
     return HttpResponse(json.dumps(ret))
+
+def paid_content_challenge_get(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+
+    challenge = None
+    try:
+        challenge = challenge_get(session, "paid_content")
+    except NotEnoughHackerBucksError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+    except KeyError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+
+    ret = {
+        "hacker_bucks": session.hacker_bucks
+    }
+    ret.update(challenge.to_json())
+    return HttpResponse(json.dumps(ret))
+
+def paid_content_challenge_get_flag(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+
+    ret = challenge_get_flag(session, "paid_content", answer=session)
+    return HttpResponse(json.dumps(ret))

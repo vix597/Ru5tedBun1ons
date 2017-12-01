@@ -69,8 +69,8 @@
                     name: name,
                     csrfmiddlewaretoken: csrf_token
                 },
-                success: function(res) {
-                    res = JSON.parse(res);
+                success: function(data) {
+                    var res = JSON.parse(data);
 
                     if (res.error) {
                         console.log("Failed: ", res.error);

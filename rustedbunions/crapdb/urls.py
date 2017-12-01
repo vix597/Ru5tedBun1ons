@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'brutalforceflag/(?P<session_id>\w+)/$', views.brutal_force_challenge_get_flag, name="brutalforceflag"),
     url(r'rot/(?P<session_id>\w+)/$', views.rot_challenge_get, name="rot"),
     url(r'rotflag/(?P<session_id>\w+)/$', views.rot_challenge_get_flag, name="rotflag"),
+    url(r'paidcontent/(?P<session_id>\w+)/$', views.paid_content_challenge_get, name="paidcontent"),
+    url(r'paidcontentflag/(?P<session_id>\w+)/$', views.paid_content_challenge_get_flag, name="paidcontentflag"),
 ]

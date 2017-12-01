@@ -35,6 +35,13 @@
                             ROT? (${{ session.challenges.rot.meta.price }})
                         {% endif %}
                     </a>
+                    <a class="nav-link" onclick="paidContent()" id='paidContentButton' href="#">
+                        {% if session.challenges.paid_content.purchased %}
+                            Paid Content
+                        {% else %}
+                            Paid Content (${{ session.challenges.paid_content.meta.price }})
+                        {% endif %}
+                    </a>
                     <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Game Time!</a>
                 </nav>
             </div>
@@ -132,6 +139,7 @@
     {% include "./challenge/brutalforce.html" %}
     {% include "./challenge/rot.html" %}
     {% include "./challenge/superadmin.html" %}
+    {% include "./challenge/paidcontent.html" %}
 
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
@@ -145,6 +153,7 @@
     <script src="{% static 'crapdb/js/challenge/flyingflags.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/brutalforce.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/rot.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/paidcontent.js' %}"></script>
 
     <script>
         // This prevents the user from ever accessing the modal
