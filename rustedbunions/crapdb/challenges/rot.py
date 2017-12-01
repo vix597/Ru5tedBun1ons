@@ -2,7 +2,6 @@ import os
 import random
 import string
 import json
-import hashlib
 
 from datetime import datetime
 from datetime import timedelta
@@ -46,15 +45,17 @@ class Rot(Challenge):
         # Solve 50 of them to win
         self.num_to_solve = 50
 
+        # The number currently solved
+        self.num_solved = 0
+
         # They will have 1 minute to solve from purchase
         self.timeout = None
 
         # Number of seconds remaining to solve
         self.remaining_time = 0
 
-        self.messages = []
-        self.encrypted_messages = []
-        self.message_hashes = []
+        self.message = ""
+        self.encrypted_message = ""
 
     def purchase(self, hacker_bucks):
         return_bucks = super().purchase(hacker_bucks)
@@ -64,14 +65,14 @@ class Rot(Challenge):
 
     def reset(self):
         now = datetime.utcnow()
+        self.num_solved = 0
         self.timeout = now + timedelta(minutes=self.ROT_TIMEOUT)
         self.remaining_time = (self.timeout - now).total_seconds()
-        self.generate_enc_messages()
+        self.generate_enc_message()
 
     def is_expired(self):
         if self.timeout:
             self.remaining_time = (self.timeout - datetime.utcnow()).total_seconds()
-            print("is_expired() - Remaining Time: ", self.remaining_time)
             if self.remaining_time <= 0:
                 return True
         return False
@@ -88,39 +89,33 @@ class Rot(Challenge):
 
         obj.update({
             "num_to_solve": self.num_to_solve,
+            "num_solved": self.num_solved,
             "remaining_time": self.remaining_time,
-            "encrypted_messages": self.encrypted_messages,
-            "message_hashes": self.message_hashes
+            "encrypted_message": self.encrypted_message,
         })
         return obj
 
-    def generate_enc_messages(self):
-        self.messages = []
-        self.encrypted_messages = []
-        self.message_hashes = []
+    def generate_enc_message(self):
+        self.message = ""
+        self.encrypted_message = ""
 
-        for i in range(self.num_to_solve):
-            # Pick a random shift b/w 1 and 25
-            key = random.randint(1, 25)
+        key = random.randint(1, 25)
 
-            # Do we pick a movie quote, or some random words?
-            if random.randint(0, 1):
-                # Pick a random movie quote
-                self.messages.append(MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower())
-            else:
-                # Make a random message
-                self.messages.append(self.make_random_message())
+        # Do we pick a movie quote, or some random words?
+        if random.randint(0, 1):
+            # Pick a random movie quote
+            self.message = MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower()
+        else:
+            # Make a random message
+            self.message = self.make_random_message()
 
-            # Generate the crypto message
-            self.encrypted_messages.append(self.shifttext(key, self.messages[i]))
-
-            # Store the clear-text hash to send to the user
-            self.message_hashes.append(hashlib.sha256(str(self.messages[i]).encode('utf-8')).hexdigest())
+        # Generate the crypto message
+        self.encrypted_message = self.shifttext(key, self.message)
 
     def make_random_message(self):
         length = random.randint(5, 20)
         msg_list = []
-        for i in range(length):
+        for _ in range(length):
             msg_list.append(WORDS[random.randint(0, len(WORDS) - 1)].strip().lower())
         return ' '.join(msg_list)
 
@@ -140,20 +135,17 @@ class Rot(Challenge):
         # Update will only change the message if the timer is expired
         self.update()
 
-        try:
-            answer = json.loads(answer)
-        except:
-            print("Unable to parse provided JSON")
-            return False
-
-        if not isinstance(answer, list):
-            print("The answer should be a list of all solved messages")
-        elif set(answer) == set(self.messages):
-            self.solved = True
+        if answer.strip().lower() == self.message.strip().lower():
+            self.num_solved += 1
+            if self.num_solved >= self.num_to_solve:
+                self.solved = True
+            else:
+                # If they're not done, generate a new encrypted message
+                self.generate_enc_message()
             return True
-        else:
-            print("No match. Answers: ", answer)
-            print("Messages: ", self.messages)
+
+        # They have to get all 50 in a row correct
+        self.reset()
         return False
 
 Session.register_challenge(Rot)

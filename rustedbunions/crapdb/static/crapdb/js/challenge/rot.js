@@ -1,12 +1,9 @@
 
 // Stores the interval ID for the startTimer() method
 var rotTimerItervalId = null;
-var rotSolved = [];
 var rotNumSolved = 0;
 var rotNumToSolve = 0;
-var rotEncryptedMessages = [];
-var rotMessageHashes = [];
-var rotCurrentCipher = "";
+var rotEncryptedMessage = "";
 
 function openRotModal() {
     $("#rotButton").text("ROT?");
@@ -56,7 +53,7 @@ function startTimer(seconds, display) {
 function rot(reload=false) {
     var session_id = localStorage.getItem("session_id");
 
-    if (rotEncryptedMessages.length && !reload) {
+    if (rotEncryptedMessage.length && !reload) {
         openRotModal();
         return;
     }
@@ -78,88 +75,71 @@ function rot(reload=false) {
 
             // Reset some things
             rotNumToSolve = res.num_to_solve;
-            rotNumSolved = 0;
-            rotSolved = [];
-            rotEncryptedMessages = res.encrypted_messages;
-            rotMessageHashes = res.message_hashes;
-            rotCurrentCipher = rotEncryptedMessages[rotNumSolved];
+            rotNumSolved = res.num_solved;
+            rotEncryptedMessage = res.encrypted_message;
 
             // Update the display and open the modal
             $("#num_to_solve").text(rotNumToSolve);
             $("#num_solved").text(rotNumSolved);
             $("#hackerBucks").text(res.hacker_bucks);
-            $("#cipher-text").text(rotCurrentCipher);
+            $("#cipher-text").text(rotEncryptedMessage);
             openRotModal();
         }
     });
 }
 
-function rotSubmitAnswer(answer) {
-    if (!rotEncryptedMessages.length) {
-        console.log("The encrypted messages have not been retrieved yet.");
+function rotSubmitAnswer(answer, callback=null) {
+    if (!rotEncryptedMessage.length) {
+        console.log("The encrypted message has not been retrieved yet.");
         console.log("Click on the 'ROT?' link and pay $25 to");
         console.log("start the challenge");
-        return false;
+        return;
     } else if (typeof answer !== "string") {
         console.log("Answer must be a string");
-        return false;
-    } 
+        return;
+    }
 
     $("#cleartext").val(answer);
 
-    checkHash = rotMessageHashes[rotNumSolved];
-    answerHash = sha256(answer);
-    if (checkHash === answerHash) {
-        rotNumSolved += 1;
-        rotSolved.push(answer);
-        rotCurrentCipher = rotEncryptedMessages[rotNumSolved];
+    var session_id = localStorage.getItem("session_id");
+    var csrf_token = localStorage.getItem("csrf_token");
 
-        $("#num_solved").text(rotNumSolved);
-        $("#cipher-text").text(rotCurrentCipher);
-    } else {
-        return false;
-    }
+    // Submit the answers
+    $.ajax({
+        url: "/crapdb/rotflag/" + session_id + "/",
+        type: "POST",
+        data: {
+            answer: answer,
+            csrfmiddlewaretoken: csrf_token
+        },
+        success: function(data) {
+            res = JSON.parse(data);
+            console.log("Result: ", res);
 
-    if (rotNumSolved >= rotNumToSolve) {
-        var session_id = localStorage.getItem("session_id");
-        var csrf_token = localStorage.getItem("csrf_token");
+            $("#num_solved").text(res.num_solved);
+            $("#cipher-text").text(res.encrypted_message);
 
-        // Submit the answers
-        $.ajax({
-            url: "/crapdb/rotflag/" + session_id + "/",
-            type: "POST",
-            data: {
-                answer: JSON.stringify(rotSolved),
-                csrfmiddlewaretoken: csrf_token
-            },
-            success: function(data) {
-                res = JSON.parse(data);
-                console.log("Result: ", res);
-                if (!res.success) {
-                    rotNumSolved = 0;
-                    rotSolved = [];
-                    $("#num_solved").text(rotNumSolved);
-                    $("#cipher-text").text(rotEncryptedMessages[rotNumSolved]);
-
-                    if (res.error) {
-                        errorAlert(res.error, options={
-                            target: $("#rotModalFooter")
-                        });
-                    } else {
-                        errorAlert("Invalid answers", options={
-                            target: $("#rotModalFooter")
-                        });
-                    }
+            if (!res.success) {
+                if (res.error) {
+                    errorAlert(res.error, options={
+                        target: $("#rotModalFooter")
+                    });
                 } else {
-                    console.log(res.flag);
-                    successAlert(res.flag, options={
-                        target: $("#rotModalFooter"),
-                        autoclose: 0
+                    errorAlert("Invalid answer", options={
+                        target: $("#rotModalFooter")
                     });
                 }
+            } else if (res.flag) {
+                console.log(res.flag);
+                successAlert(res.flag, options={
+                    target: $("#rotModalFooter"),
+                    autoclose: 0
+                });
+            } else {
+                if (callback) {
+                    callback(true);
+                }
             }
-        });
-    }
-
-    return true;
+        }
+    });
 }
