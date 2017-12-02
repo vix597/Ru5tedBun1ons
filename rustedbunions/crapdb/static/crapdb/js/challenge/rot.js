@@ -10,15 +10,15 @@ function openRotModal() {
     $("#rotModal").modal({show: true});
 
     console.log("Welcome to the ROT challenge.");
-    console.log("Using the console, an answer can be submitted. The current message");
-    console.log("to decrypt is stored in the 'rotCurrentCipher' variable. Using that");
-    console.log("variable, decrypt the message and call 'rotSubmitAnswer(clear_text)'");
-    console.log("where 'clear_text' is the decrypted message. The method returns true");
-    console.log("on success and false on failure. Repeat 50 times and on the 50th success");
-    console.log("a flag will be displayed on the screen and in the console. You have 60")
-    console.log("seconds before the game resets with a new random list of messages.");
-    console.log("HINT: The ROT key is random for each message.")
-    console.log("Good Luck!");
+    console.log("Using the console, an answer can be submitted.");
+    console.log("The current encrypted message is stored in the");
+    console.log("'rotEncryptedMessage' global variable. To submit");
+    console.log("an answer call: 'submitAnswer(clear_text, complete=function(){})'");
+    console.log("where 'clear_text' is the decrypted message and 'complete' is");
+    console.log("the callback that get's called if the decrypted message was correct");
+    console.log("The answer is not case sensitive but punctuation must be");
+    console.log("consistent. You need to provide 50 correct answers in a row within");
+    console.log("the time limit or the game will reset. Good Luck!");
 }
 
 function stopTimer(display) {

@@ -30,6 +30,7 @@
                 <th scope="col">Lifetime Hacker Bucks</th>
                 <th scope="col">Total Playtime</th>
                 <th scope="col">Flags Found</th>
+                <th scope="col">% Complete</th>
             </tr>
         </thead>
         <tbody>
@@ -39,6 +40,14 @@
                     <td>{{ leader.lifetime_hacker_bucks }}</td>
                     <td>{{ leader.playtime }}</td>
                     <td>{{ leader.flags_found }}</td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success"
+                                role="progressbar" style="width: {{ leader.percent_complete }}%;"
+                                aria-valuenow="{{ leader.percent_complete }}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

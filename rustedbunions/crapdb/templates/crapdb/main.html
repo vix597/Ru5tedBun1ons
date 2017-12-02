@@ -42,6 +42,13 @@
                             Paid Content (${{ session.challenges.paid_content.meta.price }})
                         {% endif %}
                     </a>
+                    <a class="nav-link" onclick="xor()" id="xorButton" href="#">
+                        {% if session.challenges.xor.purchased %}
+                            XOR!
+                        {% else %}
+                            XOR! (${{ session.challenges.xor.meta.price }})
+                        {% endif %}
+                    </a>
                     <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Game Time!</a>
                 </nav>
             </div>
@@ -74,8 +81,6 @@
                         <p>SQLi doesn't deserve a flag you big jerk</p>
                     {% endif %}
                 {% endif %}
-
-                <p>NOTE: Session timout after 30 minutes of idle time</p>
             </div>
         </div>
     </header>
@@ -140,6 +145,7 @@
     {% include "./challenge/rot.html" %}
     {% include "./challenge/superadmin.html" %}
     {% include "./challenge/paidcontent.html" %}
+    {% include "./challenge/xor.html" %}
 
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
@@ -154,6 +160,7 @@
     <script src="{% static 'crapdb/js/challenge/brutalforce.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/rot.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/paidcontent.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/xor.js' %}"></script>
 
     <script>
         // This prevents the user from ever accessing the modal

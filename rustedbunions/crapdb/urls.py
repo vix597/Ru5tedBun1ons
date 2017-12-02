@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'rotflag/(?P<session_id>\w+)/$', views.rot_challenge_get_flag, name="rotflag"),
     url(r'paidcontent/(?P<session_id>\w+)/$', views.paid_content_challenge_get, name="paidcontent"),
     url(r'paidcontentflag/(?P<session_id>\w+)/$', views.paid_content_challenge_get_flag, name="paidcontentflag"),
+    url(r'xor/(?P<session_id>\w+)/$', views.xor_challenge_get, name="xor"),
 ]

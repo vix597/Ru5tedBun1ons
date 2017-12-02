@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.http import HttpResponse
 from django.template import loader
+from flags import FLAGS
 
 from core.views import get_unauth_session
 from .models import LeaderboardEntry
@@ -44,6 +45,7 @@ def submit(request):
                 leader.lifetime_hacker_bucks = session.lifetime_hacker_bucks
                 leader.flags_found = len(session.claimed_flags)
                 leader.hacker_bucks = session.hacker_bucks
+                leader.percent_complete = int((leader.flags_found / len(FLAGS)) * 100)
                 leader.name = name
                 leader.playtime = str(datetime.utcnow() - session.creation_time)
                 leader.save()
