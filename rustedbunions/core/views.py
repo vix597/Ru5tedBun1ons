@@ -56,16 +56,23 @@ def get_session(session_id, fail_url="crapdb:index",
      - If status is True the second element is a session object
      - If status is False the second element is a django redirect
     '''
+
+    if len(session_id) != 32:
+        # WTF is this shit?!
+        print("********get_session() - Session ID length - Somebody is messing around*********")
+        if not http_response:
+            return (False, redirect(reverse(fail_url) + "?error={}".format(error)))
+        else:
+            return (False, HttpResponse(json.dumps({"redirect": error})))
+
     session = None
     try:
         session = Session.get_session(session_id)
     except KeyError:
         if not http_response:
-            return (False, redirect(reverse(fail_url) + "?error={}".format(
-                error)))
+            return (False, redirect(reverse(fail_url) + "?error={}".format(error)))
         else:
-            return False, HttpResponse(json.dumps({
-                "redirect": error}))
+            return (False, HttpResponse(json.dumps({"redirect": error})))
 
     return (True, session)
 
@@ -76,6 +83,14 @@ def get_unauth_session(request):
         unauth_session = UnauthenticatedSession()
         request.session["unauth_session"] = unauth_session.oid
     else:
+        session_id = request.session["unauth_session"]
+        if len(session_id) != 32:
+            # WTF is this shit?!
+            print("********get_unauth_session() - Session ID length - Somebody is messing around*********")
+            unauth_session = UnauthenticatedSession()
+            request.session["unauth_session"] = unauth_session.oid
+            return unauth_session
+
         try:
             unauth_session = Session.get_session(request.session["unauth_session"])
         except KeyError:

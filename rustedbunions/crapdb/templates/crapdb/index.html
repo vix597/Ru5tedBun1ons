@@ -14,8 +14,12 @@
 {% block content %}
     <unauth-navbar hacker-bucks="{{ unauth_session.hacker_bucks }}"></unauth-navbar>
 
-    <form class="form-signin" action="{% url 'crapdb:login' %}" method="POST">
+    <form autocomplete="off" class="form-signin" action="{% url 'crapdb:login' %}" method="POST">
         {% csrf_token %}
+        <!-- Trying my hardest to avoid autocomplete here-->
+        <input style="display:none;" autocomplete="false" type="text" name="noautocomplete">
+        <input style="display:none" type="text" name="username"/>
+        <input style="display:none" type="password" name="password"/>
 
         <h2 class="form-signin-heading">Please sign in</h2>
 
@@ -23,7 +27,7 @@
         <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
 
         <label for="inputPassword" class="sr-only">Password</label>
-        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <input name="password" autocomplete="new-password" type="password" id="inputPassword" maxlength="128" class="form-control" placeholder="Password" required>
 
         <input type="hidden" value="{{ index_page_source }}">
 

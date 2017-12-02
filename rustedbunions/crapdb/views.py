@@ -22,7 +22,13 @@ def index(request):
 
     if request.GET:
         d = request.GET.dict()
-        context["error"] = d.get("error", None)
+        error = d.get("error", None)
+
+        # If error is biggern than 200, somebody is messing with something they shouldn't be
+        if len(error) < 200:
+            context["error"] = error
+        else:
+            print("********index() - Error Length Check - Somebody is messing around*********")
 
     template = loader.get_template('crapdb/index.html')
     return HttpResponse(template.render(context, request))
@@ -59,17 +65,21 @@ def login(request):
         username = d.get("username", None)
         password = d.get("password", None)
 
-        if username is not None and password is not None:
-            try:
-                session = AuthenticatedSession.validate(username, password)
-                if session is not None:
-                    # Update the new session with the current hacker bucks and flags
-                    session.from_other_session(unauth_session)
-                    return redirect("crapdb:main", session_id=session.oid)
-                else:
-                    context["error"] = "Username/Password combination does not exist"
-            except LoginSqlInjectionError as e:
-                context["error"] = str(e)
+        if username and password:
+            if len(username) > 1000 or len(password) > 1000:
+                # Something weird is going on here
+                context["error"] = "Too much data"
+            else:
+                try:
+                    session = AuthenticatedSession.validate(username, password)
+                    if session is not None:
+                        # Update the new session with the current hacker bucks and flags
+                        session.from_other_session(unauth_session)
+                        return redirect("crapdb:main", session_id=session.oid)
+                    else:
+                        context["error"] = "Username/Password combination does not exist"
+                except LoginSqlInjectionError as e:
+                    context["error"] = str(e)
 
     context["unauth_session"] = unauth_session
     template = loader.get_template("crapdb/index.html")
@@ -110,7 +120,11 @@ def getpassword(request):
 
         if username is None or answer is None:
             context["error"] = "You must provide an answer"
+        elif len(username) > 1000 or len(answer) > 1000:
+            # Something weird is going on
+            context["error"] = "Too much data"
         else:
+
             # Query that will filter out SQLi
             # because the user values are passed to execure as parameters
             no_sqli_query = ' '.join((
@@ -156,13 +170,17 @@ def searchcrap(request):
         username = d.get("username", None)
 
         if username is not None:
-            query = "SELECT username, paid, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
-            try:
-                context["result"] = [x for x in cursor.execute(query)]
-                if not context["result"]:
-                    context["error"] = "User not found in database"
-            except Exception as e:
-                context["error"] = "'{}' - {}".format(query, str(e))
+            if len(username) > 1000:
+                # Something weird is going on here
+                context["error"] = "Too much data"
+            else:
+                query = "SELECT username, paid, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
+                try:
+                    context["result"] = [x for x in cursor.execute(query)]
+                    if not context["result"]:
+                        context["error"] = "User not found in database"
+                except Exception as e:
+                    context["error"] = "'{}' - {}".format(query, str(e))
 
         # Close the sqlite connection
         conn.close()
@@ -185,12 +203,16 @@ def querydb(request, session_id):
         query = d.get("query", None)
 
         if query is not None:
-            try:
-                ret["flags"] = [x for x in cursor.execute(query)]
-                if not ret["flags"]:
-                    ret["error"] = "No flags found in database"
-            except Exception as e:
-                ret["error"] = "'{}' - {}".format(query, str(e))
+            if len(query) > 1000:
+                # Something weird is going on here
+                ret["error"] = "Too much data"
+            else:
+                try:
+                    ret["flags"] = [x for x in cursor.execute(query)]
+                    if not ret["flags"]:
+                        ret["error"] = "No flags found in database"
+                except Exception as e:
+                    ret["error"] = "'{}' - {}".format(query, str(e))
 
         conn.close()
 
@@ -209,13 +231,17 @@ def checkflag(request, session_id):
         flag = d.get("flag", None)
 
         if flag is not None:
-            # Set's the session's hacker_bucks and prevents
-            # getting points for the same flag more than once
-            try:
-                update_hacker_bucks_from_flag(session, flag)
-                ret["hacker_bucks"] = session.hacker_bucks
-            except FlagAlreadyClaimedError:
-                ret["error"] = "Already Claimed"
+            if len(flag) > 200:
+                # Something weird is going on here
+                ret["error"] = "Too much data"
+            else:
+                # Set's the session's hacker_bucks and prevents
+                # getting points for the same flag more than once
+                try:
+                    update_hacker_bucks_from_flag(session, flag)
+                    ret["hacker_bucks"] = session.hacker_bucks
+                except FlagAlreadyClaimedError:
+                    ret["error"] = "Already Claimed"
 
     return HttpResponse(json.dumps(ret))
 

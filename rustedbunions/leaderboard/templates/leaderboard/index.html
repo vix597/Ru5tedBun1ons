@@ -15,12 +15,26 @@
 
     <div id="error"></div>
 
-    <form class="form-inline col-md-12" onsubmit="submitScore(event)" action="#">
+    <form autocomplete="off" class="form-inline col-md-12" onsubmit="submitScore(event)" action="#">
+        <!-- Trying my hardest to avoid autocomplete here-->
+        <input style="display:none;" autocomplete="false" type="text" name="noautocomplete">
+        <input style="display:none" type="text" name="username"/>
+        <input style="display:none" type="password" name="password"/>
+
         <div class="form-group">
             <label for="inputName" class="sr-only">Nickname</label>
-            <input type="text" class="form-control" id="inputName" placeholder="Nickname" required>
+            <input type="text" class="form-control" id="inputName" maxlength="25" placeholder="Nickname" required>
         </div>
-        <button type="submit" class="btn btn-primary">Submit Score</button>
+        <div class="form-group">
+            <label for="secretKey" class="sr-only">Password</label>
+            <input type="password" autocomplete="new-password" class="form-control" maxlength="128" id="secretKey" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit Score</button>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" onclick="resumeSession(event)">Resume Session</button>
+        </div>
     </form>
 
     <table class="table table-striped">
@@ -39,7 +53,7 @@
                     <td>{{ leader.name }}</td>
                     <td>{{ leader.lifetime_hacker_bucks }}</td>
                     <td>{{ leader.playtime }}</td>
-                    <td>{{ leader.flags_found }}</td>
+                    <td>{{ leader.num_flags_found }}</td>
                     <td>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar bg-success"
@@ -70,17 +84,53 @@
         var unauth_session_oid = "{{ unauth_session.oid }}";
         var csrf_token = "{{ csrf_token }}";
 
+        function resumeSession(e) {
+            var name = $("#inputName").val();
+            var secret_key = $("#secretKey").val();
+
+            // Clear on submit
+            $("#inputName").val('');
+            $("#secretKey").val('');
+
+            $.ajax({
+                url: "/leaderboard/load/",
+                type: "POST",
+                data: {
+                    name: name,
+                    secret_key: secret_key,
+                    csrfmiddlewaretoken: csrf_token
+                },
+                success: function(data) {
+                    var res = JSON.parse(data);
+
+                    if (res.error) {
+                        console.log("Failed: ", res.error);
+                        errorAlert(res.error, options={
+                            target: $("#error")
+                        });
+                    } else {
+                        window.location = "/leaderboard/";
+                    }
+                }
+            });
+        }
+
         function submitScore(e) {
             e.preventDefault(); // Prevent the submit from redirecting automatically
 
             var name = $("#inputName").val();
-            $("#inputName").val(''); // Clear nickname on submit
+            var secret_key = $("#secretKey").val();
+
+            // Clear on submit
+            $("#inputName").val('');
+            $("#secretKey").val('');
 
             $.ajax({
                 url: "/leaderboard/submit/",
                 type: "POST",
                 data: {
                     name: name,
+                    secret_key: secret_key,
                     csrfmiddlewaretoken: csrf_token
                 },
                 success: function(data) {
