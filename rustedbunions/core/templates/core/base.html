@@ -82,6 +82,12 @@
             {% load static %}
             <!-- Load the core JS for the site -->
             <script src="{% static 'core/js/core.js' %}"></script>
+
+            <script>
+                // Define these so they can be used to submit flags when not authenticated
+                var csrf_token = "{{ csrf_token }}";
+                var unauth_session_oid = "{{ unauth_session.oid }}";
+            </script>
         {% endblock %}
     </body>
 </html>

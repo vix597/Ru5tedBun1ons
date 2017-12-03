@@ -5,9 +5,21 @@ from django.http import HttpResponse
 
 from .session import Session, UnauthenticatedSession
 from .models import Flag
+from .util import is_user_data_valid, DataType
 
 class FlagAlreadyClaimedError(Exception):
     pass
+
+def calc_lifetime_hacker_bucks_from_claimed_flags(claimed_flags):
+    lifetime_hacker_bucks = 0
+
+    for flag in claimed_flags:
+        #pylint: disable=E1101
+        flagentry = Flag.objects.filter(flag=flag)
+        if flagentry:
+            lifetime_hacker_bucks += flagentry[0].value
+
+    return lifetime_hacker_bucks
 
 def update_hacker_bucks_from_flag(session, userflag):
     '''
@@ -15,10 +27,16 @@ def update_hacker_bucks_from_flag(session, userflag):
     is actually done securely...no SQL injections
     here
     '''
+
     # Normalize input
     userflag = userflag.strip()
     hacker_bucks = 0
     matched_flag = None
+
+    # Stop here if the flag is too long
+    if not is_user_data_valid(userflag, data_type=DataType.FLAG):
+        return
+
     try:
         #pylint: disable=E1101
         for flagentry in Flag.objects.all():
@@ -57,7 +75,7 @@ def get_session(session_id, fail_url="crapdb:index",
      - If status is False the second element is a django redirect
     '''
 
-    if len(session_id) != 32:
+    if not is_user_data_valid(session_id, data_type=DataType.OID):
         # WTF is this shit?!
         print("********get_session() - Session ID length - Somebody is messing around*********")
         if not http_response:
@@ -84,7 +102,7 @@ def get_unauth_session(request):
         request.session["unauth_session"] = unauth_session.oid
     else:
         session_id = request.session["unauth_session"]
-        if len(session_id) != 32:
+        if not is_user_data_valid(session_id, data_type=DataType.OID):
             # WTF is this shit?!
             print("********get_unauth_session() - Session ID length - Somebody is messing around*********")
             unauth_session = UnauthenticatedSession()
@@ -111,10 +129,13 @@ def checkflag(request, session_id):
         flag = d.get("flag", None)
 
         if flag is not None:
-            try:
-                update_hacker_bucks_from_flag(session, flag)
-                ret["hacker_bucks"] = session.hacker_bucks
-            except FlagAlreadyClaimedError:
-                ret["error"] = "Already claimed"
+            if not is_user_data_valid(flag, data_type=DataType.FLAG):
+                ret["error"] = "Too much data"
+            else:
+                try:
+                    update_hacker_bucks_from_flag(session, flag)
+                    ret["hacker_bucks"] = session.hacker_bucks
+                except FlagAlreadyClaimedError:
+                    ret["error"] = "Already claimed"
 
     return HttpResponse(json.dumps(ret))

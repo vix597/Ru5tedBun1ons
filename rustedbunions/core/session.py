@@ -1,11 +1,12 @@
 import sqlite3
 import threading
 import time
-from datetime import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-from core.util import ObjectId
+from django.utils import timezone
+
 from rustedbunions import settings
+from .util import ObjectId, is_user_data_valid
 
 class LoginSqlInjectionError(Exception):
     '''
@@ -45,7 +46,7 @@ class Session:
         self.hacker_bucks = 0
         self.lifetime_hacker_bucks = 0
         self.claimed_flags = []
-        self.creation_time = datetime.utcnow()
+        self.creation_time = timezone.now()
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
         self.challenges = {}
 
@@ -67,6 +68,8 @@ class Session:
         }
 
     def get_challenge(self, challenge_id):
+        if not is_user_data_valid(challenge_id):
+            return None
         return self.challenges.get(challenge_id, None)
 
     def from_other_session(self, other):

@@ -42,6 +42,7 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Lifetime Hacker Bucks</th>
+                <th scope="col">Current Hacker Bucks</th>
                 <th scope="col">Total Playtime</th>
                 <th scope="col">Flags Found</th>
                 <th scope="col">% Complete</th>
@@ -50,10 +51,11 @@
         <tbody>
             {% for leader in leaderboard %}
                 <tr>
-                    <td>{{ leader.name }}</td>
+                    <td>{{ leader.display_name }}</td>
                     <td>{{ leader.lifetime_hacker_bucks }}</td>
+                    <td>{{ leader.hacker_bucks }}</td>
                     <td>{{ leader.playtime }}</td>
-                    <td>{{ leader.num_flags_found }}</td>
+                    <td>{{ leader.num_flags_found }}/{{ num_flags }}</td>
                     <td>
                         <div class="progress" style="height: 20px;">
                             <div class="progress-bar bg-success"
@@ -81,9 +83,6 @@
     {{ block.super }}
 
     <script>
-        var unauth_session_oid = "{{ unauth_session.oid }}";
-        var csrf_token = "{{ csrf_token }}";
-
         function resumeSession(e) {
             var name = $("#inputName").val();
             var secret_key = $("#secretKey").val();

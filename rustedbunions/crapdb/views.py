@@ -8,6 +8,7 @@ from django.template import loader
 from core.challenge import NotEnoughHackerBucksError, ChallengeNotSolvedError
 from core.session import Session, AuthenticatedSession, LoginSqlInjectionError
 from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session, FlagAlreadyClaimedError
+from core.util import is_user_data_valid, DataType
 from rustedbunions import settings
 from flags import FLAGS
 
@@ -24,11 +25,10 @@ def index(request):
         d = request.GET.dict()
         error = d.get("error", None)
 
-        # If error is biggern than 200, somebody is messing with something they shouldn't be
-        if len(error) < 200:
-            context["error"] = error
+        if not is_user_data_valid(error):
+            context["error"] = "Too much data"
         else:
-            print("********index() - Error Length Check - Somebody is messing around*********")
+            context["error"] = error
 
     template = loader.get_template('crapdb/index.html')
     return HttpResponse(template.render(context, request))
@@ -45,8 +45,7 @@ def main(request, session_id):
         "valid_creds_login": FLAGS["valid_creds_login"][0],
         "shortest_sqli": FLAGS["shortest_sqli"][0]
     }
-    status, obj = get_session(
-        session_id, error="Login failed. No session or session expired")
+    status, obj = get_session(session_id, error="Login failed. No session or session expired")
     if not status:
         return obj # On fail obj is a redirect
     session = obj # On success obj is the session
@@ -66,8 +65,7 @@ def login(request):
         password = d.get("password", None)
 
         if username and password:
-            if len(username) > 1000 or len(password) > 1000:
-                # Something weird is going on here
+            if not is_user_data_valid(username) or not is_user_data_valid(password):
                 context["error"] = "Too much data"
             else:
                 try:
@@ -120,11 +118,9 @@ def getpassword(request):
 
         if username is None or answer is None:
             context["error"] = "You must provide an answer"
-        elif len(username) > 1000 or len(answer) > 1000:
-            # Something weird is going on
+        elif not is_user_data_valid(username) or not is_user_data_valid(answer):
             context["error"] = "Too much data"
         else:
-
             # Query that will filter out SQLi
             # because the user values are passed to execure as parameters
             no_sqli_query = ' '.join((
@@ -170,8 +166,7 @@ def searchcrap(request):
         username = d.get("username", None)
 
         if username is not None:
-            if len(username) > 1000:
-                # Something weird is going on here
+            if not is_user_data_valid(username):
                 context["error"] = "Too much data"
             else:
                 query = "SELECT username, paid, question FROM users WHERE username='" + username + "' COLLATE NOCASE"
@@ -203,8 +198,7 @@ def querydb(request, session_id):
         query = d.get("query", None)
 
         if query is not None:
-            if len(query) > 1000:
-                # Something weird is going on here
+            if not is_user_data_valid(query):
                 ret["error"] = "Too much data"
             else:
                 try:
@@ -231,8 +225,7 @@ def checkflag(request, session_id):
         flag = d.get("flag", None)
 
         if flag is not None:
-            if len(flag) > 200:
-                # Something weird is going on here
+            if not is_user_data_valid(flag, data_type=DataType.FLAG):
                 ret["error"] = "Too much data"
             else:
                 # Set's the session's hacker_bucks and prevents
@@ -261,7 +254,12 @@ def challenge_get_flag(session, challenge_id, answer=""):
         raise KeyError("No challenge found with ID: {}".format(challenge_id))
 
     if not challenge.purchased:
-        return {"error": "{} has not been purchased yet".format(challenge.meta.name)}
+        ret["error"] = "{} has not been purchased yet".format(challenge.meta.name)
+        return ret
+
+    if not is_user_data_valid(answer):
+        ret["error"] = "Too much data"
+        return ret
 
     res = challenge.check(answer)
     if res:
@@ -318,9 +316,12 @@ def brutal_force_challenge_get_flag(request, session_id):
         pin = d.get("pin", None)
 
         if pin is not None:
-            ret = challenge_get_flag(session, "brutal_force", answer=pin)
+            if not is_user_data_valid(pin, data_type=DataType.PIN):
+                ret["error"] = "The PIN should only be 4 digits"
+            else:
+                ret = challenge_get_flag(session, "brutal_force", answer=pin)
         else:
-            ret = {"error": "No PIN provided in POST request"}
+            ret["error"] = "No PIN provided in POST request"
 
     return HttpResponse(json.dumps(ret))
 

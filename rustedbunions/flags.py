@@ -55,3 +55,5 @@ FLAGS = {
     "paid_content_challenge": ("flag{TEST49}", 40),
     "xor_challenge": ("flag{TEST50}", 50)
 }
+
+MAX_FLAG_LENGTH = max([len(x) for x in FLAGS])
