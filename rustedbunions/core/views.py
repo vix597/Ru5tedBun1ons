@@ -10,6 +10,14 @@ from .util import is_user_data_valid, DataType
 class FlagAlreadyClaimedError(Exception):
     pass
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def calc_lifetime_hacker_bucks_from_claimed_flags(claimed_flags):
     lifetime_hacker_bucks = 0
 
