@@ -10,14 +10,6 @@ from .util import is_user_data_valid, DataType
 class FlagAlreadyClaimedError(Exception):
     pass
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[-1].strip()
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
-
 def calc_lifetime_hacker_bucks_from_claimed_flags(claimed_flags):
     lifetime_hacker_bucks = 0
 
@@ -106,21 +98,21 @@ def get_unauth_session(request):
     unauth_session = None
 
     if "unauth_session" not in request.session:
-        unauth_session = UnauthenticatedSession()
+        unauth_session = UnauthenticatedSession(request=request)
         request.session["unauth_session"] = unauth_session.oid
     else:
         session_id = request.session["unauth_session"]
         if not is_user_data_valid(session_id, data_type=DataType.OID):
             # WTF is this shit?!
             print("********get_unauth_session() - Session ID length - Somebody is messing around*********")
-            unauth_session = UnauthenticatedSession()
+            unauth_session = UnauthenticatedSession(request=request)
             request.session["unauth_session"] = unauth_session.oid
             return unauth_session
 
         try:
             unauth_session = Session.get_session(request.session["unauth_session"])
         except KeyError:
-            unauth_session = UnauthenticatedSession(oid=request.session["unauth_session"])
+            unauth_session = UnauthenticatedSession(oid=request.session["unauth_session"], request=request)
 
     return unauth_session
 
@@ -128,7 +120,7 @@ def checkflag(request, session_id):
     try:
         session = Session.get_session(session_id)
     except KeyError:
-        session = UnauthenticatedSession(oid=session_id)
+        session = UnauthenticatedSession(oid=session_id, request=request)
 
     ret = {"hacker_bucks": session.hacker_bucks}
 

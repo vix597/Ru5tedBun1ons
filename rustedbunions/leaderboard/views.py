@@ -114,9 +114,10 @@ def submit(request):
                         leader.lifetime_hacker_bucks = calc_lifetime_hacker_bucks_from_claimed_flags(claimed_flags)
                         leader.num_flags_found = len(claimed_flags)
                         leader.claimed_flags = json.dumps(claimed_flags)
-
+            
                         # This will overwrite their hacker bucks. Only an issue if they didn't load first
                         leader.hacker_bucks = session.hacker_bucks
+                        leader.remote_ip = session.remote_ip
                         leader.percent_complete = int((leader.num_flags_found) / len(FLAGS) * 100)
                         leader.playtime = str(timezone.now() - leader.session_creation_time)
 
@@ -145,6 +146,7 @@ def submit(request):
                     leader.percent_complete = int((leader.num_flags_found / len(FLAGS)) * 100)
                     leader.name = name.lower()
                     leader.display_name = name
+                    leader.remote_ip = session.remote_ip
                     leader.session_creation_time = session.creation_time
                     leader.secret_key = hashlib.sha512(secret_key.encode('utf-8')).hexdigest()
                     leader.playtime = str(timezone.now() - session.creation_time)

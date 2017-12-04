@@ -69,7 +69,7 @@ def login(request):
                 context["error"] = "Too much data"
             else:
                 try:
-                    session = AuthenticatedSession.validate(username, password)
+                    session = AuthenticatedSession.validate(request, username, password)
                     if session is not None:
                         # Update the new session with the current hacker bucks and flags
                         session.from_other_session(unauth_session)

@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 from django.utils import timezone
 
 from rustedbunions import settings
-from .util import ObjectId, is_user_data_valid
+from .util import ObjectId, is_user_data_valid, get_client_ip
 
 class LoginSqlInjectionError(Exception):
     '''
@@ -26,7 +26,7 @@ class Session:
     CLEANUP_EVENT = threading.Event()
 
     @classmethod
-    def get_session(cls, oid, create=False):
+    def get_session(cls, oid):
         with cls._session_lock:
             session = cls._registry.get(oid)
             if session and session.is_valid():
@@ -41,7 +41,7 @@ class Session:
     def register_challenge(cls, challenge_cls):
         cls._challenge_registry[challenge_cls.meta.challenge_id] = challenge_cls
 
-    def __init__(self, oid=None):
+    def __init__(self, oid=None, request=None):
         self.oid = oid or ObjectId()
         self.hacker_bucks = 0
         self.lifetime_hacker_bucks = 0
@@ -49,6 +49,11 @@ class Session:
         self.creation_time = timezone.now()
         self.expires = datetime.utcnow() + timedelta(minutes=self.SESSION_TIMEOUT)
         self.challenges = {}
+        self.remote_ip = None
+
+        # Try to get the remote IP if we can
+        if request:
+            self.remote_ip = get_client_ip(request)
 
         # Load up unique versions of each challenge for this session
         for challenge_id, challenge_cls in self._challenge_registry.items():
@@ -64,7 +69,8 @@ class Session:
             "lifetime_hacker_bucks": self.lifetime_hacker_bucks,
             "expires": self.expires,
             "creation_time": self.creation_time,
-            "challenges": {cid: c.to_json() for cid, c in self.challenges.items()}
+            "challenges": {cid: c.to_json() for cid, c in self.challenges.items()},
+            "remote_ip": self.remote_ip
         }
 
     def get_challenge(self, challenge_id):
@@ -115,16 +121,16 @@ class UnauthenticatedSession(Session):
     authenticated sessions
     '''
 
-    def __init__(self, oid=None):
-        super().__init__(oid=oid)
+    def __init__(self, oid=None, request=None):
+        super().__init__(oid=oid, request=request)
 
 class AuthenticatedSession(Session):
     '''
     Represents an authenticated session that stores hacker bucks and challenges
     '''
 
-    def __init__(self, username, password):
-        super().__init__()
+    def __init__(self, username, password, request=None):
+        super().__init__(request=request)
         self.username = username
         self.password = password
         self.paid = False
@@ -170,7 +176,7 @@ class AuthenticatedSession(Session):
         return False
 
     @classmethod
-    def validate(cls, username, password):
+    def validate(cls, request, username, password):
         conn = sqlite3.connect(settings.CRAPDB_PATH)
         cursor = conn.cursor()
         query = ' '.join((
@@ -189,7 +195,7 @@ class AuthenticatedSession(Session):
         conn.close()
 
         if result:
-            session = cls(username, password)
+            session = cls(username, password, request=request)
             user = result[0][0]
             if cls.is_paid_user(user):
                 if session.actually_valid:

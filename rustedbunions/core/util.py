@@ -29,6 +29,14 @@ MAX_PASSWORD_LENGTH = 128
 # Max length for a PIN
 MAX_PIN_LENGTH = 4
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[-1].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def is_user_data_valid(data, data_type=DataType.ARBITRARY_USER_DATA):
     if not hasattr(data, '__len__'):
         return True
