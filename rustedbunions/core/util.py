@@ -10,6 +10,8 @@ class DataType(Enum):
     SHORT_NAME = 4
     PASSWORD = 5
     PIN = 6
+    USER_SPECIFIED_MAX_LENGTH = 7
+    USER_SPECIFIED_EXACT_LENGTH = 8
 
 def ObjectId():
     return str(uuid4()).replace('-', '')
@@ -37,7 +39,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-def is_user_data_valid(data, data_type=DataType.ARBITRARY_USER_DATA):
+def is_user_data_valid(data, data_type=DataType.ARBITRARY_USER_DATA, length=0):
     if not hasattr(data, '__len__'):
         return True
 
@@ -53,4 +55,8 @@ def is_user_data_valid(data, data_type=DataType.ARBITRARY_USER_DATA):
         return len(data) <= MAX_PASSWORD_LENGTH
     elif data_type == DataType.PIN:
         return len(data) <= MAX_PIN_LENGTH
+    elif data_type == DataType.USER_SPECIFIED_MAX_LENGTH:
+        return len(data) <= length
+    elif data_type == DataType.USER_SPECIFIED_EXACT_LENGTH:
+        return len(data) == length
     return False

@@ -358,7 +358,10 @@ def rot_challenge_get_flag(request, session_id):
         answer = d.get("answer", None)
 
         if answer is not None:
-            ret = challenge_get_flag(session, "rot", answer=answer)
+            if not is_user_data_valid(answer):
+                ret["error"] = "Too much data"
+            else:
+                ret = challenge_get_flag(session, "rot", answer=answer)
         else:
             ret = {"error": "No answer provided in POST request"}
 
@@ -411,4 +414,26 @@ def xor_challenge_get(request, session_id):
         "hacker_bucks": session.hacker_bucks
     }
     ret.update(challenge.to_json())
+    return HttpResponse(json.dumps(ret))
+
+def xor_challenge_get_flag(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+
+    ret = {}
+
+    if request.POST:
+        d = request.POST.dict()
+        answer = d.get("answer", None)
+
+        if answer is not None:
+            if not is_user_data_valid(answer, data_type=DataType.USER_SPECIFIED_EXACT_LENGTH, length=6):
+                ret["error"] = "Passphrase must be 6 characters"
+            else:
+                ret = challenge_get_flag(session, "xor", answer=answer)
+        else:
+            ret = {"error": "No answer provided in POST request"}
+
     return HttpResponse(json.dumps(ret))

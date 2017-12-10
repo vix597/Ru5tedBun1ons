@@ -11,11 +11,15 @@ from flags import FLAGS
 
 from rustedbunions import settings
 
-MOVIE_QUOTES = []
+MOVIE_QUOTE_WORDS = []
 
 # Load all the movie quotes
 with open(os.path.join(settings.BASE_DIR, "movie_quotes.txt")) as f:
-    MOVIE_QUOTES.extend(f.readlines())
+    quotes = f.readlines()
+    for quote in quotes:
+        words = quote.split(" ")
+        for word in words:
+            MOVIE_QUOTE_WORDS.append(word.strip().lower())
 
 class Rot(Challenge):
     ALPHABET = string.ascii_lowercase
@@ -92,9 +96,11 @@ class Rot(Challenge):
         self.encrypted_message = ""
 
         key = random.randint(1, 25)
+        message_len = random.randint(4, 20)
+        self.message = ""
 
-        # Pick a random movie quote
-        self.message = MOVIE_QUOTES[random.randint(0, len(MOVIE_QUOTES) - 1)].strip().lower()
+        # Generate a crazy movie quote
+        self.message = ' '.join([MOVIE_QUOTE_WORDS[random.randint(0, len(MOVIE_QUOTE_WORDS) - 1)] for _ in range(message_len)])
 
         # Generate the crypto message
         self.encrypted_message = self.shifttext(key, self.message)

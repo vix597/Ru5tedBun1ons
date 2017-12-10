@@ -1,8 +1,28 @@
 <challenge-modal modal-id="xorModal">
     <yield to="modal-header">
+        <h5 class="modal-title">You've received a secret message</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </yield>
+    <yield to="modal-body">
+        <p>
+            Our teams of crypto scientists have tried their best. What they tell me is
+            the first 4 characters of the message work out to be: "The ". After that point all our
+            quantum password crackers fried. It's up to you now. You can do it.
+        </p>
         <div class="form-group" style="width: 100%;">
-            <label for="xorCipherText">Decrypt this. The cleartext contains a flag</label>
+            <label for="xorCipherText">Decrypt this:</label>
             <input class="form-control" type="text" id="xorCipherText" name="xorCipherText" readonly>
         </div>
+        <div class"form-group" style="width: 100%;">
+            <label for="xorPassphrase">What's the passphrase?</label>
+            <input class="form-control" type="text" id="xorPassphrase" name="xorPassphrase">
+        </div>
+        <button type="button" class="btn btn-success" style="margin-top: 10px;"
+            onclick="xorSubmitAnswer($('#xorPassphrase').val())">Submit Answer</button>
+    </yield>
+    <yield to="modal-footer">
+        <div id="xorModalFooter" style="width: 100%;"></div>
     </yield>
 </challenge-modal>

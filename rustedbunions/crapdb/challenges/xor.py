@@ -1,8 +1,13 @@
+import string
+import random
+
 from core.challenge import Challenge, ChallengeMetadata
 from core.session import Session
 from flags import FLAGS
 
 class Xor(Challenge):
+    alnum = string.ascii_letters + string.digits
+
     meta = ChallengeMetadata(
         challenge_id="xor",
         name="XOR",
@@ -14,10 +19,20 @@ class Xor(Challenge):
 
     def __init__(self):
         super().__init__()
+        random.seed() # uses current system time
+
         # NOTE: Change before deploy
-        self.message = "this is not going to be the message used for deploy " + self.meta.flag
-        self.key = "key" * (int(len(self.message) / 3) + 1)
-        self.cipher = self.sxor(self.key, self.message)
+        self.message = "the quick brown fox jumps over the lazy dog"
+        self.key = ""
+        self.cipher_key = None
+        self.generate_key()
+        self.cipher = self.sxor(self.cipher_key, self.message)
+
+    def generate_key(self):
+        key_len = 6
+        for _ in range(key_len):
+            self.key += self.alnum[random.randint(0, (len(self.alnum) - 1))]
+        self.cipher_key = str(self.key) * (int(len(self.message) / len(self.key)) + 1)
 
     def sxor(self, s1, s2):
         # convert strings to a list of character pair tuples
@@ -35,10 +50,9 @@ class Xor(Challenge):
         return obj
 
     def check(self, answer):
-        '''
-        Don't need to check, the flag is in the message.
-        '''
-        self.solved = True
-        return True
+        if answer.strip() == self.key or answer.strip() == self.cipher_key:
+            self.solved = True
+            return True
+        return False
 
 Session.register_challenge(Xor)
