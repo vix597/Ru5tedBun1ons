@@ -10,8 +10,8 @@
     <link href="{% static 'crapdb/css/hackerstyle.css' %}" rel="stylesheet">
 
     <!-- Load Riot Tags -->
-    <script src="{% static 'crapdb/tags/blog-content.tag.html' %}" type='riot/tag'></script>
     <script src="{% static 'crapdb/tags/challenge-modal.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'crapdb/tags/challenge-card.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
@@ -20,76 +20,75 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
-                    <a class="nav-link" onclick="superAdmin()" id="settingsButton" href="#">Super Admin Settings</a>
-                    <a class="nav-link" onclick='brutalForce()' id="brutalForceButton" href="#">
-                        {% if session.challenges.brutal_force.purchased %}
-                            Brutal Force
-                        {% else %}
-                            Brutal Force (${{ session.challenges.brutal_force.meta.price }})
-                        {% endif %}
-                    </a>
-                    <a class="nav-link" onclick='rot()' id="rotButton" href="#">
-                        {% if session.challenges.rot.purchased %}
-                            ROT?
-                        {% else %}
-                            ROT? (${{ session.challenges.rot.meta.price }})
-                        {% endif %}
-                    </a>
-                    <a class="nav-link" onclick="paidContent()" id='paidContentButton' href="#">
-                        {% if session.challenges.paid_content.purchased %}
-                            Paid Content
-                        {% else %}
-                            Paid Content (${{ session.challenges.paid_content.meta.price }})
-                        {% endif %}
-                    </a>
-                    <a class="nav-link" onclick="xor()" id="xorButton" href="#">
-                        {% if session.challenges.xor.purchased %}
-                            XOR!
-                        {% else %}
-                            XOR! (${{ session.challenges.xor.meta.price }})
-                        {% endif %}
-                    </a>
-                    <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Game Time!</a>
+                    <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Grind For Bucks</a>
                 </nav>
-            </div>
-        </div>
-
-        <div class="blog-header">
-            <div class="container">
-                {% if session.username %}
-                    <h1 class="blog-title">Welcome {{ session.username }}</h1>
-
-                    {% if session.username|length <= 8 and not session.actually_valid %}
-                        <p>
-                            You logged in with the shortest possible SQLi for this site.
-                            Here ya go: <br> {{ shortest_sqli }}
-                        </p>
-                    {% endif %}
-                {% else %}
-                    <h1 class="blog-title">Welcome {{ no_user_login }}</h1>
-                {% endif %}
-
-                {% if not session.password %}
-                    <p>How'd you get in here without a {{ no_password_login }}</p>
-                {% elif session.actually_valid %}
-                    <!-- Flag for logging in with legit creds (no SQLi) -->
-                    <p>
-                        No SQLi earns you a flag: {{ valid_creds_login }}
-                    </p>
-                {% else %}
-                    {% if session.username and session.username|length > 8 or not session.username %}
-                        <p>SQLi doesn't deserve a flag you big jerk</p>
-                    {% endif %}
-                {% endif %}
             </div>
         </div>
     </header>
 
     <main role="main" class="container">
         <div class="row">
-            <blog-content class="col-sm-8 blog-main"></blog-content>
+            <div class="col-sm-8 blog-main">
+                <div class="row" style="border-bottom: 2px;border-bottom-color: green; border-bottom-style: solid;">
+                    {% if session.username %}
+                        <h1 class="blog-title">Welcome {{ session.username }}</h1>
 
-            <aside class="col-sm-3 ml-sm-auto blog-sidebar">
+                        {% if session.username|length <= 8 and not session.actually_valid %}
+                            <p>
+                                You logged in with the shortest possible SQLi for this site.
+                                Here ya go: {{ shortest_sqli }}
+                            </p>
+                        {% endif %}
+                    {% else %}
+                        <h1 class="blog-title">Welcome {{ no_user_login }}</h1>
+                    {% endif %}
+
+                    {% if not session.password %}
+                        <p>How'd you get in here without a {{ no_password_login }}</p>
+                    {% elif session.actually_valid %}
+                        <!-- Flag for logging in with legit creds (no SQLi) -->
+                        <p>
+                            No SQLi earns you a flag: {{ valid_creds_login }}
+                        </p>
+                    {% else %}
+                        {% if session.username and session.username|length > 8 or not session.username %}
+                            <p>SQLi doesn't deserve a flag you big jerk</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="blog-errors" style="margin-top: 10px;"></div>
+
+                {% for challenge in session.challenges %}
+                    <!--
+                    {% if forloop.counter0|divisibleby:2 %}
+                        {% if forloop.counter0 != 0 %}
+                            </div>
+                        {% endif %}
+                        <div class="row" style="margin-top: 5px;margin-bottom: 5px;">
+                    {% endif %}
+                    -->
+
+                    <!-- Challenge cards -->
+                    <challenge-card class="col-sm-12"
+                        id="{{ challenge.meta.challenge_id }}"
+                        name="{{ challenge.meta.name }}"
+                        description="{{ challenge.meta.description }}"
+                        price="{{ challenge.meta.price }}"
+                        value="{{ challenge.meta.value }}"
+                        purchased="{{ challenge.purchased }}"
+                        solved="{{ challenge.solved }}"
+                        challenge-function="{{ challenge.meta.js_function }}"></challenge-card>
+
+                    <!--
+                    {% if forloop.last %}
+                        </div>
+                    {% endif %}
+                    -->
+                {% endfor %}
+            </div>
+
+            <aside class="col-sm-3 ml-sm-auto blog-sidebar" style="margin-bottom: 10px;">
                 <div class="sidebar-module card" style="margin-bottom: 10px;padding-bottom: 0px;">
                     <div class="card-body">
                         <h4 class="card-title text-center">Hacker Bucks</h4>
@@ -105,28 +104,23 @@
                     <input class="form-control" type="text" id="testflag"
                         placeholder="Test a flag" name="checkflag" onkeydown="testFlagKeyDown(event)">
 
-                    <button style="margin-top: 8px;" class="btn btn-success btn-block" 
+                    <button style="margin-top: 8px;" class="btn btn-success btn-block"
                         onclick="testFlag()">Get Hacker Bucks</button>
                 </div>
 
                 <div class="sidebar-module sidebar-module-inset">
                     <h4>About</h4>
                     <p>
-                        Buffer afk ascii flood ack ssh chown finally client var concurrently gobble 
-                        regex gnu. Epoch char bytes ban memory leak thread race condition.
+                        A sweet hackable site I developed
+                        for the fun of it. Now give me
+                        money. (if you want)
                     </p>
-                </div>
-
-                <div class="sidebar-module">
-                    <h4>Archives</h4>
-                    <ol class="list-unstyled">
-                        <li><a href="#">March 2014</a></li>
-                        <li><a href="#">February 2014</a></li>
-                        <li><a href="#">January 2014</a></li>
-                        <li><a href="#">December 2013</a></li>
-                        <li><a href="#">November 2013</a></li>
-                        <li><a href="#">October 2013</a></li>
-                    </ol>
+                    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                        <input type="hidden" name="cmd" value="_s-xclick">
+                        <input type="hidden" name="hosted_button_id" value="9DXKTVQ3NW9NS">
+                        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                        <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                    </form>
                 </div>
             </aside><!-- /.blog-sidebar -->
         </div><!-- /.row -->
@@ -207,8 +201,8 @@
         }
 
         $(document).ready(function() {
-            riot.mount("blog-content");
             riot.mount("challenge-modal");
+            riot.mount("challenge-card");
 
             // Set the session ID in the browser's local storage for later
             localStorage.setItem("session_id", "{{ session_id }}");

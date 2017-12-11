@@ -14,7 +14,8 @@ div.blog-header {
     font-size: 48px;
 }
 
-.blog-masthead {
+.blog-masthead,
+.challenge-card {
     background-color: black;
     border-color: green;
     border-width: 2px;
@@ -41,7 +42,8 @@ a:hover.nav-link, a:hover {
 .sidebar-module h4,
 .sidebar-module.card,
 .modal-title,
-.modal-header > button.close {
+.modal-header > button.close,
+.card-title {
     color: green;
     font-family: "Courier New", Courier, monospace;
 }

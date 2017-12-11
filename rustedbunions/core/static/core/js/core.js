@@ -7,7 +7,7 @@ var csrf_token = undefined;
 
 function bootstrapAlert(msg, options={}) {
     var defaults = {
-        target:$(".blog-header"),
+        target:$(".blog-errors"),
         prepend: true,
         autoclose: 4000,
         cls: "alert-danger"

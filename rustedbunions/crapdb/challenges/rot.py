@@ -31,7 +31,9 @@ class Rot(Challenge):
         description="Ancient crypto",
         price=25,
         value=FLAGS["rot_challenge"][1],
-        flag=FLAGS["rot_challenge"][0]
+        flag=FLAGS["rot_challenge"][0],
+        js_function="rot()",
+        sort_order=3
     )
 
     def __init__(self):

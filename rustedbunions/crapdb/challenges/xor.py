@@ -14,7 +14,9 @@ class Xor(Challenge):
         description="The most exclusive 'or'",
         price=25,
         value=FLAGS["xor_challenge"][1],
-        flag=FLAGS["xor_challenge"][0]
+        flag=FLAGS["xor_challenge"][0],
+        js_function="xor()",
+        sort_order=4
     )
 
     def __init__(self):

@@ -1,5 +1,6 @@
 import sqlite3
 import threading
+import operator
 import time
 from datetime import timedelta, datetime
 
@@ -69,7 +70,8 @@ class Session:
             "lifetime_hacker_bucks": self.lifetime_hacker_bucks,
             "expires": self.expires,
             "creation_time": self.creation_time,
-            "challenges": {cid: c.to_json() for cid, c in self.challenges.items()},
+            "challenges": sorted(
+                [c.to_json() for c in self.challenges.values()], key=lambda challenge: challenge["meta"]["sort_order"]),
             "remote_ip": self.remote_ip
         }
 

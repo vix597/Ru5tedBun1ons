@@ -8,13 +8,16 @@ class NotEnoughHackerBucksError(Exception):
 
 class ChallengeMetadata:
 
-    def __init__(self, price=0, value=0, flag="", challenge_id="", name="", description=""):
+    def __init__(self, price=0, value=0, flag="", challenge_id="", name="", description="",
+                 js_function="", sort_order=0):
         self.price = price
         self.value = value
         self.flag = flag
         self.challenge_id = challenge_id
         self.name = name
         self.description = description
+        self.js_function = js_function
+        self.sort_order = sort_order
 
     def to_json(self):
         # Flag not included to remain secret
@@ -23,7 +26,9 @@ class ChallengeMetadata:
             "value": self.value,
             "challenge_id": self.challenge_id,
             "name": self.name,
-            "description": self.description
+            "description": self.description,
+            "js_function": self.js_function,
+            "sort_order": self.sort_order
         }
 
 class Challenge:

@@ -12,7 +12,9 @@ class BrutalForce(Challenge):
         description="Use the force",
         price=6,
         value=FLAGS["brutal_force_challenge"][1],
-        flag=FLAGS["brutal_force_challenge"][0]
+        flag=FLAGS["brutal_force_challenge"][0],
+        js_function="brutalForce()",
+        sort_order=1
     )
 
     def __init__(self):

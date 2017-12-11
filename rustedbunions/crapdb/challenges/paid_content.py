@@ -10,7 +10,9 @@ class PaidContent(Challenge):
         description="Pay for things you want!",
         price=25,
         value=FLAGS["paid_content_challenge"][1],
-        flag=FLAGS["paid_content_challenge"][0]
+        flag=FLAGS["paid_content_challenge"][0],
+        js_function="paidContent()",
+        sort_order=2
     )
 
     def check(self, answer):
