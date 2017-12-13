@@ -1,13 +1,11 @@
 var cipherText = "";
 
 function openXorModal() {
-    $("#xorButton").text("XOR!");
+    setPurchasedChallenge("xor");
     $("#xorModal").modal({show: true});
 }
 
 function xor() {
-    var session_id = localStorage.getItem("session_id");
-
     if (cipherText.length) {
         openXorModal();
         return;
@@ -23,7 +21,7 @@ function xor() {
                 window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
                 return;
             } else if (res.error) {
-                errorAlert(res.error);
+                errorAlert(res.error, options={target: $("#xor-error")});
                 return;
             }
 
@@ -38,9 +36,6 @@ function xor() {
 }
 
 function xorSubmitAnswer(passphrase) {
-    var session_id = localStorage.getItem("session_id");
-    var csrf_token = localStorage.getItem("csrf_token");
-
     $.ajax({
         url: "/crapdb/xorflag/" + session_id + "/",
         type: "POST",

@@ -1,6 +1,7 @@
+var pin_hash = null;
 
 function printBrutalWelcome() {
-    $("#brutalForceButton").text("Brutal Force");
+    setPurchasedChallenge("brutal_force");
     $("#brutalForceModal").modal({show: true});
 
     console.log("Welcome to the brutal force challenge.");
@@ -12,8 +13,6 @@ function printBrutalWelcome() {
 }
 
 function brutalForce() {
-    var session_id = localStorage.getItem("session_id");
-    var pin_hash = localStorage.getItem("pin_hash");
     if (pin_hash) {
         printBrutalWelcome();
         return;
@@ -29,21 +28,20 @@ function brutalForce() {
                 window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
                 return;
             } else if (res.error) {
-                errorAlert(res.error);
+                errorAlert(res.error, options={target: $("#brutal_force-error")});
                 return;
             } 
 
             // Update the hacker bucks
             $("#hackerBucks").text(res.hacker_bucks);
 
-            localStorage.setItem("pin_hash", res.pin_hash);
+            pin_hash = res.pin_hash;
             printBrutalWelcome();
         }
     });
 }
 
 function submitPin(pin_number, display_alert=false) {
-    var pin_hash = localStorage.getItem("pin_hash");
     if (!pin_hash) {
         console.log("The user's PIN hash has not been retrieved yet.");
         console.log("Click on the 'Burtal Force' link and pay $15 to");
@@ -55,9 +53,6 @@ function submitPin(pin_number, display_alert=false) {
 
     var result = sha256(pin_number.toString());
     if (result == pin_hash) {
-        var session_id = localStorage.getItem("session_id");
-        var csrf_token = localStorage.getItem("csrf_token");
-
         // Print the PIN
         console.log("User's pin is: ", pin_number);
 

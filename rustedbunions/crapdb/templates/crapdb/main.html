@@ -10,8 +10,8 @@
     <link href="{% static 'crapdb/css/hackerstyle.css' %}" rel="stylesheet">
 
     <!-- Load Riot Tags -->
-    <script src="{% static 'crapdb/tags/challenge-modal.tag.html' %}" type='riot/tag'></script>
-    <script src="{% static 'crapdb/tags/challenge-card.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'core/tags/challenge-modal.tag.html' %}" type='riot/tag'></script>
+    <script src="{% static 'core/tags/challenge-card.tag.html' %}" type='riot/tag'></script>
 {% endblock %}
 
 {% block content %}
@@ -28,7 +28,7 @@
 
     <main role="main" class="container">
         <div class="row">
-            <div class="col-sm-8 blog-main">
+            <div class="col-sm-9 blog-main">
                 <div class="row" style="border-bottom: 2px;border-bottom-color: green; border-bottom-style: solid;">
                     {% if session.username %}
                         <h1 class="blog-title">Welcome {{ session.username }}</h1>
@@ -56,19 +56,9 @@
                         {% endif %}
                     {% endif %}
                 </div>
-
-                <div class="blog-errors" style="margin-top: 10px;"></div>
+                <div class="blog-errors" style="margin-top:10px;margin-bottom:0px;"></div>
 
                 {% for challenge in session.challenges %}
-                    <!--
-                    {% if forloop.counter0|divisibleby:2 %}
-                        {% if forloop.counter0 != 0 %}
-                            </div>
-                        {% endif %}
-                        <div class="row" style="margin-top: 5px;margin-bottom: 5px;">
-                    {% endif %}
-                    -->
-
                     <!-- Challenge cards -->
                     <challenge-card class="col-sm-12"
                         id="{{ challenge.meta.challenge_id }}"
@@ -78,13 +68,11 @@
                         value="{{ challenge.meta.value }}"
                         purchased="{{ challenge.purchased }}"
                         solved="{{ challenge.solved }}"
-                        challenge-function="{{ challenge.meta.js_function }}"></challenge-card>
-
-                    <!--
-                    {% if forloop.last %}
-                        </div>
-                    {% endif %}
-                    -->
+                        challenge-function="{{ challenge.meta.js_function }}">
+                        <yield to="errors">
+                            <div id="{{ challenge.meta.challenge_id }}-error"></div>
+                        </yield>
+                    </challenge-card>
                 {% endfor %}
             </div>
 
@@ -149,6 +137,7 @@
 
     {% load static %}
     <!-- Load the challenge JS files -->
+    <script src="{% static 'crapdb/js/challenge/superadmin.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/matrix.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/flyingflags.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/brutalforce.js' %}"></script>
@@ -157,32 +146,6 @@
     <script src="{% static 'crapdb/js/challenge/xor.js' %}"></script>
 
     <script>
-        // This prevents the user from ever accessing the modal
-        // Impossible to bypass this
-        var authorized = false;
-
-        function superAdmin() {
-            if (authorized) {
-                var session_id = localStorage.getItem("session_id");
-                $.ajax({
-                    url: "/crapdb/superadmin/" + session_id + "/",
-                    type: "GET",
-                    success: function(data) {
-                        var res = JSON.parse(data);
-                        if (res.redirect) {
-                            window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
-                            return;
-                        }
-
-                        $("#superAdminModalBody").text(res.flag);
-                        $("#superAdminModal").modal({show: true});
-                    }
-                });
-            } else {
-                errorAlert("Javascript validation failed. You are not super admin. authorized=" + authorized);
-            }
-        }
-
         function testFlagKeyDown(event) {
             if (event.key == "Enter") {
                 testFlag();
@@ -190,35 +153,23 @@
         }
 
         function logout() {
-            var session_id = localStorage.getItem("session_id");
             localStorage.clear();
             window.location = "/crapdb/logout/" + session_id + "/";
         }
 
         function jackit() {
-            var session_id = localStorage.getItem("session_id");
             window.location = "/jackit/" + session_id + "/";
         }
 
         $(document).ready(function() {
-            riot.mount("challenge-modal");
-            riot.mount("challenge-card");
+            localStorage.setItem("session_id", session_id);
 
-            // Set the session ID in the browser's local storage for later
-            localStorage.setItem("session_id", "{{ session_id }}");
-            // Set the csrf_token in the local storage for later
-            localStorage.setItem("csrf_token", "{{ csrf_token }}");
+            riot.compile(function() {
+                challenge_cards = riot.mount("challenge-card");
+                riot.mount("challenge-modal");
 
-            var pin_hash = localStorage.getItem("pin_hash");
-            if (pin_hash) {
-                $("#brutalForceButton").text("Brutal Force");
-            }
-
-            var encrypted_message = localStorage.getItem("encrypted_message");
-            if (encrypted_message) {
-                $("#rotButton").text("ROT?");
-                $("#cipher-text").text(encrypted_message);
-            }
+                console.log("challenges: ", challenge_cards);
+            });
         });
     </script>
 {% endblock %}

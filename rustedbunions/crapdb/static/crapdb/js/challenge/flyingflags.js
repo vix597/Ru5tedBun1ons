@@ -37,9 +37,6 @@ function popThoseFlags(flags) {
 function flagsForDays() {
     query = "SELECT flag from flags";
 
-    var session_id = localStorage.getItem("session_id");
-    var csrf_token = localStorage.getItem("csrf_token");
-
     // Load the flags
     $.ajax({
         url: "/crapdb/querydb/" + session_id + "/",

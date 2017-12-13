@@ -1,4 +1,3 @@
-
 // Stores the interval ID for the startTimer() method
 var rotTimerItervalId = null;
 var rotNumSolved = 0;
@@ -6,7 +5,7 @@ var rotNumToSolve = 0;
 var rotEncryptedMessage = "";
 
 function openRotModal() {
-    $("#rotButton").text("ROT?");
+    setPurchasedChallenge("rot");
     $("#rotModal").modal({show: true});
 
     console.log("Welcome to the ROT challenge.");
@@ -52,8 +51,6 @@ function startTimer(seconds, display) {
 }
 
 function rot(reload=false) {
-    var session_id = localStorage.getItem("session_id");
-
     if (rotEncryptedMessage.length && !reload) {
         openRotModal();
         return;
@@ -69,7 +66,7 @@ function rot(reload=false) {
                 window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
                 return;
             } else if (res.error) {
-                errorAlert(res.error);
+                errorAlert(res.error, options={target: $("#rot-error")});
                 return;
             }
             startTimer(res.remaining_time, $("#rot_timer"));
@@ -101,9 +98,6 @@ function rotSubmitAnswer(answer, callback=null) {
     }
 
     $("#cleartext").val(answer);
-
-    var session_id = localStorage.getItem("session_id");
-    var csrf_token = localStorage.getItem("csrf_token");
 
     // Submit the answers
     $.ajax({

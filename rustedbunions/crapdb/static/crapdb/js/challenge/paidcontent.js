@@ -1,8 +1,8 @@
+var paidContentChallengePurchased = false;
+
 
 function openPaidContentModal() {
-    var session_id = localStorage.getItem("session_id");
-
-    $("#paidContentButton").text("Paid Content");
+    setPurchasedChallenge("paid_content");
     $("#paidContentModal").modal({show: true});
 
     $.ajax({
@@ -20,9 +20,7 @@ function openPaidContentModal() {
 }
 
 function paidContent() {
-    var session_id = localStorage.getItem("session_id");
-
-    if (localStorage.getItem("paidContentChallengePurchased")) {
+    if (paidContentChallengePurchased) {
         openPaidContentModal();
         return;
     }
@@ -37,12 +35,12 @@ function paidContent() {
                 window.location = "/crapdb/?error=" + encodeURIComponent(res.redirect);
                 return;
             } else if (res.error) {
-                errorAlert(res.error);
+                errorAlert(res.error, options={target: $("#paid_content-error")});
                 return;
             }
 
             $("#hackerBucks").text(res.hacker_bucks);
-            localStorage.setItem("paidContentChallengePurchased", true);
+            paidContentChallengePurchased = true;
             openPaidContentModal();
         }
     });

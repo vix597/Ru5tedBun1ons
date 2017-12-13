@@ -11,7 +11,7 @@ class Xor(Challenge):
     meta = ChallengeMetadata(
         challenge_id="xor",
         name="XOR",
-        description="The most exclusive 'or'",
+        description="The most exclusive",
         price=25,
         value=FLAGS["xor_challenge"][1],
         flag=FLAGS["xor_challenge"][0],

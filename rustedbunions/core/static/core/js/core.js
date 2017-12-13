@@ -2,8 +2,10 @@
 // Methods to add alerts to the page and send ajax requests
 //
 
+var session_id = undefined;
 var unauth_session_oid = undefined;
 var csrf_token = undefined;
+var challenge_cards = [];
 
 function bootstrapAlert(msg, options={}) {
     var defaults = {
@@ -52,6 +54,24 @@ function errorAlert(error, options={}) {
 function successAlert(msg, options={}) {
     options.cls = "alert-success";
     bootstrapAlert(msg, options=options);
+}
+
+function getChallenge(challenge_id) {
+    for (challenge of challenge_cards) {
+        if (challenge.challenge_id === challenge_id) {
+            return challenge;
+        }
+    }
+    return null;
+}
+
+function setPurchasedChallenge(challenge_id) {
+    var challenge = getChallenge(challenge_id);
+    if (challenge) {
+        challenge.setPurchased();
+        return true;
+    }
+    return false;
 }
 
 function testFlag() {

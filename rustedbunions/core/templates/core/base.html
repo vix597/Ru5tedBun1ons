@@ -85,8 +85,9 @@
 
             <script>
                 // Define these so they can be used to submit flags when not authenticated
-                var csrf_token = "{{ csrf_token }}";
-                var unauth_session_oid = "{{ unauth_session.oid }}";
+                csrf_token = "{{ csrf_token }}";
+                unauth_session_oid = "{{ unauth_session.oid }}";
+                session_id = "{{ session_id }}";
             </script>
         {% endblock %}
     </body>

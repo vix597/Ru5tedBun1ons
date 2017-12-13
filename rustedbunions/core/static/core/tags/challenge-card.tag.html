@@ -1,0 +1,40 @@
+<challenge-card>
+    <div class="card challenge-card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4 class="card-title">{ name }</h4>
+                    <p>{ description }</p>
+                </div>
+                <aside class="col-sm-6">
+                    <ul>
+                        <li>Price: { price == 0 ? "Free" : "$" + price }</li>
+                        <li>Bounty: ${ value }</li>
+                        <virtual if="{ price > 0 }">
+                            <li>Purchased: { purchased }</li>
+                        </virtual>
+                    </ul>
+                </aside>
+            </div>
+            <yield from="errors"></yield>
+            <button class="btn btn-success" onclick="{ challenge_function }">Hack!</button>
+        </div>
+    </div>
+
+    <script>
+        var tag = this;
+        tag.name = opts.name || "";
+        tag.description = opts.description || "";
+        tag.price = opts.price || 0;
+        tag.value = opts.value || 0;
+        tag.purchased = opts.purchased || false;
+        tag.solved = opts.solved || false;
+        tag.challenge_function = opts.challengeFunction || function(){console.log("BUG: NO CHALLENGE FUNCTION");};
+        tag.challenge_id = opts.id || "";
+
+        tag.setPurchased = function() {
+            tag.purchased = true;
+            tag.update();
+        }
+    </script>
+</challenge-card>
