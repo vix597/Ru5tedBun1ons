@@ -158,6 +158,10 @@
                             target: $("#error")
                         });
                     } else {
+                        if (res.flag) {
+                            // Alert is blocking
+                            alert(res.flag);
+                        }
                         // Reload the page
                         window.location = "/leaderboard/";
                     }

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'crapdb.apps.CrapdbConfig',
     'jackit.apps.JackitConfig',
     'leaderboard.apps.LeaderboardConfig',
+    'traveler.apps.TravelerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

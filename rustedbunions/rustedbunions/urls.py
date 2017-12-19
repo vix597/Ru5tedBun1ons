@@ -22,7 +22,7 @@ index_view = RedirectView.as_view(url="/crapdb/", permanent=True)
 urlpatterns = [
     url(r'^$', index_view, name='index'),
     url(r'^crapdb/', include('crapdb.urls')),
-    url(r'^etc/', include('crapdb.urls')),
+    url(r'^etc/', include('traveler.urls')),
     url(r'^jackit/', include('jackit.urls')),
     url(r'^core/', include('core.urls')),
     url(r'^leaderboard/', include('leaderboard.urls')),
