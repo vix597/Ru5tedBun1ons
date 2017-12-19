@@ -1,6 +1,6 @@
 import json
 import hashlib
-import lxml.html
+from html.parser import HTMLParser
 
 from django.http import HttpResponse
 from django.template import loader
@@ -164,8 +164,10 @@ def submit(request):
             ret["error"] = "No name/secret key provided for leaderboard entry"
 
         if "error" not in ret:
-            maybe_html = name
-            if lxml.html.fromstring(maybe_html).find('.//*') is not None:
+            parser = HTMLParser()
+            parser.feed(name)
+            parser.close()
+            if parser.get_starttag_text():
                 ret["flag"] = FLAGS["scoreboard_hacking"][0]
 
     return HttpResponse(json.dumps(ret))
