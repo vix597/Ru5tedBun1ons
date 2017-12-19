@@ -1,0 +1,19 @@
+{% extends 'core/base.html' %}
+
+{% block head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    root:x:0:0:root:/root:/bin/bash<br>
+    bin:x:1:1:bin:/bin:/sbin/nologin<br>
+    daemon:x:2:2:daemon:/sbin:/sbin/nologin<br>
+    sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin<br>
+    tcpdump:x:72:72::/:/sbin/nologin<br>
+    mandar:x:500:500:Mandar Shinde:/home/mandar:/bin/bash<br>
+    mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/bash<br>
+    nagios:{{ flag }}:501:501::/home/nagios:/bin/bash<br>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

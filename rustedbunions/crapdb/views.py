@@ -33,6 +33,16 @@ def index(request):
     template = loader.get_template('crapdb/index.html')
     return HttpResponse(template.render(context, request))
 
+def shadow(request):
+    context = {"flag": FLAGS["dir_traveler"][0]}
+    template = loader.get_template('crapdb/shadow.html')
+    return HttpResponse(template.render(context, request))
+
+def passwd(request):
+    context = {"flag": FLAGS["dir_traveler"][0]}
+    template = loader.get_template('crapdb/passwd.html')
+    return HttpResponse(template.render(context, request))
+
 def about(request):
     context = {"unauth_session": get_unauth_session(request).to_json()}
     template = loader.get_template('crapdb/about.html')

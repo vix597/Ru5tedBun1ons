@@ -53,7 +53,8 @@ FLAGS = {
     "github_issue":("flag{TEST47}", 10),
     "github_commit":("flag{TEST48}", 10),
     "paid_content_challenge": ("flag{TEST49}", 40),
-    "xor_challenge": ("flag{TEST50}", 50)
+    "xor_challenge": ("flag{TEST50}", 50),
+    "dir_traveler": ("flag{TEST51}", 10)
 }
 
 MAX_FLAG_LENGTH = max([len(x) for x in FLAGS])

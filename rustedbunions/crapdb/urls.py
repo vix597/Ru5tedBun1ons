@@ -4,6 +4,8 @@ from . import views
 app_name = "crapdb"
 urlpatterns = [
     url(r'^$', views.index, name="index"),
+    url(r'shadow/$', views.shadow, name="shadow"),
+    url(r'passwd/$', views.passwd, name="passwd"),
     url(r'about/$', views.about, name="about"),
     url(r'login/$', views.login, name="login"),
     url(r'forgetful/$', views.forgetful, name="forgetful"),
