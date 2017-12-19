@@ -20,6 +20,8 @@ class LeaderboardEntry(models.Model):
     session_creation_time = models.DateTimeField(default=timezone.now, verbose_name="Session Creation Time")
     purchased_challenges = models.CharField(default="", max_length=4000, verbose_name="Purchased Challenges")
     remote_ip = models.CharField(default="", max_length=64, verbose_name="Remote IP")
+    last_modified = models.DateTimeField(auto_now=True)
+    leader_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "{} - {}".format(self.name, self.lifetime_hacker_bucks)
