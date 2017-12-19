@@ -3,6 +3,7 @@ All the flags in one place so I only have to edit the one
 file on deploy
 '''
 
+# NOTE: Change before deploy
 FLAGS = {
     "index_page_source":("flag{TEST1}", 7),
     "forgetful_page_source":("flag{TEST2}", 7),
@@ -55,6 +56,19 @@ FLAGS = {
     "paid_content_challenge": ("flag{TEST49}", 40),
     "xor_challenge": ("flag{TEST50}", 50),
     "dir_traveler": ("flag{TEST51}", 10)
+}
+
+# NOTE: Change before deploy
+#               user       password        question         answer     paid?
+CRAPDB_USERS = {
+    "admin": "('admin', 'admin_password', 'sec_question', 'sec_answer', 0)",
+    "user1": "('user1', 'user1_password', 'sec_question', 'sec_answer', 0)",
+    "user2": "('user2', 'user2_password', 'sec_question', 'sec_answer', 0)",
+    "user3": "('user3', 'user3_password', 'sec_question', 'sec_answer', 0)",
+    "user4": "('user4', 'user4_password', 'sec_question', 'sec_answer', 0)",
+    "paid1": "('paid1', 'paid1_password', 'sec_question', 'sec_answer', 1)",
+    "paid2": "('paid2', 'paid2_password', 'sec_question', 'sec_answer', 1)",
+    "paid3": "('paid3', 'paid3_password', 'sec_question', 'sec_answer', 1)"
 }
 
 MAX_FLAG_LENGTH = max([len(x) for x in FLAGS])

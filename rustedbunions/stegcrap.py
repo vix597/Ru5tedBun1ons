@@ -74,7 +74,8 @@ if __name__ == "__main__":
 
     img_type = imghdr.what(args.file)
     if img_type == "bmp":
-        BMP_FILE_HEADER_SIZE = 50 # 14 + 1 bytes
+        BMP_FILE_HEADER_SIZE = 50 # This gets us past the header...idk how big it is...ferp
+                                  # If it's not fixed length then maybe I break some BMP files...whatever
         if not args.un_steg:
             source_file = None
             with open(args.file, 'rb') as f:
