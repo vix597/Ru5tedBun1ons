@@ -23,7 +23,7 @@ class Session:
     _challenge_registry = {}
     _registry = {}
     _session_lock = threading.Lock()
-    SESSION_TIMEOUT = 30 # 30 minute session timeout
+    SESSION_TIMEOUT = 600 # 10 hour session timeout
     CLEANUP_EVENT = threading.Event()
 
     @classmethod
