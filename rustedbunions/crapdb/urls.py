@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'xorflag/(?P<session_id>\w+)/$', views.xor_challenge_get_flag, name="xorflag"),
     url(r'genetic/(?P<session_id>\w+)/$', views.genetic_challenge_get, name="genetic"),
     url(r'geneticflag/(?P<session_id>\w+)/$', views.genetic_challenge_get_flag, name="geneticflag"),
+    url(r'syncsession/(?P<session_id>\w+)/$', views.sync_session, name="syncsession"),
 ]

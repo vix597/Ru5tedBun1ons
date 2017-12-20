@@ -27,7 +27,6 @@ class Genetic(Challenge):
         self.score = 0
         for _ in range(self.password_len):
             self.password += self.chars[random.randint(0, len(self.chars) - 1)]
-        print("Password: ", self.password)
 
     def to_json(self):
         obj = super().to_json()

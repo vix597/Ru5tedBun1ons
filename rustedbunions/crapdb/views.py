@@ -14,6 +14,21 @@ from flags import FLAGS
 
 #pylint: disable=E1101
 
+def sync_session(request, session_id):
+    ret = {}
+    unauth_session = get_unauth_session(request)
+
+    try:
+        # Update the unauth session with the hacker bucks and flags
+        session = Session.get_session(session_id)
+        unauth_session.from_other_session(session)
+    except KeyError:
+        pass
+
+    ret = {"hacker_bucks": unauth_session.hacker_bucks}
+    AuthenticatedSession.logout(session_id)
+    return HttpResponse(json.dumps(ret))
+
 def index(request):
     context = {
         "unauth_session": get_unauth_session(request).to_json(),

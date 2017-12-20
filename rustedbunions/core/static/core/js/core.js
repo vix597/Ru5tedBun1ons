@@ -123,3 +123,23 @@ function testFlag() {
         }
     });
 }
+
+function syncSession() {
+    session_id = localStorage.getItem("session_id");
+    if (session_id) {
+        console.log("Session sync");
+
+        // On an unauth page with a session ID. Sync the hacker bucks
+        $.ajax({
+            url: "/crapdb/syncsession/" + session_id + "/",
+            type: "GET",
+            success: function(res) {
+                res = JSON.parse(res);
+                if (res.hacker_bucks) {
+                    $("#hackerBucks").text(res.hacker_bucks);
+                }
+                localStorage.clear();
+            }
+        });
+    }
+}
