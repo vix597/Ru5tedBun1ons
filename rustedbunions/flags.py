@@ -9,7 +9,6 @@ FLAGS = {
     "forgetful_page_source":("flag{TEST2}", 7),
     "no_user_login":("flag{TEST3}", 25),
     "no_password_login":("flag{TEST4}", 25),
-    "django_admin_flag":("flag{TEST5}", 10000),
     "django_settings_flag":("flag{TEST6}", 12),
     "super_admin_challenge":("flag{TEST7}", 15),
     "index_console_output":("flag{TEST8}", 10),
