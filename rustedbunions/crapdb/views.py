@@ -67,7 +67,7 @@ def login(request):
         username = d.get("username", None)
         password = d.get("password", None)
 
-        if username and password:
+        if username is not None and password is not None:
             if not is_user_data_valid(username) or not is_user_data_valid(password):
                 context["error"] = "Too much data"
             else:
