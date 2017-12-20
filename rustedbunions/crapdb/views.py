@@ -26,7 +26,6 @@ def sync_session(request, session_id):
         pass
 
     ret = {"hacker_bucks": unauth_session.hacker_bucks}
-    AuthenticatedSession.logout(session_id)
     return HttpResponse(json.dumps(ret))
 
 def index(request):

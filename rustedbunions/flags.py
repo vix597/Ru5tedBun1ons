@@ -46,7 +46,7 @@ FLAGS = {
     "paid_content_challenge": ("flag{TEST49}", 40),
     "xor_challenge": ("flag{TEST50}", 50),
     "dir_traveler": ("flag{TEST51}", 10),
-    "genes": ("flag{TEST52}", 100)
+    "genes": ("flag{TEST52}", 50)
 }
 
 # NOTE: Change before deploy

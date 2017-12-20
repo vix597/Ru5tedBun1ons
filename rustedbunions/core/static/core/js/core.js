@@ -138,7 +138,6 @@ function syncSession() {
                 if (res.hacker_bucks) {
                     $("#hackerBucks").text(res.hacker_bucks);
                 }
-                localStorage.clear();
             }
         });
     }
