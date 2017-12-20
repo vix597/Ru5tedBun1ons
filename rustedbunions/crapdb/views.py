@@ -106,7 +106,11 @@ def forgetful(request):
     return HttpResponse(template.render(context, request))
 
 def getpassword(request):
-    context = {}
+    context = {
+        "unauth_session": get_unauth_session(request).to_json(),
+        "forgetful_page_source": FLAGS["forgetful_page_source"][0],
+        "valid_sec_answer": FLAGS["valid_sec_answer"][0]
+    }
 
     if request.POST:
         conn = sqlite3.connect(settings.CRAPDB_PATH)
@@ -156,7 +160,11 @@ def getpassword(request):
     return HttpResponse(template.render(context, request))
 
 def searchcrap(request):
-    context = {}
+    context = {
+        "unauth_session": get_unauth_session(request).to_json(),
+        "forgetful_page_source": FLAGS["forgetful_page_source"][0],
+        "valid_sec_answer": FLAGS["valid_sec_answer"][0]
+    }
 
     if request.POST:
         conn = sqlite3.connect(settings.CRAPDB_PATH)
