@@ -62,4 +62,4 @@ CRAPDB_USERS = {
     "paid3": "('paid3', 'paid3_password', 'sec_question', 'sec_answer', 1)"
 }
 
-MAX_FLAG_LENGTH = max([len(x) for x in FLAGS])
+MAX_FLAG_LENGTH = max([len(x[0]) for x in FLAGS.values()])
