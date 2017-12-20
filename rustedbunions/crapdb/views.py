@@ -482,8 +482,8 @@ def genetic_challenge_get_flag(request, session_id):
         answer = d.get("answer", None)
 
         if answer is not None:
-            if not is_user_data_valid(answer, data_type=DataType.USER_SPECIFIED_EXACT_LENGTH, length=9):
-                ret["error"] = "Password must be 9 characters"
+            if not is_user_data_valid(answer, data_type=DataType.USER_SPECIFIED_EXACT_LENGTH, length=7):
+                ret["error"] = "Password must be 7 characters"
             else:
                 ret = challenge_get_flag(session, "genetic", answer=answer)
         else:

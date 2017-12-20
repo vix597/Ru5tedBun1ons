@@ -46,7 +46,8 @@ FLAGS = {
     "github_commit":("flag{TEST48}", 10),
     "paid_content_challenge": ("flag{TEST49}", 40),
     "xor_challenge": ("flag{TEST50}", 50),
-    "dir_traveler": ("flag{TEST51}", 10)
+    "dir_traveler": ("flag{TEST51}", 10),
+    "genes": ("flag{TEST52}", 100)
 }
 
 # NOTE: Change before deploy
