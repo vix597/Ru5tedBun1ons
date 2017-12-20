@@ -6,8 +6,8 @@ from core.session import Session
 from flags import FLAGS
 
 class Genetic(Challenge):
-    chars = string.ascii_letters + string.digits + string.punctuation
-    password_len = 9
+    chars = string.ascii_letters + string.digits
+    password_len = 7
 
     meta = ChallengeMetadata(
         challenge_id="genetic",
@@ -51,4 +51,4 @@ class Genetic(Challenge):
         self.get_fitness(answer)
         return True
 
-#Session.register_challenge(Genetic)
+Session.register_challenge(Genetic)

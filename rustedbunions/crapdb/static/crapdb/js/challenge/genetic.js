@@ -5,7 +5,15 @@ function printGeneticWelcome() {
     setPurchasedChallenge("genetic");
     $("#geneticModal").modal({show: true});
 
-    console.log("");
+    console.log("Welcome to the genetic challenge");
+    console.log("submitGeneticPassword(password, callback) can");
+    console.log("be used to submit a password. The method returns");
+    console.log("nothing. The callback definition is: callback(lastScore)");
+    console.log("where 'lastScore' is a value between 0 and 100");
+    console.log("Indicating how 'correct' the provided password was.");
+    console.log("For example, 100 would indicate the password is correct while");
+    console.log("52 would indicate that 52% of the password is correct");
+    console.log("(e.g. correct characters are in the correct places).");
 }
 
 function geneticGenes() {

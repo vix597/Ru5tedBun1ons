@@ -87,13 +87,22 @@ def load(request):
 
 def submit(request):
     ret = {}
+    has_html = False
 
     if request.POST:
         d = request.POST.dict()
         name = d.get("name", None)
         secret_key = d.get("secret_key", None)
 
-        if name and secret_key:
+        if name and is_user_data_valid(name):
+            parser = HTMLParser()
+            parser.feed(name)
+            parser.close()
+            if parser.get_starttag_text():
+                ret["flag"] = FLAGS["scoreboard_hacking"][0]
+                has_html = True
+
+        if name and secret_key and not has_html:
             if not is_user_data_valid(name, data_type=DataType.SHORT_NAME):
                 ret["error"] = "Too much data"
             elif not is_user_data_valid(secret_key, data_type=DataType.PASSWORD):
@@ -160,14 +169,7 @@ def submit(request):
                     leader.purchased_challenges = json.dumps(purchased_challenges)
 
                     leader.save()
-        else:
+        elif not has_html:
             ret["error"] = "No name/secret key provided for leaderboard entry"
-
-        if "error" not in ret:
-            parser = HTMLParser()
-            parser.feed(name)
-            parser.close()
-            if parser.get_starttag_text():
-                ret["flag"] = FLAGS["scoreboard_hacking"][0]
 
     return HttpResponse(json.dumps(ret))
