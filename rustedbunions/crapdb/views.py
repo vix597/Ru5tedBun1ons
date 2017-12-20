@@ -437,3 +437,45 @@ def xor_challenge_get_flag(request, session_id):
             ret = {"error": "No answer provided in POST request"}
 
     return HttpResponse(json.dumps(ret))
+
+def genetic_challenge_get(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+
+    challenge = None
+    try:
+        challenge = challenge_get(session, "genetic")
+    except NotEnoughHackerBucksError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+    except KeyError as e:
+        return HttpResponse(json.dumps({"error": str(e)}))
+
+    ret = {
+        "hacker_bucks": session.hacker_bucks
+    }
+    ret.update(challenge.to_json())
+    return HttpResponse(json.dumps(ret))
+
+def genetic_challenge_get_flag(request, session_id):
+    status, obj = get_session(session_id, http_response=True)
+    if not status:
+        return obj # HttpResponse containing error on fail
+    session = obj
+
+    ret = {}
+
+    if request.POST:
+        d = request.POST.dict()
+        answer = d.get("answer", None)
+
+        if answer is not None:
+            if not is_user_data_valid(answer, data_type=DataType.USER_SPECIFIED_EXACT_LENGTH, length=9):
+                ret["error"] = "Password must be 9 characters"
+            else:
+                ret = challenge_get_flag(session, "genetic", answer=answer)
+        else:
+            ret = {"error": "No answer provided in POST request"}
+
+    return HttpResponse(json.dumps(ret))

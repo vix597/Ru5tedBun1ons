@@ -20,7 +20,6 @@
             <div class="container">
                 <nav class="nav">
                     <a class="nav-link" onclick="logout()" href="#">Logout</a>
-                    <a class="nav-link" onclick='jackit()' id='jackitButton' href="#">Grind For Bucks</a>
                 </nav>
             </div>
         </div>
@@ -128,6 +127,7 @@
     {% include "./challenge/superadmin.html" %}
     {% include "./challenge/paidcontent.html" %}
     {% include "./challenge/xor.html" %}
+    {% include "./challenge/genetic.html" %}
 
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
@@ -144,6 +144,7 @@
     <script src="{% static 'crapdb/js/challenge/rot.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/paidcontent.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/xor.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/genetic.js' %}"></script>
 
     <script>
         function testFlagKeyDown(event) {
@@ -155,10 +156,6 @@
         function logout() {
             localStorage.clear();
             window.location = "/crapdb/logout/" + session_id + "/";
-        }
-
-        function jackit() {
-            window.location = "/jackit/" + session_id + "/";
         }
 
         $(document).ready(function() {

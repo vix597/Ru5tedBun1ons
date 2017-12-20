@@ -1,0 +1,16 @@
+<challenge-modal modal-id="geneticModal" modal-footer-class="modal-body">
+    <yield to="modal-header">
+        <div class="form-group" style="width: 100%;">
+            <label for="geneticPassword">9 character password</label>
+            <input class="form-control" type="text" id="geneticPassword"
+                name="geneticPassword" maxlength="9">
+        </div>
+    </yield>
+    <yield to="modal-body">
+        <button type="button" class="btn btn-success"
+            onclick="submitGeneticPassword($('#geneticPassword').val(), cb=null, display_alert=true)">Submit Password</button>
+    </yield>
+    <yield to="modal-footer">
+        <div id="geneticModalFooter"></div>
+    </yield>
+</challenge-modal>
