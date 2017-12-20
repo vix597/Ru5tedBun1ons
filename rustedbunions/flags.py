@@ -39,15 +39,6 @@ FLAGS = {
     "rot_challenge":("flag{TEST32}", 37),
     "shortest_sqli":("flag{TEST33}", 17),
     "scoreboard_hacking":("flag{TEST34}", 50),
-    "game1":("flag{TEST35}", 12),
-    "game2":("flag{TEST36}", 12),
-    "game3":("flag{TEST37}", 12),
-    "game4":("flag{TEST38}", 12),
-    "game5":("flag{TEST39}", 12),
-    "game6":("flag{TEST40}", 17),
-    "game7":("flag{TEST41}", 20),
-    "game8":("flag{TEST42}", 22),
-    "game9":("flag{TEST43}", 25),
     "stego1":("flag{TEST44}", 10),
     "stego2":("flag{TEST45}", 15),
     "stego3":("flag{TEST46}", 25),
@@ -55,8 +46,7 @@ FLAGS = {
     "github_commit":("flag{TEST48}", 10),
     "paid_content_challenge": ("flag{TEST49}", 40),
     "xor_challenge": ("flag{TEST50}", 50),
-    "dir_traveler": ("flag{TEST51}", 10),
-    "genes": ("flag{TEST52}", 100)
+    "dir_traveler": ("flag{TEST51}", 10)
 }
 
 # NOTE: Change before deploy
