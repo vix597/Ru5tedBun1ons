@@ -4,11 +4,6 @@ body {
     padding-bottom: 40px;
 }
 
-.unauth-navbar {
-    margin-left: 90px; 
-    margin-right: 90px;
-}
-
 @media (max-width: 48rem) {
     body {
         padding-top: 150px;
