@@ -56,7 +56,10 @@ def main(request, session_id):
     return HttpResponse(template.render(context, request))
 
 def login(request):
-    context = {}
+    context = {
+        "index_page_source": FLAGS["index_page_source"][0],
+        "index_console_output": FLAGS["index_console_output"][0]
+    }
     unauth_session = get_unauth_session(request)
 
     if request.POST:
@@ -79,7 +82,7 @@ def login(request):
                 except LoginSqlInjectionError as e:
                     context["error"] = str(e)
 
-    context["unauth_session"] = unauth_session
+    context["unauth_session"] = unauth_session.to_json()
     template = loader.get_template("crapdb/index.html")
     return HttpResponse(template.render(context, request))
 
