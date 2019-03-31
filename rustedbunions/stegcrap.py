@@ -10,8 +10,8 @@ import imghdr
 import struct
 
 desc = """
-Do you want to hide data in files and maybe break the files 
-and also not hide the data really good at all?. Then this is 
+Do you want to hide data in files and maybe break the files
+and also not hide the data really good at all?. Then this is
 the tool for you!
 """
 
@@ -25,7 +25,7 @@ def sxor(s1, s2):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument("-f", "--file", action="store", help="File to add/get secrets to/from", 
+    parser.add_argument("-f", "--file", action="store", help="File to add/get secrets to/from",
                         type=str, required=True)
     parser.add_argument("-d", "--dest", action="store", help="Destination file", type=str)
     parser.add_argument("-m", "--message", action="store", help="The message to hide in the file", type=str)
