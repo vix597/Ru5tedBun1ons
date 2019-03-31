@@ -1,9 +1,0 @@
-{
-    "python.linting.pylintArgs": [
-        "--rcfile=./.pylintrc"
-    ],
-    "editor.renderWhitespace": "all",
-    "python.pythonPath": "python3",
-    "window.zoomLevel": 0,
-    "editor.minimap.enabled": false
-}

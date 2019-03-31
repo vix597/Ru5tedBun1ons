@@ -11,11 +11,13 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from .utils import get_secret_key
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEPLOY_PUBLIC_DIR = os.path.join("/", "home", "public", "rustedbunions")
 DEPLOY_PROTECTED_DIR = os.path.join("/", "home", "protected")
+SECRET_KEY_FILE = os.path.join(BASE_DIR, "django_secret_key")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -35,6 +37,8 @@ ALLOWED_HOSTS = ["www.rustedbunions.com"]
 
 if DEBUG:
     ALLOWED_HOSTS = []
+if not DEBUG:
+    SECRET_KEY = get_secret_key(SECRET_KEY_FILE)  # Creates the key if it doesn't exist
 
 # Application definition
 

@@ -1,3 +1,12 @@
 {
-    "python.pythonPath": "C:\\Python35\\python.exe"
+    "python.linting.pylintArgs": [
+        "--rcfile=.\\rustedbunions\\.pylintrc"
+    ],
+    "editor.renderWhitespace": "all",
+    "python.pythonPath": ".\\venv\\Scripts\\python.exe",
+    "window.zoomLevel": 0,
+    "editor.minimap.enabled": false,
+    "editor.trimAutoWhitespace": true,
+    "trailing-spaces.trimOnSave": true,
+    "files.insertFinalNewline": true
 }

@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^crapdb/', include('crapdb.urls')),
     url(r'^etc/', include('traveler.urls')),
     url(r'^core/', include('core.urls')),
+    url(r'^leaderboard/', include('leaderboard.urls')),
     url(r'^admin/', admin.site.urls),
 ]
