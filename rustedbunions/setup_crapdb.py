@@ -6,30 +6,32 @@ import os
 import sys
 import sqlite3
 from rustedbunions import settings
-from flags import FLAGS, CRAPDB_USERS
+from flags import FlagGenerator, CRAPDB_USERS
+
+flags = FlagGenerator.generate_flags()
 
 CRAPDB_SETUP = [
     "CREATE TABLE flags (flag text)",
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table1"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table2"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table3"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table4"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table5"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table6"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table7"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table8"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table9"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table10"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table11"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table12"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table13"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table14"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table15"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table16"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table17"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table18"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table19"][0]),
-    "INSERT INTO flags VALUES ('{}')".format(FLAGS["flag_table20"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table1"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table2"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table3"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table4"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table5"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table6"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table7"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table8"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table9"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table10"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table11"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table12"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table13"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table14"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table15"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table16"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table17"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table18"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table19"][0]),
+    "INSERT INTO flags VALUES ('{}')".format(flags["flag_table20"][0]),
     "CREATE TABLE users (username text, password text, question text, answer text, paid integer)",
     "INSERT INTO users VALUES {}".format(CRAPDB_USERS["admin"]),
     "INSERT INTO users VALUES {}".format(CRAPDB_USERS["user1"]),

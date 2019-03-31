@@ -7,10 +7,11 @@ from datetime import timedelta
 
 from core.challenge import Challenge, ChallengeMetadata
 from core.session import Session
-from flags import FLAGS
+from flags import FlagGenerator
 
 from rustedbunions import settings
 
+FLAGS = FlagGenerator.generate_flags()
 MOVIE_QUOTE_WORDS = []
 
 # Load all the movie quotes

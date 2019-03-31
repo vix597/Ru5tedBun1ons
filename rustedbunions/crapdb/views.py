@@ -10,7 +10,9 @@ from core.session import Session, AuthenticatedSession, LoginSqlInjectionError
 from core.views import update_hacker_bucks_from_flag, get_session, get_unauth_session, FlagAlreadyClaimedError
 from core.util import is_user_data_valid, DataType
 from rustedbunions import settings
-from flags import FLAGS
+from flags import FlagGenerator
+
+FLAGS = FlagGenerator.generate_flags()
 
 #pylint: disable=E1101
 

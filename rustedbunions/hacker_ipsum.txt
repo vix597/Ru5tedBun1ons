@@ -1,0 +1,148 @@
+*.*
+Bit
+Ctl-c
+Dennis Ritchie
+Donald Knuth
+Eof
+Finally
+Im compiling
+Im sorry Dave Im afraid I cant do that
+James T. Kirk
+L0phtCrack
+Leslie Lamport
+Linus Torvalds
+Starcraft
+Thread
+access
+ack
+afk
+alloc
+ascii
+back door
+bar
+big-endian
+bin
+bit
+blob
+boolean
+brute force
+bubble sort
+buffer
+bypass
+bytes
+cache
+case
+cat
+char
+client
+concurrently
+continue
+cookie
+crack
+ctl-c
+ddos
+deadlock
+default
+define
+dereference
+do
+double
+dword
+echo
+else
+emacs
+eof
+epoch
+error
+exception
+false
+fatal
+finally
+firewall
+float
+flood
+foad
+foo
+fopen
+for
+fork
+function
+gc
+gcc
+gnu
+gobble
+grep
+gurfle
+hack
+hash
+haxx0r
+hello world
+highjack
+ifdef
+in
+int
+interpreter
+ip
+its a feature
+kilo
+leapfrog
+leet big-endian
+less
+lib
+linux
+machine code
+mailbomb
+mainframe
+malloc
+man pages
+mega
+memory leak
+mountain dew
+nak
+null
+over clock
+packet
+packet sniffer
+perl
+piggyback
+pragma
+printf
+private
+public
+qword
+race condition
+regex
+root
+salt
+script kiddies
+semaphore
+shell shock
+short
+socket
+spoof
+sql
+ssh
+stack
+stack trace
+stdio.h
+strlen
+sudo
+syn
+tcp
+terminal
+todo
+true
+tunnel
+unix
+unsigned long
+var
+vi
+vim
+void
+wannabee
+warez
+while
+win
+wombat
+worm
+xss

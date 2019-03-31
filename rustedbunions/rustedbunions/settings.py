@@ -41,7 +41,7 @@ if DEBUG:
 INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'crapdb.apps.CrapdbConfig',
-    'leaderboard.apps.LeaderboardConfig',
+    #'leaderboard.apps.LeaderboardConfig',
     'traveler.apps.TravelerConfig',
     'django.contrib.admin',
     'django.contrib.auth',

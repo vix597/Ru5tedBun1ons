@@ -1,7 +1,10 @@
 from enum import Enum
 from uuid import uuid4
 
-from flags import MAX_FLAG_LENGTH
+from flags import FlagGenerator
+
+FLAGS = FlagGenerator.generate_flags()
+MAX_FLAG_LENGTH = FlagGenerator.max_flag_length
 
 class DataType(Enum):
     ARBITRARY_USER_DATA = 1

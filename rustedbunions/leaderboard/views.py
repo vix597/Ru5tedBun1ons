@@ -6,10 +6,12 @@ from django.http import HttpResponse
 from django.template import loader
 from django.utils import timezone
 
-from flags import FLAGS
+from flags import FlagGenerator
 from core.util import is_user_data_valid, DataType
 from core.views import get_unauth_session, calc_lifetime_hacker_bucks_from_claimed_flags
 from .models import LeaderboardEntry
+
+FLAGS = FlagGenerator.generate_flags()
 
 def get_leaderboard():
     '''
@@ -124,7 +126,7 @@ def submit(request):
                         leader.lifetime_hacker_bucks = calc_lifetime_hacker_bucks_from_claimed_flags(claimed_flags)
                         leader.num_flags_found = len(claimed_flags)
                         leader.claimed_flags = json.dumps(claimed_flags)
-            
+
                         # This will overwrite their hacker bucks. Only an issue if they didn't load first
                         leader.hacker_bucks = session.hacker_bucks
                         leader.remote_ip = session.remote_ip

@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.template import loader
 
-from flags import FLAGS
+from flags import FlagGenerator
+
+FLAGS = FlagGenerator.generate_flags()
 
 def shadow(request):
     context = {"flag": FLAGS["dir_traveler"][0]}

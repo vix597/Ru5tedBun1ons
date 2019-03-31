@@ -12,7 +12,9 @@ if __name__ == "__main__":
     django.setup()
 
     from core.models import Flag
-    from flags import FLAGS
+    from flags import FlagGenerator
+
+    FLAGS = FlagGenerator.generate_flags()
 
     for flag in FLAGS.values():
         #pylint: disable=E1101

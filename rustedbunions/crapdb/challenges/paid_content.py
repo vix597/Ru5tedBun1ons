@@ -1,7 +1,9 @@
 
 from core.challenge import Challenge, ChallengeMetadata
 from core.session import Session, AuthenticatedSession
-from flags import FLAGS
+from flags import FlagGenerator
+
+FLAGS = FlagGenerator.generate_flags()
 
 class PaidContent(Challenge):
     meta = ChallengeMetadata(
