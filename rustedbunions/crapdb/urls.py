@@ -1,9 +1,12 @@
-from django.conf.urls import url
+from django.views.generic.base import RedirectView
+from django.conf.urls import url, include
+from django.contrib import admin
 from . import views
 
 app_name = "crapdb"
 urlpatterns = [
     url(r'^$', views.index, name="index"),
+    url(r'admin/$', RedirectView.as_view(url='/admin')),
     url(r'about/$', views.about, name="about"),
     url(r'login/$', views.login, name="login"),
     url(r'forgetful/$', views.forgetful, name="forgetful"),

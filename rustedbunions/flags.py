@@ -80,7 +80,8 @@ class FlagGeneratorSingleton:
         "paid_content_challenge": ("flag{TEST49}", 40),
         "xor_challenge": ("flag{TEST50}", 50),
         "dir_traveler": ("flag{TEST51}", 10),
-        "genes": ("flag{TEST52}", 50)
+        "genes": ("flag{TEST52}", 50),
+        "sentence_bot_challenge": ("flag{TEST53}", 45)
     }
 
     #: The singleton instance of the web server
