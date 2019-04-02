@@ -114,7 +114,7 @@
     </main><!-- /.container -->
 
     <footer class="blog-footer">
-        <p>Blog template built for <a href="#">Bootstrap</a> by 
+        <p>Blog template built for <a href="#">Bootstrap</a> by
             <a href="#">@mdo</a>. Modified
             for hackers by <a href="#">#RustyBunions</a>
         </p>
@@ -128,6 +128,7 @@
     {% include "./challenge/paidcontent.html" %}
     {% include "./challenge/xor.html" %}
     {% include "./challenge/genetic.html" %}
+    {% include "./challenge/sentencebot.html" %}
 
     <canvas id="matrix" style="display:none"></canvas>
 {% endblock %}
@@ -145,6 +146,7 @@
     <script src="{% static 'crapdb/js/challenge/paidcontent.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/xor.js' %}"></script>
     <script src="{% static 'crapdb/js/challenge/genetic.js' %}"></script>
+    <script src="{% static 'crapdb/js/challenge/sentencebot.js' %}"></script>
 
     <script>
         function testFlagKeyDown(event) {

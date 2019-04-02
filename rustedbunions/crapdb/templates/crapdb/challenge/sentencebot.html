@@ -1,0 +1,18 @@
+<challenge-modal modal-id="sentenceBotModal">
+    <yield to="modal-header">
+        <h5 class="modal-title">Sentence Bot Reversing</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </yield>
+    <yield to="modal-body">
+        <p>
+            Reverse engineer the sentence bot!
+        </p>
+        {% load static %}
+        <a class="btn btn-primary" href="{% static 'crapdb/other/sentencebot.bin' %}">Download</a>
+    </yield>
+    <yield to="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+    </yield>
+</challenge-modal>
