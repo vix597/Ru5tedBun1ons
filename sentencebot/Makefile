@@ -1,2 +1,2 @@
 all:
-	gcc sentencebot.c net.c crypt.c -o ./build/sentencebot
+	gcc -static sentencebot.c net.c crypt.c -o ./build/sentencebot
