@@ -81,7 +81,16 @@ class FlagGeneratorSingleton:
         "xor_challenge": ("flag{TEST50}", 50),
         "dir_traveler": ("flag{TEST51}", 10),
         "genes": ("flag{TEST52}", 50),
-        "sentence_bot_challenge": ("flag{TEST53}", 45)
+        "sentence_bot_challenge": ("flag{TEST53}", 45),
+        "jackit_level_1": ("flag{TEST54}", 5),
+        "jackit_level_2": ("flag{TEST55}", 8),
+        "jackit_level_3": ("flag{TEST56}", 10),
+        "jackit_level_4": ("flag{TEST57}", 12),
+        "jackit_level_5": ("flag{TEST58}", 15),
+        "jackit_level_6": ("flag{TEST59}", 18),
+        "jackit_level_7": ("flag{TEST60}", 20),
+        "jackit_level_8": ("flag{TEST61}", 25),
+        "jackit_hacked_score": ("flag{TEST62}", 40)
     }
 
     #: The singleton instance of the web server
@@ -188,7 +197,7 @@ class FlagGeneratorSingleton:
         self.max_flag_length = max([len(x[0]) for x in self.generated_flags.values()])
 
         with open("flags.txt", "w") as fh:
-            for key, value in self.generated_flags.items():
+            for key, value in sorted(self.generated_flags.items(), key=lambda x: x[0]):
                 fh.write(key + "," + value[0] + "," + str(value[1]) + "\n")
 
         return self.generated_flags
