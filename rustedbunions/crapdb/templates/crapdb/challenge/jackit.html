@@ -1,0 +1,18 @@
+<challenge-modal modal-id="jackItModal">
+    <yield to="modal-header">
+        <h5 class="modal-title">Gaming Challenge</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </yield>
+    <yield to="modal-body">
+        <p>
+            Play the game and re-program character stats to solve challenges and get flags
+        </p>
+        {% load static %}
+        <a class="btn btn-primary" href="https://github.com/vix597/jackit/releases/download/1.0/jackit-1.0-win-x64-exe.zip">Download</a>
+    </yield>
+    <yield to="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+    </yield>
+</challenge-modal>

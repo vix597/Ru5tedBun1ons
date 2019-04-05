@@ -5,3 +5,4 @@ from .paid_content import PaidContent
 from .xor import Xor
 from .genetic import Genetic
 from .sentence_bot import SentenceBot
+from .jackit import JackIt

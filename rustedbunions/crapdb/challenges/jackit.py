@@ -5,16 +5,16 @@ from flags import FlagGenerator
 FLAGS = FlagGenerator.generate_flags()
 
 
-class SentenceBot(Challenge):
+class JackIt(Challenge):
     meta = ChallengeMetadata(
-        challenge_id="sentence_bot",
-        name="Sentence Bot",
-        description="RE The Flag",
+        challenge_id="jackit_game",
+        name="Game Programming Challenge",
+        description="2D Side-scrolling game where you modify code to win",
         price=0,
-        value=FLAGS["sentence_bot_challenge"][1],
+        value=153,
         flag="",
-        sort_order=0,
-        js_function="sentenceBot()"
+        sort_order=1,
+        js_function="jackIt()"
     )
 
     def __init__(self):
@@ -27,4 +27,4 @@ class SentenceBot(Challenge):
         return True
 
 
-Session.register_challenge(SentenceBot)
+Session.register_challenge(JackIt)
